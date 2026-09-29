@@ -1,0 +1,3385 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Nunito:wght@300;400;500;600&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --bg1:#060b22;
+    --bg2:#101b4a;
+    --card:#0b1337cc;
+    --card-border:rgba(255, 213, 170, 0.22);
+    --text:#f8e8d6;
+    --soft:#d7c1bb;
+    --gold:#f0c999;
+    --pink:#e8b8c8;
+    --note:#e8d4c4;
+    --note-text:#5b4035;
+    --mini:#121d49;
+}
+
+body{
+    font-family:'Nunito', sans-serif;
+    color:var(--text);
+    background:
+        radial-gradient(circle at top left, rgba(101,68,167,.35), transparent 35%),
+        radial-gradient(circle at top right, rgba(255,160,180,.18), transparent 25%),
+        linear-gradient(180deg, #07102e 0%, #090f2d 30%, #060b22 100%);
+    min-height:100vh;
+}
+
+/* NAVBAR */
+.navbar{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 28px;
+    background:rgba(5,10,30,.78);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.logo{
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.8rem;
+    font-weight:600;
+    color:#f7e1c7;
+}
+
+.menu{
+    display:flex;
+    gap:26px;
+    flex-wrap:wrap;
+}
+
+.menu a{
+    color:#f2dfcf;
+    text-decoration:none;
+    font-size:.96rem;
+}
+
+.menu a:hover{
+    color:var(--gold);
+}
+
+.nav-right{
+    color:#f0d4be;
+    font-size:.95rem;
+}
+
+/* HERO */
+.hero{
+    position:relative;
+    min-height:430px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    background:
+        linear-gradient(rgba(5,8,28,.35), rgba(5,8,28,.55)),
+        url("imagenes/portada/cielo.jpg") center/cover no-repeat;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+}
+
+.hero-overlay{
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 50% 15%, rgba(255,228,181,.05), transparent 20%),
+      radial-gradient(circle at 80% 20%, rgba(255,255,255,.06), transparent 12%);
+}
+
+.hero-content{
+    position:relative;
+    z-index:2;
+    text-align:center;
+}
+
+.hero-content h1{
+    font-family:'Cormorant Garamond', serif;
+    font-size:5rem;
+    line-height:.95;
+    font-weight:600;
+    color:#f5e3cf;
+    text-shadow:0 0 20px rgba(0,0,0,.25);
+}
+
+.hero-content h2{
+    font-family:'Cormorant Garamond', serif;
+    font-size:2.1rem;
+    margin-top:12px;
+    color:#f7e7d8;
+}
+
+.subtitle{
+    margin-top:14px;
+    letter-spacing:2px;
+    font-size:.95rem;
+    text-transform:uppercase;
+    color:#f0d2bc;
+}
+
+.hero-content button{
+    margin-top:24px;
+    border:none;
+    background:linear-gradient(180deg,#f3d6b5,#ddb389);
+    color:#35251e;
+    padding:14px 28px;
+    border-radius:999px;
+    font-weight:700;
+    cursor:pointer;
+    font-size:1rem;
+    box-shadow:0 6px 18px rgba(0,0,0,.2);
+}
+
+.hero-left-note,
+.hero-right-text,
+.hero-note-paper{
+    position:absolute;
+    z-index:2;
+    color:#f5d9d7;
+}
+
+.hero-left-note{
+    left:5%;
+    top:28%;
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.6rem;
+    line-height:1.1;
+    max-width:220px;
+    transform:rotate(-3deg);
+}
+
+.hero-right-text{
+    right:13%;
+    top:31%;
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.8rem;
+    line-height:1.1;
+    transform:rotate(-5deg);
+}
+
+.hero-note-paper{
+    right:3.5%;
+    top:12%;
+    background:var(--note);
+    color:var(--note-text);
+    padding:20px 16px;
+    border-radius:8px;
+    width:150px;
+    text-align:center;
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.5rem;
+    line-height:1.1;
+    box-shadow:0 10px 20px rgba(0,0,0,.25);
+    transform:rotate(2deg);
+}
+
+/* DASHBOARD */
+.dashboard{
+    max-width:1400px;
+    margin:0 auto;
+    padding:18px;
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:14px;
+}
+
+.card{
+    position:relative;
+    background:
+        linear-gradient(180deg, rgba(20,30,80,.82), rgba(9,15,45,.88));
+    border:1px solid var(--card-border);
+    border-radius:20px;
+    padding:20px;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.05),
+        0 8px 24px rgba(0,0,0,.22);
+    overflow:hidden;
+}
+
+.card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 90% 10%, rgba(255,227,186,.05), transparent 18%),
+      radial-gradient(circle at 20% 80%, rgba(255,182,193,.03), transparent 20%);
+    pointer-events:none;
+}
+
+.card h3{
+    font-family:'Cormorant Garamond', serif;
+    font-size:2rem;
+    color:#f7e6d2;
+    margin-bottom:6px;
+}
+
+.card h4{
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.8rem;
+    margin-top:4px;
+    color:#f8e6d3;
+}
+
+.card-sub,
+.date{
+    color:#d5c0be;
+    margin-bottom:14px;
+    font-size:.98rem;
+}
+
+/* historia */
+.timeline{
+    margin-top:10px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
+
+.timeline-item{
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+    position:relative;
+}
+
+.icon-box{
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:10px;
+    background:rgba(255,234,214,.08);
+    border:1px solid rgba(255,224,190,.3);
+    color:#f2d2ad;
+    flex-shrink:0;
+}
+
+.timeline-item strong{
+    font-size:1.35rem;
+    font-family:'Cormorant Garamond', serif;
+    color:#f6e7d8;
+}
+
+.timeline-item p{
+    color:#d8c5c1;
+    font-size:.95rem;
+    line-height:1.3;
+}
+
+.paper-note{
+    position:absolute;
+    background:var(--note);
+    color:var(--note-text);
+    border-radius:8px;
+    box-shadow:0 10px 20px rgba(0,0,0,.2);
+    font-family:'Cormorant Garamond', serif;
+}
+
+.small-note{
+    right:18px;
+    top:90px;
+    padding:18px 14px;
+    width:90px;
+    text-align:center;
+    font-size:1.5rem;
+    transform:rotate(2deg);
+}
+
+.vertical-note{
+    right:18px;
+    top:90px;
+    width:95px;
+    padding:18px 12px;
+    font-size:1.45rem;
+    text-align:center;
+    transform:rotate(3deg);
+}
+
+/* capítulo */
+.tab-buttons{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+}
+
+.tab-buttons button,
+.outline-btn{
+    background:rgba(255,255,255,.05);
+    color:#f8e3d8;
+    border:1px solid rgba(255,228,210,.25);
+    border-radius:999px;
+    padding:10px 16px;
+    cursor:pointer;
+}
+
+.tab-buttons button:first-child{
+    background:linear-gradient(180deg,#f2d5b5,#e7b98c);
+    color:#3c2a20;
+    font-weight:700;
+}
+
+.letter-box{
+    position:relative;
+    background:#ecdfd4;
+    color:#46352f;
+    border-radius:16px;
+    padding:18px 18px 22px;
+    min-height:270px;
+}
+
+.letter-box h5{
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.6rem;
+    margin-bottom:10px;
+    padding-right:112px;
+    min-height:76px;
+}
+
+.letter-box p{
+    line-height:1.45;
+    margin-bottom:12px;
+    font-size:.98rem;
+}
+
+.letter-sticky{
+    position:absolute;
+    right:18px;
+    top:-10px;
+    bottom:auto;
+    background:#e7c7b4;
+    padding:12px 10px;
+    border-radius:6px;
+    width:100px;
+    text-align:center;
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.2rem;
+    transform:rotate(-3deg);
+    box-shadow:0 8px 16px rgba(0,0,0,.15);
+}
+
+/* mini grid */
+.mini-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+    margin-top:10px;
+}
+
+.mini-card{
+    min-height:120px;
+    border-radius:16px;
+    border:1px solid rgba(255,230,210,.18);
+    background:rgba(255,255,255,.03);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    gap:8px;
+    color:#f7dece;
+    font-size:1.6rem;
+}
+
+.mini-card span{
+    font-size:1rem;
+    line-height:1.2;
+}
+
+.quote-box{
+    margin-top:18px;
+    border-radius:18px;
+    padding:18px;
+    text-align:center;
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.5rem;
+    color:#f8d8d2;
+    border:1px solid rgba(255,214,190,.15);
+    background:rgba(255,255,255,.025);
+}
+
+/* distancia */
+.distance-photos{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    margin:18px 0;
+}
+
+.polaroid{
+    width:120px;
+    height:150px;
+    background:#f7f2ef;
+    color:#3d2d30;
+    border-radius:6px;
+    box-shadow:0 8px 18px rgba(0,0,0,.2);
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    padding:12px;
+    text-align:center;
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.1rem;
+    transform:rotate(-4deg);
+}
+
+.polaroid:nth-child(3){
+    transform:rotate(4deg);
+}
+
+.distance-line{
+    color:#f0c9d0;
+    font-size:1.4rem;
+    text-align:center;
+}
+
+.distance-text{
+    color:#d7c5c7;
+    line-height:1.5;
+}
+
+/* recuerdos */
+.polaroid-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin:18px 0;
+}
+
+.recuerdos .polaroid{
+    width:auto;
+    height:170px;
+    transform:none;
+}
+
+/* playlist */
+.music-player{
+    border:1px solid rgba(255,224,210,.18);
+    border-radius:18px;
+    padding:16px;
+    display:flex;
+    gap:15px;
+    margin-top:12px;
+    background:rgba(255,255,255,.03);
+}
+
+.album-cover{
+    width:110px;
+    height:110px;
+    border-radius:12px;
+    background:
+      linear-gradient(rgba(0,0,0,.15), rgba(0,0,0,.3)),
+      url("imagenes/portada/cielo.jpg") center/cover no-repeat;
+}
+
+.song-info{
+    flex:1;
+}
+
+.song-info small{
+    color:#d9c8ca;
+}
+
+.song-info strong{
+    display:block;
+    margin-top:4px;
+    font-size:1.25rem;
+}
+
+.song-info p{
+    color:#d3c1c3;
+    margin:4px 0 14px;
+}
+
+.progress{
+    height:4px;
+    border-radius:999px;
+    background:linear-gradient(90deg, #fff 0%, #fff 45%, rgba(255,255,255,.2) 45%);
+    margin-bottom:15px;
+}
+
+.controls{
+    font-size:1.6rem;
+    letter-spacing:10px;
+}
+
+.player-quote{
+    margin-top:16px;
+    text-align:center;
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.45rem;
+    color:#f4d9d6;
+}
+
+/* metas */
+.dream-list{
+    list-style:none;
+    margin-top:12px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    padding-right:100px;
+}
+
+.dream-list li::before{
+    content:"☐";
+    margin-right:10px;
+    color:#f0d1bc;
+}
+
+/* cartas */
+.envelope-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin-top:20px;
+}
+
+.envelope{
+    background:linear-gradient(180deg,#f1ddd2,#efd0cf);
+    color:#4c3740;
+    border-radius:10px;
+    min-height:118px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.35rem;
+    padding:12px;
+}
+
+/* futuros */
+.locked-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin-top:16px;
+}
+
+.locked-card{
+    min-height:120px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.09);
+    background:rgba(255,255,255,.04);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    text-align:center;
+    color:#e1d3d7;
+}
+
+.locked-card span{
+    font-weight:700;
+}
+
+.locked-card small{
+    color:#bcaeb8;
+}
+
+.footer-love{
+    margin-top:26px;
+    text-align:center;
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.6rem;
+    color:#f5d8d7;
+}
+
+/* tamaños especiales del grid */
+.capitulo{
+    grid-column:span 1;
+}
+.historia,
+.amo,
+.distancia,
+.recuerdos,
+.playlist,
+.metas,
+.cartas,
+.futuros{
+    min-height:330px;
+}
+
+/* responsive */
+@media (max-width: 1100px){
+    .dashboard{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .hero-content h1{
+        font-size:4rem;
+    }
+
+    .hero-left-note,
+    .hero-right-text,
+    .hero-note-paper{
+        display:none;
+    }
+
+    .polaroid-grid,
+    .envelope-grid,
+    .locked-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .mini-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media (max-width: 700px){
+    .navbar{
+        flex-direction:column;
+        gap:12px;
+        padding:16px;
+    }
+
+    .menu{
+        justify-content:center;
+        gap:14px;
+    }
+
+    .dashboard{
+        grid-template-columns:1fr;
+    }
+
+    .hero{
+        min-height:340px;
+        padding:20px;
+    }
+
+    .hero-content h1{
+        font-size:3rem;
+    }
+
+    .hero-content h2{
+        font-size:1.7rem;
+    }
+
+    .polaroid-grid,
+    .envelope-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .distance-photos{
+        flex-direction:column;
+    }
+
+    .music-player{
+        flex-direction:column;
+    }
+
+    .dream-list{
+        padding-right:0;
+    }
+}
+
+/* =========================================
+   MEJORAS PREMIUM / EFECTOS VISUALES
+========================================= */
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    overflow-x:hidden;
+}
+
+/* para que las estrellas queden detrás */
+.navbar,
+.hero,
+.dashboard{
+    position:relative;
+    z-index:1;
+}
+
+/* --------- ESTRELLAS ANIMADAS --------- */
+#starfield{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    overflow:hidden;
+}
+
+.star{
+    position:absolute;
+    border-radius:50%;
+    background:white;
+    box-shadow:0 0 6px rgba(255,255,255,.7);
+    animation:twinkle linear infinite;
+    opacity:.8;
+}
+
+@keyframes twinkle{
+    0%{
+        opacity:.15;
+        transform:scale(.8);
+    }
+    50%{
+        opacity:1;
+        transform:scale(1.25);
+    }
+    100%{
+        opacity:.2;
+        transform:scale(.9);
+    }
+}
+
+/* estrella fugaz */
+.shooting-star{
+    position:fixed;
+    width:160px;
+    height:2px;
+    background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,230,200,.95), rgba(255,255,255,0));
+    transform:rotate(-25deg);
+    box-shadow:0 0 12px rgba(255,220,180,.6);
+    z-index:0;
+    pointer-events:none;
+    animation:shoot 6s linear infinite;
+    opacity:0;
+}
+
+@keyframes shoot{
+    0%{
+        top:12%;
+        left:72%;
+        opacity:0;
+    }
+    8%{
+        opacity:1;
+    }
+    18%{
+        top:28%;
+        left:52%;
+        opacity:0;
+    }
+    100%{
+        top:28%;
+        left:52%;
+        opacity:0;
+    }
+}
+
+/* --------- ANIMACIÓN DE APARICIÓN --------- */
+.reveal{
+    opacity:0;
+    transform:translateY(35px);
+    transition:all .9s ease;
+}
+
+.reveal.show{
+    opacity:1;
+    transform:translateY(0);
+}
+
+/* --------- PORTADA MÁS VIVA --------- */
+.hero{
+    box-shadow:inset 0 -50px 70px rgba(0,0,0,.28);
+}
+
+.hero-content{
+    animation:heroFade 1.6s ease;
+}
+
+@keyframes heroFade{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.hero-content h1{
+    text-shadow:
+        0 0 10px rgba(255,235,220,.08),
+        0 0 25px rgba(255,220,180,.06),
+        0 3px 15px rgba(0,0,0,.35);
+    animation:floatTitle 5s ease-in-out infinite;
+}
+
+@keyframes floatTitle{
+    0%,100%{
+        transform:translateY(0);
+    }
+    50%{
+        transform:translateY(-4px);
+    }
+}
+
+.hero-left-note,
+.hero-right-text,
+.hero-note-paper,
+.paper-note,
+.letter-sticky{
+    animation:softFloat 6s ease-in-out infinite;
+}
+
+@keyframes softFloat{
+    0%,100%{
+        transform:translateY(0) rotate(0deg);
+    }
+    50%{
+        transform:translateY(-5px) rotate(-1deg);
+    }
+}
+
+.enter-btn{
+    transition:all .35s ease;
+    box-shadow:0 10px 26px rgba(240,201,153,.20);
+    animation:pulseGlow 2.5s ease-in-out infinite;
+}
+
+.enter-btn:hover{
+    transform:translateY(-3px) scale(1.03);
+    box-shadow:0 14px 28px rgba(240,201,153,.32);
+}
+
+@keyframes pulseGlow{
+    0%,100%{
+        box-shadow:0 10px 20px rgba(240,201,153,.18);
+    }
+    50%{
+        box-shadow:0 12px 28px rgba(240,201,153,.34);
+    }
+}
+
+/* --------- TARJETAS MÁS ELEGANTES --------- */
+.card{
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease,
+        border-color .35s ease;
+}
+
+.card:hover{
+    transform:translateY(-7px);
+    border-color:rgba(255,218,180,.45);
+    box-shadow:
+        0 16px 34px rgba(0,0,0,.30),
+        0 0 0 1px rgba(255,230,190,.06),
+        0 0 24px rgba(255,218,170,.08);
+}
+
+.card::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:20px;
+    background:linear-gradient(
+        135deg,
+        rgba(255,255,255,.07),
+        rgba(255,255,255,0) 22%,
+        rgba(255,255,255,0) 78%,
+        rgba(255,230,200,.04)
+    );
+    pointer-events:none;
+}
+
+/* mini tarjetas */
+.mini-card{
+    transition:all .3s ease;
+}
+
+.mini-card:hover{
+    transform:translateY(-5px) scale(1.02);
+    border-color:rgba(255,224,190,.3);
+    background:rgba(255,255,255,.06);
+    box-shadow:0 10px 20px rgba(0,0,0,.18);
+}
+
+/* polaroids */
+.polaroid{
+    transition:all .35s ease;
+}
+
+.polaroid:hover{
+    transform:rotate(-2deg) translateY(-6px) scale(1.03);
+    box-shadow:0 16px 24px rgba(0,0,0,.28);
+}
+
+/* sobres */
+.envelope{
+    transition:all .3s ease;
+    cursor:pointer;
+    box-shadow:0 8px 16px rgba(0,0,0,.12);
+}
+
+.envelope:hover{
+    transform:translateY(-6px) rotate(-1deg);
+    box-shadow:0 14px 25px rgba(0,0,0,.22);
+}
+
+/* botón borde */
+.outline-btn{
+    transition:all .3s ease;
+}
+
+.outline-btn:hover{
+    transform:translateY(-2px);
+    border-color:rgba(255,224,190,.45);
+    box-shadow:0 8px 18px rgba(0,0,0,.18);
+}
+
+/* reproductor */
+.music-player{
+    transition:all .3s ease;
+}
+
+.music-player:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 20px rgba(0,0,0,.18);
+}
+
+/* carta */
+.letter-box{
+    box-shadow:
+        0 12px 24px rgba(0,0,0,.16),
+        inset 0 1px 0 rgba(255,255,255,.4);
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.04)),
+        #ecdfd4;
+}
+
+/* tarjetitas bloqueadas */
+.locked-card{
+    transition:all .3s ease;
+}
+
+.locked-card:hover{
+    transform:translateY(-5px);
+    background:rgba(255,255,255,.06);
+    border-color:rgba(255,227,190,.2);
+}
+
+/* navbar refinada */
+.menu a{
+    position:relative;
+    transition:color .25s ease;
+}
+
+.menu a::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:-4px;
+    width:0;
+    height:1px;
+    background:var(--gold);
+    transition:width .25s ease;
+}
+
+.menu a:hover::after{
+    width:100%;
+}
+
+/* scrollbar bonita */
+::-webkit-scrollbar{
+    width:10px;
+}
+
+::-webkit-scrollbar-track{
+    background:#070d26;
+}
+
+::-webkit-scrollbar-thumb{
+    background:linear-gradient(180deg,#d7a97d,#8b5f77);
+    border-radius:999px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background:linear-gradient(180deg,#efc194,#9f6f8b);
+}
+
+/* un poco más romántico el quote */
+.quote-box,
+.player-quote,
+.footer-love{
+    text-shadow:0 2px 10px rgba(0,0,0,.18);
+}
+
+/* =========================================================
+   EXPERIENCIA DE ENTRADA INTEGRADA
+   Portada completa → Carta de bienvenida → Dashboard
+   ========================================================= */
+
+/* El atributo hidden debe ocultar por completo las escenas. */
+[hidden]{
+    display:none !important;
+}
+
+/* Base general de las escenas. */
+.screen{
+    width:100%;
+}
+
+/* ---------------------------------------------------------
+   NAVBAR
+   Se oculta durante la portada y la carta.
+   JavaScript quitará esta clase al entrar al dashboard.
+   --------------------------------------------------------- */
+
+.navbar.navbar-intro-hidden{
+    display:none !important;
+}
+
+.navbar.navbar-enter{
+    animation:navbarReveal .65s cubic-bezier(.22,1,.36,1) both;
+}
+
+@keyframes navbarReveal{
+    from{
+        opacity:0;
+        transform:translateY(-18px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* ---------------------------------------------------------
+   PORTADA A PANTALLA COMPLETA
+   --------------------------------------------------------- */
+
+.hero{
+    min-height:100svh !important;
+    height:100svh !important;
+    padding:clamp(24px, 4vw, 56px);
+    isolation:isolate;
+    box-shadow:inset 0 -50px 70px rgba(0,0,0,.28);
+
+    background:
+        linear-gradient(180deg, rgba(4,8,29,.18), rgba(4,8,29,.54)),
+        radial-gradient(circle at 16% 20%, rgba(130,92,181,.28), transparent 28%),
+        radial-gradient(circle at 82% 22%, rgba(231,158,180,.16), transparent 24%),
+        url("imagenes/portada/cielo.jpg") center/cover no-repeat;
+}
+
+.hero::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    background:
+        linear-gradient(90deg, rgba(4,8,29,.30), transparent 22%, transparent 78%, rgba(4,8,29,.30)),
+        linear-gradient(180deg, transparent 65%, rgba(5,8,28,.28));
+}
+
+.hero-overlay,
+.hero-content,
+.hero-left-note,
+.hero-right-text,
+.hero-note-paper{
+    z-index:2;
+}
+
+.hero-date{
+    margin-top:8px;
+    color:rgba(248,230,216,.86);
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.12rem;
+    letter-spacing:.02em;
+}
+
+/* El botón de entrada se siente como una puerta visual. */
+.enter-btn{
+    position:relative;
+    overflow:hidden;
+    border:1px solid rgba(255,239,220,.60) !important;
+}
+
+.enter-btn::after{
+    content:"";
+    position:absolute;
+    top:-50%;
+    left:-70%;
+    width:45%;
+    height:200%;
+    transform:rotate(18deg);
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.48),
+        transparent
+    );
+    transition:left .7s ease;
+}
+
+.enter-btn:hover::after{
+    left:125%;
+}
+
+/* ---------------------------------------------------------
+   ESCENA / CARTA DE BIENVENIDA
+   Debe caber completa dentro del viewport.
+   --------------------------------------------------------- */
+
+.welcome-screen{
+    position:relative;
+    min-height:100svh !important;
+    height:100svh !important;
+    overflow:hidden !important;
+    display:grid;
+    place-items:center;
+    padding:clamp(12px, 2.5vh, 28px) clamp(14px, 3vw, 28px) !important;
+    isolation:isolate;
+
+    background:
+        radial-gradient(circle at 18% 20%, rgba(116,83,173,.28), transparent 30%),
+        radial-gradient(circle at 84% 28%, rgba(231,164,185,.15), transparent 26%),
+        radial-gradient(circle at 50% 82%, rgba(224,172,132,.08), transparent 30%),
+        linear-gradient(180deg, #07102d 0%, #0b1234 48%, #060b22 100%);
+}
+
+/* Estrellas decorativas del fondo de bienvenida. */
+.welcome-screen::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+    opacity:.65;
+
+    background-image:
+        radial-gradient(circle at 15% 18%, rgba(255,255,255,.95) 0 1px, transparent 1.6px),
+        radial-gradient(circle at 72% 15%, rgba(255,229,196,.90) 0 1px, transparent 1.8px),
+        radial-gradient(circle at 37% 32%, rgba(255,255,255,.70) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 85% 58%, rgba(255,255,255,.80) 0 1px, transparent 1.6px),
+        radial-gradient(circle at 21% 70%, rgba(255,216,201,.75) 0 1px, transparent 1.7px),
+        radial-gradient(circle at 63% 78%, rgba(255,255,255,.75) 0 1px, transparent 1.4px);
+
+    background-size:
+        210px 210px,
+        260px 260px,
+        185px 185px,
+        240px 240px,
+        225px 225px,
+        190px 190px;
+}
+
+.welcome-screen::after{
+    content:"";
+    position:absolute;
+    width:min(760px, 78vw);
+    height:min(760px, 78vw);
+    border-radius:50%;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    z-index:0;
+    pointer-events:none;
+    background:radial-gradient(
+        circle,
+        rgba(244,207,170,.08),
+        rgba(136,92,174,.04) 38%,
+        transparent 68%
+    );
+    filter:blur(8px);
+}
+
+.welcome-scene{
+    position:relative;
+    z-index:2;
+    width:min(660px, 94vw) !important;
+    max-height:calc(100svh - 24px);
+    display:grid;
+    place-items:center;
+}
+
+/* Carta de papel elegante. */
+.welcome-paper{
+    position:relative;
+    width:100%;
+    max-height:calc(100svh - 28px);
+
+    padding:
+        clamp(26px, 4.5vh, 48px)
+        clamp(24px, 5vw, 60px) !important;
+
+    text-align:center;
+    color:#49372f;
+
+    border-radius:16px 13px 18px 14px;
+    border:1px solid rgba(112,76,59,.18);
+
+    background:
+        linear-gradient(rgba(255,255,255,.28), rgba(255,255,255,.05)),
+        radial-gradient(circle at 18% 12%, rgba(255,255,255,.55), transparent 30%),
+        linear-gradient(135deg, #f0dfcf 0%, #ead2c2 48%, #e6c9ba 100%);
+
+    box-shadow:
+        0 35px 80px rgba(0,0,0,.42),
+        0 3px 0 rgba(255,255,255,.26) inset,
+        0 -1px 0 rgba(91,58,47,.07) inset;
+
+    transform:rotate(-.25deg);
+}
+
+.welcome-paper::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:inherit;
+    pointer-events:none;
+    opacity:.28;
+    mix-blend-mode:multiply;
+
+    background:
+        repeating-linear-gradient(
+            0deg,
+            rgba(103,72,57,.025) 0,
+            rgba(103,72,57,.025) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+}
+
+/* Cinta decorativa superior. */
+.welcome-paper::after{
+    content:"";
+    position:absolute;
+    width:82px;
+    height:24px;
+    top:-12px;
+    left:50%;
+    transform:translateX(-50%) rotate(-2deg);
+    border-radius:2px;
+    background:rgba(224,196,174,.68);
+    box-shadow:0 2px 6px rgba(63,41,34,.08);
+}
+
+.welcome-star{
+    position:relative;
+    z-index:1;
+    display:block;
+    margin-bottom:10px;
+    color:#a96f59;
+    font-size:1.45rem;
+    animation:paperStarGlow 2.8s ease-in-out infinite;
+}
+
+@keyframes paperStarGlow{
+    0%,100%{
+        opacity:.55;
+        transform:scale(.92);
+        text-shadow:0 0 0 rgba(169,111,89,0);
+    }
+    50%{
+        opacity:1;
+        transform:scale(1.08);
+        text-shadow:0 0 13px rgba(169,111,89,.22);
+    }
+}
+
+.welcome-small{
+    position:relative;
+    z-index:1;
+    margin-bottom:8px;
+    color:#8a6254;
+    font-size:.72rem;
+    font-weight:600;
+    letter-spacing:.30em;
+}
+
+.welcome-paper h2{
+    position:relative;
+    z-index:1;
+    margin:0;
+    font-family:'Cormorant Garamond', serif;
+    font-size:clamp(2.35rem, 5vw, 3.75rem) !important;
+    line-height:.98;
+    font-weight:600;
+    color:#4f382f;
+}
+
+.welcome-divider{
+    position:relative;
+    z-index:1;
+    width:min(230px, 72%);
+    margin:clamp(14px, 2.4vh, 22px) auto !important;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+
+    color:#9d6b58;
+}
+
+.welcome-divider span:first-child,
+.welcome-divider span:last-child{
+    flex:1;
+    height:1px;
+    background:linear-gradient(90deg, transparent, rgba(116,76,60,.38));
+}
+
+.welcome-divider span:last-child{
+    background:linear-gradient(90deg, rgba(116,76,60,.38), transparent);
+}
+
+.welcome-message{
+    position:relative;
+    z-index:1;
+    max-width:510px;
+    margin:0 auto;
+
+    color:#5e463c;
+    font-family:'Cormorant Garamond', serif;
+    font-size:clamp(1.02rem, 2vw, 1.28rem) !important;
+    line-height:1.48 !important;
+}
+
+.welcome-ending{
+    position:relative;
+    z-index:1;
+
+    margin-top:clamp(12px, 2vh, 18px) !important;
+
+    color:#7a5045;
+    font-family:'Cormorant Garamond', serif;
+    font-size:clamp(1.18rem, 2.1vw, 1.48rem) !important;
+    font-style:italic;
+    font-weight:600;
+}
+
+.continue-btn{
+    position:relative;
+    z-index:1;
+
+    margin-top:clamp(16px, 2.4vh, 24px) !important;
+    padding:13px 26px;
+
+    border:1px solid rgba(82,54,45,.20);
+    border-radius:999px;
+
+    color:#f9eadc;
+    background:linear-gradient(180deg, #7f5361 0%, #67404f 100%);
+
+    font-family:'Nunito', sans-serif;
+    font-size:.92rem;
+    font-weight:700;
+    letter-spacing:.02em;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 10px 22px rgba(72,43,51,.20),
+        inset 0 1px 0 rgba(255,255,255,.18);
+
+    transition:
+        transform .28s ease,
+        box-shadow .28s ease,
+        filter .28s ease;
+}
+
+.continue-btn:hover{
+    transform:translateY(-3px);
+    filter:brightness(1.06);
+
+    box-shadow:
+        0 15px 30px rgba(72,43,51,.28),
+        inset 0 1px 0 rgba(255,255,255,.20);
+}
+
+/* ---------------------------------------------------------
+   TRANSICIONES ENTRE ESCENAS
+   --------------------------------------------------------- */
+
+.screen-exit{
+    animation:screenExit .72s cubic-bezier(.65,0,.35,1) forwards;
+    pointer-events:none;
+}
+
+.screen-enter{
+    animation:screenEnter .90s cubic-bezier(.22,1,.36,1) both;
+}
+
+@keyframes screenExit{
+    from{
+        opacity:1;
+        transform:scale(1);
+        filter:blur(0);
+    }
+    to{
+        opacity:0;
+        transform:scale(1.018);
+        filter:blur(7px);
+    }
+}
+
+@keyframes screenEnter{
+    from{
+        opacity:0;
+        transform:translateY(18px) scale(.988);
+        filter:blur(5px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+        filter:blur(0);
+    }
+}
+
+/* ---------------------------------------------------------
+   DASHBOARD
+   Conserva el diseño original.
+   Solo añadimos entrada y navegación.
+   --------------------------------------------------------- */
+
+.dashboard-screen{
+    min-height:100vh;
+    padding-top:24px;
+    padding-bottom:36px;
+}
+
+.dashboard-screen.screen-enter .card{
+    opacity:0;
+    transform:translateY(28px);
+    animation:dashboardCardIn .72s cubic-bezier(.22,1,.36,1) forwards;
+}
+
+.dashboard-screen.screen-enter .card:nth-child(1){ animation-delay:.06s; }
+.dashboard-screen.screen-enter .card:nth-child(2){ animation-delay:.13s; }
+.dashboard-screen.screen-enter .card:nth-child(3){ animation-delay:.20s; }
+.dashboard-screen.screen-enter .card:nth-child(4){ animation-delay:.27s; }
+.dashboard-screen.screen-enter .card:nth-child(5){ animation-delay:.34s; }
+.dashboard-screen.screen-enter .card:nth-child(6){ animation-delay:.41s; }
+.dashboard-screen.screen-enter .card:nth-child(7){ animation-delay:.48s; }
+.dashboard-screen.screen-enter .card:nth-child(8){ animation-delay:.55s; }
+.dashboard-screen.screen-enter .card:nth-child(9){ animation-delay:.62s; }
+
+@keyframes dashboardCardIn{
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* Evita que la navbar sticky tape la tarjeta destino. */
+.dashboard .card{
+    scroll-margin-top:95px;
+}
+
+/* ---------------------------------------------------------
+   AJUSTES PARA PANTALLAS BAJAS
+   --------------------------------------------------------- */
+
+@media (max-height:780px){
+
+    .welcome-paper{
+        padding:24px 42px 26px !important;
+    }
+
+    .welcome-star{
+        margin-bottom:5px !important;
+        font-size:1.2rem !important;
+    }
+
+    .welcome-small{
+        margin-bottom:5px !important;
+        font-size:.66rem !important;
+    }
+
+    .welcome-paper h2{
+        font-size:clamp(2.15rem, 4.6vw, 3.15rem) !important;
+    }
+
+    .welcome-divider{
+        margin:13px auto !important;
+    }
+
+    .welcome-message{
+        font-size:1.04rem !important;
+        line-height:1.42 !important;
+    }
+
+    .welcome-ending{
+        margin-top:11px !important;
+        font-size:1.22rem !important;
+    }
+
+    .continue-btn{
+        margin-top:14px !important;
+        padding:11px 22px !important;
+    }
+}
+
+@media (max-height:650px){
+
+    .welcome-paper{
+        padding:19px 34px 20px !important;
+    }
+
+    .welcome-paper::after{
+        height:18px !important;
+        top:-9px !important;
+    }
+
+    .welcome-star{
+        display:none;
+    }
+
+    .welcome-paper h2{
+        font-size:2.35rem !important;
+    }
+
+    .welcome-divider{
+        margin:9px auto !important;
+    }
+
+    .welcome-message{
+        font-size:.98rem !important;
+        line-height:1.34 !important;
+    }
+
+    .welcome-ending{
+        margin-top:8px !important;
+        font-size:1.12rem !important;
+    }
+
+    .continue-btn{
+        margin-top:11px !important;
+        padding:10px 20px !important;
+    }
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE MÓVIL DE LA EXPERIENCIA
+   --------------------------------------------------------- */
+
+@media (max-width:700px){
+
+    .hero,
+    .welcome-screen{
+        min-height:100svh !important;
+        height:100svh !important;
+    }
+
+    .welcome-screen{
+        padding:12px !important;
+    }
+
+    .welcome-scene{
+        width:min(100%, 560px) !important;
+    }
+
+    .welcome-paper{
+        width:100%;
+        max-height:calc(100svh - 24px);
+        padding:30px 20px 28px !important;
+        border-radius:14px;
+    }
+
+    .welcome-paper::after{
+        width:68px;
+        height:21px;
+        top:-10px;
+    }
+
+    .welcome-paper h2{
+        font-size:clamp(2.2rem, 11vw, 3rem) !important;
+    }
+
+    .welcome-message{
+        font-size:1rem !important;
+    }
+
+    .continue-btn{
+        width:100%;
+        max-width:280px;
+    }
+
+    .dashboard-screen{
+        min-height:auto;
+        padding-top:18px;
+    }
+}
+
+/* Respeta la preferencia del usuario de reducir animaciones. */
+@media (prefers-reduced-motion: reduce){
+
+    .screen-exit,
+    .screen-enter,
+    .dashboard-screen.screen-enter .card,
+    .welcome-star,
+    .navbar.navbar-enter{
+        animation-duration:.01ms !important;
+        animation-iteration-count:1 !important;
+    }
+}
+/* =========================================================
+   COLECCIONES HORIZONTALES DEL DASHBOARD
+   Táctil en móvil/tablet + arrastre con mouse en PC
+   Sin flechas, puntos ni scrollbar visible
+   ========================================================= */
+
+/*
+   Estas son las colecciones internas que se comportarán
+   como carruseles naturales:
+   - Cosas que amo de ti
+   - Nuestros recuerdos
+   - Cartas especiales
+   - Próximos capítulos
+
+   El desplazamiento queda limitado al contenedor.
+*/
+.polaroid-grid,
+.envelope-grid{
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    align-items:stretch;
+
+    width:100%;
+    max-width:100%;
+
+    gap:14px;
+
+    overflow-x:auto;
+    overflow-y:hidden;
+
+    /*
+      El navegador conserva el gesto vertical de la página
+      y permite el horizontal dentro de la colección.
+    */
+    touch-action:pan-x pan-y;
+    overscroll-behavior-inline:contain;
+    overscroll-behavior-block:auto;
+
+    -webkit-overflow-scrolling:touch;
+
+    /* Firefox */
+    scrollbar-width:none;
+
+    /* IE / Edge antiguo */
+    -ms-overflow-style:none;
+
+    /*
+      Un poco de espacio lateral permite que la última tarjeta
+      llegue a verse completa sin pegarse al borde.
+    */
+    padding:4px 10px 10px 2px;
+
+    /*
+      Evita seleccionar texto accidentalmente al arrastrar
+      con el mouse. JavaScript activa el cursor de arrastre.
+    */
+    cursor:grab;
+}
+
+/* Chrome / Edge / Safari: scrollbar totalmente oculto */
+.polaroid-grid::-webkit-scrollbar,
+.envelope-grid::-webkit-scrollbar{
+    display:none;
+    width:0;
+    height:0;
+    background:transparent;
+}
+
+/* Estado mientras se arrastra con click izquierdo en PC */
+.polaroid-grid.is-dragging,
+.envelope-grid.is-dragging{
+    cursor:grabbing;
+    user-select:none;
+    -webkit-user-select:none;
+}
+
+/*
+  Durante el arrastre evitamos que una tarjeta interprete
+  accidentalmente el gesto como click.
+*/
+.polaroid-grid.is-dragging > *,
+.envelope-grid.is-dragging > *{
+    pointer-events:none;
+}
+
+
+/* ---------------------------------------------------------
+   ANCHOS EN PC
+   Se ve más de una tarjeta y una parte de la siguiente.
+   --------------------------------------------------------- */
+
+
+.polaroid-grid .polaroid{
+    flex:0 0 clamp(125px, 31%, 155px);
+    width:auto !important;
+}
+
+.envelope-grid .envelope{
+    flex:0 0 clamp(145px, 35%, 175px);
+}
+
+
+
+/* ---------------------------------------------------------
+   TABLET
+   --------------------------------------------------------- */
+
+@media (max-width:1100px){
+
+
+    .polaroid-grid .polaroid{
+        flex-basis:42%;
+    }
+
+    .envelope-grid .envelope{
+        flex-basis:46%;
+    }
+
+}
+
+
+/* ---------------------------------------------------------
+   MÓVIL
+   Una tarjeta domina la vista y la siguiente queda
+   parcialmente visible como pista natural de continuidad.
+   --------------------------------------------------------- */
+
+@media (max-width:700px){
+
+    .polaroid-grid,
+    .envelope-grid{
+        gap:12px;
+        padding-right:18px;
+    }
+
+
+    .polaroid-grid .polaroid{
+        flex-basis:67%;
+        min-width:0;
+    }
+
+    .envelope-grid .envelope{
+        flex-basis:74%;
+    }
+
+}
+
+
+/*
+  En dispositivos sin hover (principalmente táctiles)
+  no mostramos cursor de escritorio.
+*/
+@media (hover:none) and (pointer:coarse){
+
+    .polaroid-grid,
+    .envelope-grid{
+        cursor:auto;
+    }
+}
+/* =========================================================
+   CAPÍTULOS DINÁMICOS + AJUSTES MÓVILES
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   Mini tarjetas y próximos capítulos vuelven a ser GRID.
+   Conservamos carrusel natural solo donde aporta:
+   recuerdos y cartas especiales.
+   --------------------------------------------------------- */
+
+.mini-grid{
+    display:grid !important;
+    grid-template-columns:repeat(3, 1fr) !important;
+    overflow:visible !important;
+    padding:0 !important;
+    cursor:default !important;
+}
+
+.locked-grid{
+    display:grid !important;
+    grid-template-columns:repeat(4, 1fr) !important;
+    gap:12px;
+    overflow:visible !important;
+    padding:0 !important;
+    cursor:default !important;
+}
+
+
+/* ---------------------------------------------------------
+   TARJETAS DE CAPÍTULOS
+   --------------------------------------------------------- */
+
+.chapter-card{
+    position:relative;
+    min-height:138px;
+    padding:16px 12px;
+    cursor:default;
+    transition:
+        transform .28s ease,
+        border-color .28s ease,
+        background .28s ease,
+        box-shadow .28s ease;
+}
+
+.chapter-card .chapter-icon{
+    font-size:1.15rem;
+}
+
+.chapter-card .chapter-title{
+    font-weight:700;
+}
+
+.chapter-card .chapter-date{
+    display:block;
+    font-size:.74rem;
+    color:#bcaeb8;
+    line-height:1.25;
+}
+
+.chapter-card.is-locked{
+    opacity:.82;
+}
+
+.chapter-card.is-locked[data-clickable="true"]{
+    cursor:pointer;
+}
+
+.chapter-card.is-locked[data-clickable="true"]:hover{
+    transform:translateY(-3px);
+    border-color:rgba(255,225,190,.20);
+    background:rgba(255,255,255,.055);
+}
+
+.chapter-card.is-unlocked{
+    background:
+        linear-gradient(
+            180deg,
+            rgba(239,208,177,.10),
+            rgba(255,255,255,.04)
+        );
+    border-color:rgba(239,208,177,.25);
+}
+
+.chapter-card.is-unlocked:hover{
+    transform:translateY(-4px);
+    border-color:rgba(239,208,177,.42);
+    box-shadow:0 12px 24px rgba(0,0,0,.18);
+}
+
+.chapter-open-btn{
+    margin-top:5px;
+    padding:8px 12px;
+    border-radius:999px;
+    border:1px solid rgba(239,208,177,.32);
+    background:linear-gradient(180deg,#efd0ad,#dcae83);
+    color:#33231d;
+    font-family:'Nunito', sans-serif;
+    font-size:.76rem;
+    font-weight:700;
+    cursor:pointer;
+    transition:
+        transform .22s ease,
+        filter .22s ease,
+        box-shadow .22s ease;
+}
+
+.chapter-open-btn:hover{
+    transform:translateY(-2px);
+    filter:brightness(1.05);
+    box-shadow:0 8px 18px rgba(220,174,131,.18);
+}
+
+.chapter-open-btn:active,
+.chapter-continue-btn:active,
+.chapter-back-btn:active{
+    transform:scale(.97);
+}
+
+/* Respuesta visual cuando se toca un capítulo aún bloqueado. */
+.chapter-card.locked-feedback{
+    animation:lockedFeedback .42s ease;
+}
+
+@keyframes lockedFeedback{
+    0%,100%{ transform:translateX(0); }
+    25%{ transform:translateX(-4px); }
+    50%{ transform:translateX(4px); }
+    75%{ transform:translateX(-2px); }
+}
+
+
+/* ---------------------------------------------------------
+   TOAST DE CAPÍTULO BLOQUEADO
+   --------------------------------------------------------- */
+
+.chapter-toast{
+    position:fixed;
+    left:50%;
+    bottom:26px;
+    z-index:5000;
+
+    width:min(420px, calc(100vw - 30px));
+    padding:13px 18px;
+
+    transform:translate(-50%, 20px);
+    opacity:0;
+    pointer-events:none;
+
+    text-align:center;
+    color:#f4dfd2;
+
+    border:1px solid rgba(239,208,177,.20);
+    border-radius:14px;
+
+    background:rgba(9,15,45,.94);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+
+    box-shadow:0 18px 42px rgba(0,0,0,.34);
+
+    transition:
+        opacity .28s ease,
+        transform .28s ease;
+}
+
+.chapter-toast.show{
+    opacity:1;
+    transform:translate(-50%, 0);
+}
+
+
+/* ---------------------------------------------------------
+   PANTALLAS DE CAPÍTULO
+   --------------------------------------------------------- */
+
+.chapter-scene{
+    position:fixed;
+    inset:0;
+    z-index:4000;
+
+    display:grid;
+    place-items:center;
+
+    padding:clamp(16px, 3vw, 34px);
+
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+
+    transition:
+        opacity .45s ease,
+        visibility .45s ease;
+}
+
+.chapter-scene.is-visible{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+}
+
+.chapter-scene-backdrop{
+    position:absolute;
+    inset:0;
+
+    background:
+        radial-gradient(circle at 20% 20%, rgba(104,73,158,.22), transparent 32%),
+        radial-gradient(circle at 80% 26%, rgba(223,152,176,.12), transparent 28%),
+        rgba(5,9,28,.88);
+
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+}
+
+.chapter-intro-paper,
+.chapter-content-panel{
+    position:relative;
+    z-index:2;
+
+    width:min(650px, 94vw);
+    max-height:calc(100svh - 34px);
+
+    overflow:auto;
+
+    text-align:center;
+
+    transform:translateY(18px) scale(.985);
+
+    transition:
+        transform .55s cubic-bezier(.22,1,.36,1),
+        opacity .45s ease;
+
+    opacity:0;
+}
+
+.chapter-scene.is-visible .chapter-intro-paper,
+.chapter-scene.is-visible .chapter-content-panel{
+    transform:translateY(0) scale(1);
+    opacity:1;
+}
+
+/* Carta intermedia */
+.chapter-intro-paper{
+    padding:clamp(34px, 5vw, 58px) clamp(25px, 6vw, 62px);
+
+    color:#49372f;
+
+    border-radius:16px 13px 18px 14px;
+    border:1px solid rgba(112,76,59,.18);
+
+    background:
+        linear-gradient(rgba(255,255,255,.28), rgba(255,255,255,.05)),
+        radial-gradient(circle at 18% 12%, rgba(255,255,255,.55), transparent 30%),
+        linear-gradient(135deg,#f0dfcf 0%,#ead2c2 48%,#e6c9ba 100%);
+
+    box-shadow:0 35px 80px rgba(0,0,0,.45);
+}
+
+/* Panel del contenido */
+.chapter-content-panel{
+    padding:clamp(30px, 5vw, 54px);
+
+    color:#f5dfd2;
+
+    border:1px solid rgba(239,208,177,.18);
+    border-radius:22px;
+
+    background:
+        radial-gradient(circle at top, rgba(104,73,158,.13), transparent 32%),
+        linear-gradient(160deg, rgba(19,29,76,.97), rgba(7,13,42,.98));
+
+    box-shadow:0 35px 85px rgba(0,0,0,.48);
+}
+
+.chapter-close-btn{
+    position:absolute;
+    top:12px;
+    right:14px;
+
+    width:36px;
+    height:36px;
+
+    display:grid;
+    place-items:center;
+
+    margin:0;
+    padding:0;
+
+    border:0;
+    border-radius:50%;
+
+    background:rgba(255,255,255,.08);
+    color:inherit;
+
+    font-size:1.5rem;
+    line-height:1;
+
+    cursor:pointer;
+
+    transition:
+        transform .22s ease,
+        background .22s ease;
+}
+
+.chapter-close-btn:hover{
+    transform:rotate(8deg) scale(1.05);
+    background:rgba(255,255,255,.13);
+}
+
+.chapter-scene-symbol{
+    display:block;
+    margin-bottom:9px;
+    color:#9a6958;
+    font-size:1.4rem;
+}
+
+.chapter-scene-label{
+    margin-bottom:7px;
+    font-size:.70rem;
+    font-weight:700;
+    letter-spacing:.28em;
+    color:#9b6d5d;
+}
+
+.chapter-content-panel .chapter-scene-label{
+    color:#d0aaa3;
+}
+
+.chapter-intro-paper h2,
+.chapter-content-panel h2{
+    font-family:'Cormorant Garamond', serif;
+    font-size:clamp(2.35rem, 5vw, 3.7rem);
+    line-height:1;
+}
+
+.chapter-intro-paper h2{
+    color:#4f382f;
+}
+
+.chapter-content-panel h2{
+    color:#f7e5d4;
+}
+
+.chapter-scene-divider{
+    width:190px;
+    margin:22px auto;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+
+    color:#9c6c59;
+}
+
+.chapter-scene-divider span{
+    flex:1;
+    height:1px;
+    background:linear-gradient(90deg,transparent,rgba(116,76,60,.38));
+}
+
+.chapter-scene-divider span:last-child{
+    background:linear-gradient(90deg,rgba(116,76,60,.38),transparent);
+}
+
+.chapter-scene-message{
+    max-width:500px;
+    margin:0 auto;
+
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.25rem;
+    line-height:1.55;
+    color:#62483d;
+}
+
+.chapter-continue-btn,
+.chapter-back-btn{
+    margin-top:26px;
+    padding:12px 23px;
+
+    border-radius:999px;
+    border:1px solid rgba(239,208,177,.28);
+
+    font-family:'Nunito', sans-serif;
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:
+        transform .22s ease,
+        filter .22s ease,
+        box-shadow .22s ease;
+}
+
+.chapter-continue-btn{
+    color:#f8eadf;
+    background:linear-gradient(180deg,#7f5361,#67404f);
+}
+
+.chapter-back-btn{
+    color:#35241d;
+    background:linear-gradient(180deg,#efd0ad,#dcae83);
+}
+
+.chapter-continue-btn:hover,
+.chapter-back-btn:hover{
+    transform:translateY(-2px);
+    filter:brightness(1.05);
+    box-shadow:0 10px 22px rgba(0,0,0,.17);
+}
+
+.chapter-content-date{
+    margin-top:8px;
+    color:#ceb8b7;
+}
+
+.chapter-content-body{
+    margin-top:24px;
+    text-align:left;
+    line-height:1.7;
+    color:#e8d5cf;
+}
+
+.chapter-content-body p + p{
+    margin-top:14px;
+}
+
+.chapter-content-placeholder{
+    padding:18px;
+    border:1px dashed rgba(239,208,177,.20);
+    border-radius:14px;
+    background:rgba(255,255,255,.035);
+    text-align:center;
+    color:#d7c2c1;
+}
+
+
+/* ---------------------------------------------------------
+   Controles que todavía NO tienen contenido real:
+   no deben parecer botones funcionales.
+   --------------------------------------------------------- */
+
+.tab-buttons button:disabled,
+.outline-btn:disabled{
+    opacity:.55;
+    cursor:default;
+    transform:none !important;
+    box-shadow:none !important;
+    filter:none !important;
+}
+
+
+/* ---------------------------------------------------------
+   MÓVIL: papeles decorativos sin superposición
+   --------------------------------------------------------- */
+
+@media (max-width:700px){
+
+    .mini-grid{
+        grid-template-columns:repeat(2,1fr) !important;
+    }
+
+    .locked-grid{
+        grid-template-columns:repeat(2,1fr) !important;
+    }
+
+    .small-note,
+    .vertical-note{
+        position:static !important;
+        display:block;
+
+        width:min(145px, 48%);
+        margin:18px 0 0 auto;
+
+        transform:rotate(2deg) !important;
+    }
+
+    .vertical-note{
+        transform:rotate(3deg) !important;
+    }
+
+    .historia,
+    .metas{
+        overflow:hidden;
+    }
+
+    .chapter-intro-paper,
+    .chapter-content-panel{
+        width:min(100%, 560px);
+        max-height:calc(100svh - 24px);
+    }
+
+    .chapter-intro-paper{
+        padding:36px 22px 30px;
+    }
+
+    .chapter-content-panel{
+        padding:38px 22px 28px;
+    }
+
+    .chapter-scene-message{
+        font-size:1.10rem;
+    }
+
+    .chapter-open-btn{
+        width:100%;
+    }
+}
+
+
+/* Una columna extra angosta para teléfonos pequeños. */
+@media (max-width:430px){
+
+    .locked-grid{
+        grid-template-columns:1fr !important;
+    }
+
+    .mini-grid{
+        grid-template-columns:repeat(2, minmax(0,1fr)) !important;
+    }
+
+    .small-note,
+    .vertical-note{
+        width:135px;
+    }
+}
+
+
+/* =========================================================
+   MODAL DE EVENTOS - NUESTRA HISTORIA
+   ========================================================= */
+
+.timeline-button{
+    cursor:pointer !important;
+    border:0;
+    font:inherit;
+    color:inherit;
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        background .25s ease;
+}
+
+.timeline-button:hover,
+.timeline-button:focus-visible{
+    transform:scale(1.08);
+    box-shadow:0 0 18px rgba(239,208,177,.25);
+    outline:none;
+}
+
+.timeline-button:active{
+    transform:scale(.94);
+}
+
+
+.timeline-modal{
+    position:fixed;
+    inset:0;
+    z-index:6000;
+
+    display:grid;
+    place-items:center;
+
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+
+    transition:
+        opacity .35s ease,
+        visibility .35s ease;
+}
+
+.timeline-modal.is-open{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+}
+
+.timeline-modal-backdrop{
+    position:absolute;
+    inset:0;
+
+    background:rgba(4,8,28,.82);
+    backdrop-filter:blur(9px);
+    -webkit-backdrop-filter:blur(9px);
+}
+
+.timeline-modal-card{
+    position:relative;
+    z-index:2;
+
+    width:min(580px,92vw);
+    padding:clamp(30px,5vw,52px);
+
+    text-align:center;
+
+    color:#4b382f;
+
+    border-radius:18px;
+
+    background:
+      linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.05)),
+      linear-gradient(135deg,#f0dfcf,#e6c9ba);
+
+    box-shadow:
+      0 35px 90px rgba(0,0,0,.5);
+
+    transform:
+      translateY(25px)
+      scale(.96);
+
+    transition:
+      transform .45s cubic-bezier(.22,1,.36,1);
+}
+
+.timeline-modal.is-open .timeline-modal-card{
+    transform:
+      translateY(0)
+      scale(1);
+}
+
+
+.timeline-modal-close{
+    position:absolute;
+    top:12px;
+    right:15px;
+
+    width:34px;
+    height:34px;
+
+    border:0;
+    border-radius:50%;
+
+    background:rgba(90,55,45,.10);
+    color:#5a4035;
+
+    font-size:1.4rem;
+    cursor:pointer;
+}
+
+.timeline-modal-icon{
+    display:block;
+    font-size:2rem;
+    margin-bottom:12px;
+}
+
+.timeline-modal-card h2{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(2rem,5vw,3rem);
+    margin:0;
+}
+
+.timeline-modal-date{
+    margin-top:8px;
+    color:#8b6254;
+}
+
+.timeline-modal-divider{
+    margin:20px 0;
+    color:#ad7964;
+}
+
+.timeline-modal-card p:last-child{
+    font-family:'Cormorant Garamond',serif;
+    font-size:1.25rem;
+    line-height:1.65;
+}
+
+
+@media(max-width:700px){
+
+    .timeline-modal-card{
+        width:calc(100vw - 32px);
+        padding:34px 22px;
+    }
+
+    .timeline-modal-card p:last-child{
+        font-size:1.1rem;
+    }
+}
+/* =========================================================
+   AJUSTES FINALES - NUESTRA HISTORIA COMPACTA
+   ========================================================= */
+
+/*
+   Prioridad:
+   1) título de la sección
+   2) línea temporal
+   3) interacción
+   4) papel decorativo
+*/
+
+.historia{
+    position:relative;
+    min-height:0 !important;
+    height:auto !important;
+
+    /*
+      En el grid de escritorio las tarjetas de una misma fila
+      tienden a estirarse hasta la altura de la más alta.
+      Esto hace que "Nuestra historia" termine justo después
+      de su contenido, sin rellenar espacio vacío.
+    */
+    align-self:start;
+}
+
+/* El encabezado deja un pequeño rincón para la nota decorativa. */
+.historia > h3,
+.historia > .card-sub{
+    padding-right:112px;
+}
+
+.historia > .card-sub{
+    margin-bottom:12px;
+}
+
+
+/* ---------------------------------------------------------
+   LÍNEA TEMPORAL COMPACTA
+   --------------------------------------------------------- */
+
+.timeline{
+    margin-top:8px;
+    gap:9px;
+}
+
+.timeline-item{
+    gap:10px;
+    min-width:0;
+}
+
+.timeline-copy{
+    min-width:0;
+    flex:1;
+}
+
+.timeline-item strong{
+    display:block;
+
+    font-size:1.08rem;
+    line-height:1.05;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.timeline-date{
+    display:block;
+
+    margin-top:2px;
+
+    color:#e4d5cf;
+
+    font-family:'Nunito', sans-serif;
+    font-size:.72rem;
+    line-height:1.15;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.timeline-item .timeline-summary{
+    display:block;
+
+    overflow:hidden;
+
+    margin-top:2px;
+
+    color:#c9b8bb;
+
+    font-family:'Nunito', sans-serif;
+    font-size:.75rem;
+    line-height:1.2;
+
+    /* Una línea en escritorio sin usar propiedades experimentales. */
+    max-height:1.2em;
+}
+
+
+/* Botón del icono un poco más pequeño para limpiar la tarjeta. */
+.timeline .icon-box{
+    width:32px;
+    height:32px;
+
+    border-radius:9px;
+
+    flex:0 0 32px;
+
+    font-size:.90rem;
+}
+
+
+/* ---------------------------------------------------------
+   PAPEL LATERAL: SOLO DECORATIVO
+   --------------------------------------------------------- */
+
+.story-side-note{
+    position:absolute !important;
+
+    top:18px !important;
+    right:16px !important;
+
+    width:105px !important;
+
+    padding:10px 9px !important;
+
+    margin:0 !important;
+
+    text-align:center;
+
+    font-family:'Cormorant Garamond', serif;
+    font-size:14px !important;
+    line-height:1.12 !important;
+    font-weight:500;
+
+    color:#64483e;
+
+    transform:rotate(2deg) !important;
+
+    z-index:2;
+
+    pointer-events:none;
+}
+
+/* La nota no necesita los párrafos largos anteriores. */
+.story-side-note p,
+.story-side-note strong{
+    margin:0;
+}
+
+
+/* ---------------------------------------------------------
+   MODAL: EL CONTENIDO LARGO VIVE AQUÍ
+   --------------------------------------------------------- */
+
+.timeline-modal-kicker{
+    margin:0 0 6px;
+
+    color:#9b6b5a;
+
+    font-family:'Nunito', sans-serif;
+    font-size:.70rem;
+    font-weight:700;
+    letter-spacing:.23em;
+    text-transform:uppercase;
+}
+
+.timeline-modal-card{
+    /*
+      El modal nunca ocupa toda la pantalla.
+      El encabezado, fecha, separador y botón de cerrar
+      permanecen siempre visibles.
+    */
+    width:min(620px, calc(100vw - 32px));
+    max-height:85vh;
+    overflow:hidden;
+
+    display:flex;
+    flex-direction:column;
+}
+
+.timeline-modal-text{
+    /*
+      Solo esta zona se desplaza cuando la historia es larga.
+      min-height:0 es importante dentro de un contenedor flex
+      para permitir que el contenido realmente haga scroll.
+    */
+    flex:1 1 auto;
+    min-height:0;
+    max-height:none;
+
+    overflow-y:auto;
+    overflow-x:hidden;
+
+    margin-top:0;
+    padding:0 10px 4px 2px;
+
+    text-align:left;
+
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+
+    scrollbar-width:thin;
+    scrollbar-color:rgba(122,80,69,.38) transparent;
+}
+
+.timeline-modal-text::-webkit-scrollbar{
+    width:5px;
+}
+
+.timeline-modal-text::-webkit-scrollbar-track{
+    background:transparent;
+}
+
+.timeline-modal-text::-webkit-scrollbar-thumb{
+    background:rgba(122,80,69,.32);
+    border-radius:999px;
+}
+
+.timeline-modal-text p{
+    margin:0;
+
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.20rem;
+    line-height:1.62;
+
+    color:#533d34;
+}
+
+.timeline-modal-text p + p{
+    margin-top:14px;
+}
+
+
+/* ---------------------------------------------------------
+   TABLET
+   --------------------------------------------------------- */
+
+@media(max-width:1100px){
+
+    .historia > h3,
+    .historia > .card-sub{
+        padding-right:0;
+    }
+
+    .story-side-note{
+        top:16px !important;
+        right:16px !important;
+
+        width:98px !important;
+
+        font-size:13px !important;
+
+        opacity:.88;
+    }
+
+    .historia > h3{
+        padding-right:108px;
+    }
+
+    .timeline-item .timeline-summary{
+        /* Hasta dos líneas en tablet. */
+        max-height:2.4em;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   MÓVIL
+   La nota queda en el encabezado y nunca invade la timeline.
+   --------------------------------------------------------- */
+
+@media(max-width:700px){
+
+    .historia{
+        padding:18px;
+    }
+
+    .historia > h3{
+        padding-right:92px;
+
+        font-size:1.85rem;
+    }
+
+    .historia > .card-sub{
+        padding-right:0;
+        max-width:70%;
+
+        font-size:.86rem;
+    }
+
+    .story-side-note{
+        position:absolute !important;
+
+        top:14px !important;
+        right:12px !important;
+
+        width:88px !important;
+
+        padding:8px 7px !important;
+
+        font-size:13px !important;
+        line-height:1.08 !important;
+
+        transform:rotate(2deg) !important;
+
+        opacity:.90;
+    }
+
+    .timeline{
+        margin-top:10px;
+        gap:10px;
+    }
+
+    .timeline-item strong{
+        font-size:1.05rem;
+    }
+
+    .timeline-date{
+        font-size:.70rem;
+    }
+
+    .timeline-item .timeline-summary{
+        font-size:.74rem;
+        line-height:1.18;
+
+        /* Hasta dos líneas en móvil. */
+        max-height:2.36em;
+    }
+
+    .timeline-modal-card{
+        width:calc(100vw - 24px);
+        max-height:84svh;
+        padding:28px 18px 22px;
+        border-radius:16px;
+    }
+
+    .timeline-modal-text{
+        flex:1 1 auto;
+        min-height:0;
+        max-height:none;
+
+        padding:0 7px 2px 0;
+
+        overflow-y:auto;
+        overflow-x:hidden;
+    }
+
+    .timeline-modal-text p{
+        font-size:1.08rem;
+        line-height:1.55;
+    }
+}
+
+
+/* Teléfonos muy angostos: quitamos la nota antes de sacrificar legibilidad. */
+@media(max-width:390px){
+
+    .story-side-note{
+        display:none;
+    }
+
+    .historia > h3,
+    .historia > .card-sub{
+        padding-right:0;
+        max-width:none;
+    }
+}
+
+@media(max-width:1100px){
+    .historia{
+        align-self:start;
+        height:auto !important;
+    }
+}
+
+
+/* =========================================================
+   NUESTRA DISTANCIA
+   Modificación aislada: no afecta ninguna otra tarjeta.
+   ========================================================= */
+
+.distancia .distance-composition{
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) minmax(86px, .82fr) minmax(0, 1fr);
+    align-items:center;
+    gap:10px;
+    width:100%;
+    margin:14px 0 16px;
+}
+
+.distancia .distance-polaroid{
+    width:100%;
+    max-width:132px;
+    margin:0;
+    padding:7px 7px 9px;
+    justify-self:center;
+
+    background:#f7f2ef;
+    color:#3d2d30;
+
+    border-radius:6px;
+    box-shadow:0 8px 18px rgba(0,0,0,.22);
+
+    font-family:'Cormorant Garamond', serif;
+    text-align:center;
+}
+
+.distancia .distance-polaroid-left{
+    transform:rotate(-4deg);
+}
+
+.distancia .distance-polaroid-right{
+    transform:rotate(4deg);
+}
+
+.distancia .distance-photo-frame{
+    width:100%;
+    overflow:hidden;
+    background:#e8e1dc;
+}
+
+.distancia .distance-photo-image{
+    display:block;
+    width:100%;
+    aspect-ratio:4 / 5;
+    object-fit:cover;
+    object-position:center;
+}
+
+.distancia .distance-polaroid-left .distance-photo-image{
+    object-position:center 34%;
+}
+
+.distancia .distance-polaroid-right .distance-photo-image{
+    object-position:center 32%;
+}
+
+.distancia .distance-polaroid figcaption{
+    margin-top:7px;
+    font-size:1.05rem;
+    line-height:1;
+    color:#473641;
+}
+
+.distancia .distance-center{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:11px;
+    text-align:center;
+}
+
+.distancia .distance-route{
+    width:100%;
+    display:grid;
+    grid-template-columns:auto 1fr auto 1fr auto;
+    align-items:center;
+    gap:4px;
+    color:#f0c9d0;
+}
+
+.distancia .distance-plane{
+    display:inline-block;
+    font-size:1.02rem;
+    line-height:1;
+    color:#f0b9c8;
+}
+
+.distancia .distance-plane-left{
+    transform:rotate(-8deg);
+}
+
+.distancia .distance-plane-right{
+    transform:scaleX(-1) rotate(-8deg);
+}
+
+.distancia .distance-heart{
+    font-family:'Cormorant Garamond', serif;
+    font-size:2rem;
+    line-height:1;
+    color:#f3c4d0;
+}
+
+.distancia .distance-route-line{
+    min-width:10px;
+    height:1px;
+    border-top:2px dashed rgba(240,185,200,.85);
+    transform:translateY(1px);
+}
+
+.distancia .distance-near{
+    margin:0;
+    color:#ead4cf;
+    font-family:'Cormorant Garamond', serif;
+    font-size:1rem;
+    line-height:1.2;
+}
+
+.distancia .distance-story{
+    margin:0;
+    color:#d7c5c7;
+    font-size:.90rem;
+    line-height:1.48;
+    text-align:left;
+}
+
+.distancia .distance-closing{
+    margin:13px 0 0;
+    color:#f2d7d4;
+    font-family:'Cormorant Garamond', serif;
+    font-size:1.18rem;
+    line-height:1.25;
+    text-align:center;
+}
+
+
+/* TABLET */
+@media (max-width:1100px){
+
+    .distancia .distance-composition{
+        grid-template-columns:minmax(0, 1fr) minmax(80px, .78fr) minmax(0, 1fr);
+        gap:9px;
+    }
+
+    .distancia .distance-polaroid{
+        max-width:126px;
+    }
+}
+
+
+/* CELULAR: las dos fotografías permanecen juntas */
+@media (max-width:700px){
+
+    .distancia .distance-photos{
+        flex-direction:row;
+    }
+
+    .distancia .distance-composition{
+        grid-template-columns:minmax(0, 1fr) minmax(72px, .72fr) minmax(0, 1fr);
+        gap:6px;
+        margin:12px 0 14px;
+    }
+
+    .distancia .distance-polaroid{
+        max-width:112px;
+        padding:5px 5px 8px;
+    }
+
+    .distancia .distance-polaroid figcaption{
+        margin-top:6px;
+        font-size:.92rem;
+    }
+
+    .distancia .distance-route{
+        gap:2px;
+    }
+
+    .distancia .distance-plane{
+        font-size:.82rem;
+    }
+
+    .distancia .distance-heart{
+        font-size:1.65rem;
+    }
+
+    .distancia .distance-route-line{
+        min-width:6px;
+    }
+
+    .distancia .distance-near{
+        font-size:.88rem;
+        line-height:1.16;
+    }
+
+    .distancia .distance-story{
+        font-size:.86rem;
+        line-height:1.45;
+    }
+
+    .distancia .distance-closing{
+        margin-top:11px;
+        font-size:1.08rem;
+    }
+}
+
+
+/* Teléfonos angostos: compactar sin ocultar ni apilar las fotos */
+@media (max-width:390px){
+
+    .distancia .distance-composition{
+        grid-template-columns:minmax(0, 1fr) 66px minmax(0, 1fr);
+        gap:5px;
+    }
+
+    .distancia .distance-polaroid{
+        max-width:98px;
+        padding:4px 4px 7px;
+    }
+
+    .distancia .distance-polaroid figcaption{
+        font-size:.84rem;
+    }
+
+    .distancia .distance-near{
+        font-size:.77rem;
+    }
+
+    .distancia .distance-plane{
+        font-size:.72rem;
+    }
+
+    .distancia .distance-heart{
+        font-size:1.48rem;
+    }
+
+    .distancia .distance-story{
+        font-size:.82rem;
+    }
+}
+
+
+/* =========================================================
+   NUESTROS RECUERDOS — CUADRÍCULA 2 x 2
+   Modificación aislada: no afecta ninguna otra sección.
+   ========================================================= */
+
+.recuerdos .memory-grid{
+    display:grid !important;
+    grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+    gap:12px !important;
+
+    width:100%;
+    max-width:100%;
+
+    margin:14px 0 0 !important;
+    padding:0 !important;
+
+    overflow:visible !important;
+    cursor:default !important;
+}
+
+.recuerdos .memory-polaroid{
+    width:100% !important;
+    min-width:0 !important;
+    height:auto !important;
+    min-height:0 !important;
+
+    margin:0;
+    padding:7px 7px 9px;
+
+    display:block !important;
+
+    background:#f7f2ef;
+    color:#3d2d30;
+
+    border-radius:6px;
+    box-shadow:0 8px 18px rgba(0,0,0,.2);
+
+    transform:none;
+    text-align:center;
+}
+
+.recuerdos .memory-polaroid:nth-child(1){
+    transform:rotate(-1.3deg);
+}
+
+.recuerdos .memory-polaroid:nth-child(2){
+    transform:rotate(1.2deg);
+}
+
+.recuerdos .memory-polaroid:nth-child(3){
+    transform:rotate(.8deg);
+}
+
+.recuerdos .memory-polaroid:nth-child(4){
+    transform:rotate(-1deg);
+}
+
+.recuerdos .memory-polaroid:hover{
+    transform:translateY(-3px) scale(1.01);
+}
+
+.recuerdos .memory-photo-frame{
+    width:100%;
+    height:82px;
+
+    overflow:hidden;
+
+    background:#e8e1dc;
+    border-radius:2px;
+}
+
+.recuerdos .memory-photo{
+    display:block;
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+    object-position:center;
+}
+
+.recuerdos .memory-photo-frame-pending{
+    background:
+        linear-gradient(
+            135deg,
+            rgba(232,225,220,.95),
+            rgba(245,239,235,.95)
+        );
+}
+
+.recuerdos .memory-polaroid figcaption{
+    margin-top:7px;
+
+    color:#3d2d30;
+
+    font-family:'Cormorant Garamond', serif;
+    font-size:.95rem;
+    line-height:1.08;
+
+    text-align:center;
+}
+
+
+/* TABLET */
+@media (max-width:1100px){
+
+    .recuerdos .memory-grid{
+        grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+        gap:11px !important;
+    }
+
+    .recuerdos .memory-photo-frame{
+        height:88px;
+    }
+}
+
+
+/* MÓVIL: se mantienen las 4 tarjetas en 2 x 2 */
+@media (max-width:700px){
+
+    .recuerdos .memory-grid{
+        grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+        gap:10px !important;
+
+        margin-top:12px !important;
+        padding:0 !important;
+    }
+
+    .recuerdos .memory-polaroid{
+        padding:6px 6px 8px;
+    }
+
+    .recuerdos .memory-photo-frame{
+        height:92px;
+    }
+
+    .recuerdos .memory-polaroid figcaption{
+        margin-top:6px;
+        font-size:.90rem;
+        line-height:1.06;
+    }
+}
+
+
+/* Teléfonos angostos: sigue siendo 2 x 2, sin carrusel */
+@media (max-width:390px){
+
+    .recuerdos .memory-grid{
+        grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+        gap:8px !important;
+    }
+
+    .recuerdos .memory-photo-frame{
+        height:78px;
+    }
+
+    .recuerdos .memory-polaroid figcaption{
+        font-size:.82rem;
+    }
+}
+
+
+/* =========================================================
+   NUESTRA PLAYLIST — VERSIÓN FINAL ESTABLE
+   Solo afecta la sección .playlist.
+   ========================================================= */
+
+.playlist .playlist-final-player{
+    align-items:center;
+}
+
+.playlist .playlist-cover{
+    display:block;
+    flex:0 0 110px;
+    width:110px;
+    height:110px;
+    overflow:hidden;
+    text-decoration:none;
+    background:#101735;
+}
+
+.playlist .playlist-cover img{
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+}
+
+.playlist .playlist-final-info{
+    min-width:0;
+}
+
+.playlist .playlist-final-info small{
+    display:block;
+    color:#d9c8ca;
+}
+
+.playlist .playlist-final-info strong{
+    display:block;
+    margin-top:5px;
+    color:#f7e6d8;
+    font-size:1.22rem;
+    line-height:1.18;
+}
+
+.playlist .playlist-final-info p{
+    margin:5px 0 13px;
+    color:#d3c1c3;
+    line-height:1.3;
+}
+
+.playlist .playlist-divider{
+    width:100%;
+    height:1px;
+    margin:0 0 14px;
+    background:linear-gradient(
+        90deg,
+        rgba(244,217,214,.55),
+        rgba(244,217,214,.12)
+    );
+}
+
+.playlist .playlist-open-btn{
+    width:max-content;
+    max-width:100%;
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    padding:8px 13px;
+    border:1px solid rgba(255,224,210,.24);
+    border-radius:999px;
+    color:#f4d9d6;
+    background:rgba(255,255,255,.035);
+    text-decoration:none;
+    font-size:.84rem;
+    line-height:1;
+    transition:
+        transform .25s ease,
+        background .25s ease,
+        border-color .25s ease,
+        box-shadow .25s ease;
+}
+
+.playlist .playlist-open-btn:hover{
+    transform:translateY(-2px);
+    border-color:rgba(255,224,190,.45);
+    background:rgba(255,255,255,.07);
+    box-shadow:0 8px 18px rgba(0,0,0,.16);
+}
+
+.playlist .playlist-open-icon{
+    width:29px;
+    height:29px;
+    display:grid;
+    place-items:center;
+    flex:0 0 29px;
+    border-radius:50%;
+    color:#35251f;
+    background:linear-gradient(180deg,#f1d3b3,#ddb28a);
+    font-size:.78rem;
+    padding-left:2px;
+}
+
+.playlist .playlist-open-note{
+    margin-top:9px;
+    color:#aa9aa8 !important;
+    font-size:.70rem;
+    line-height:1.3;
+}
+
+@media (max-width:700px){
+
+    .playlist .playlist-final-player{
+        flex-direction:column;
+        align-items:center;
+        text-align:center;
+        gap:16px;
+    }
+
+    .playlist .playlist-cover{
+        flex-basis:auto;
+        width:150px;
+        height:150px;
+    }
+
+    .playlist .playlist-final-info{
+        width:100%;
+    }
+
+    .playlist .playlist-open-btn{
+        margin-inline:auto;
+    }
+}
+
