@@ -35,12 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
       sceneEnterCleanup: 950,
       starCount: 120,
       shootingStarInterval: 9000,
-      useReducedMotion: window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-      ).matches,
+      useReducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     },
 
     currentScene: "hero",
+    spotifyInitialized: false,
 
     init() {
       this.setInitialState();
@@ -48,7 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
       this.bindSceneEvents();
       this.bindNavigation();
       this.initHorizontalCollections();
-      this.initSpotifyPlaylist();
       this.initAnniversaryChapters();
       this.initTimelineStories();
       this.initPendingControls();
@@ -69,30 +67,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (heroScreen) {
         heroScreen.hidden = false;
-        heroScreen.classList.remove(
-          "screen-enter",
-          "screen-exit"
-        );
+        heroScreen.classList.remove("screen-enter", "screen-exit");
       }
 
       if (welcomeScreen) {
         welcomeScreen.hidden = true;
-        welcomeScreen.classList.remove(
-          "screen-enter",
-          "screen-exit"
-        );
+        welcomeScreen.classList.remove("screen-enter", "screen-exit");
       }
 
       if (dashboardScreen) {
         dashboardScreen.hidden = true;
-        dashboardScreen.classList.remove(
-          "screen-enter",
-          "screen-exit"
-        );
+        dashboardScreen.classList.remove("screen-enter", "screen-exit");
       }
 
       /*
+        Decisión de diseño:
         Durante portada y carta NO mostramos el menú.
+        Así la introducción se siente como una experiencia
+        y no como una web con enlaces que todavía no sirven.
       */
       if (navbar) {
         navbar.classList.add("navbar-intro-hidden");
@@ -100,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       /*
         No existe scroll durante las dos primeras escenas.
+        Cada una ocupa el viewport completo.
       */
       if (body) {
         body.style.overflowX = "hidden";
@@ -113,10 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
        BOTONES DE LAS ESCENAS
     ===================================================== */
     bindSceneEvents() {
-      const {
-        enterBtn,
-        continueBtn,
-      } = this.elements;
+      const { enterBtn, continueBtn } = this.elements;
 
       if (enterBtn) {
         enterBtn.addEventListener("click", () => {
@@ -137,11 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
     goFromHeroToWelcome() {
       if (this.currentScene !== "hero") return;
 
-      const {
-        heroScreen,
-        welcomeScreen,
-      } = this.elements;
-
+      const { heroScreen, welcomeScreen } = this.elements;
       if (!heroScreen || !welcomeScreen) return;
 
       this.currentScene = "transitioning";
@@ -152,11 +138,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (this.settings.useReducedMotion) {
         heroScreen.hidden = true;
         welcomeScreen.hidden = false;
-
         this.enablePointer(welcomeScreen);
-
         this.currentScene = "welcome";
-
         return;
       }
 
@@ -174,9 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         window.setTimeout(() => {
           welcomeScreen.classList.remove("screen-enter");
-
           this.enablePointer(welcomeScreen);
-
           this.currentScene = "welcome";
         }, this.settings.sceneEnterCleanup);
 
@@ -208,18 +189,17 @@ document.addEventListener("DOMContentLoaded", () => {
         dashboardScreen.hidden = false;
 
         if (navbar) {
-          navbar.classList.remove(
-            "navbar-intro-hidden"
-          );
+          navbar.classList.remove("navbar-intro-hidden");
         }
 
-        if (body) {
-          body.style.overflowY = "auto";
-        }
+        if (body) body.style.overflowY = "auto";
 
         this.enablePointer(dashboardScreen);
-
         this.currentScene = "dashboard";
+
+        requestAnimationFrame(() => {
+          this.initSpotifyPlaylist();
+        });
 
         return;
       }
@@ -230,11 +210,11 @@ document.addEventListener("DOMContentLoaded", () => {
         welcomeScreen.hidden = true;
         welcomeScreen.classList.remove("screen-exit");
 
+        /*
+          El menú aparece justo cuando entramos al universo.
+        */
         if (navbar) {
-          navbar.classList.remove(
-            "navbar-intro-hidden"
-          );
-
+          navbar.classList.remove("navbar-intro-hidden");
           navbar.classList.add("navbar-enter");
 
           window.setTimeout(() => {
@@ -245,22 +225,26 @@ document.addEventListener("DOMContentLoaded", () => {
         dashboardScreen.hidden = false;
 
         requestAnimationFrame(() => {
-          dashboardScreen.classList.add(
-            "screen-enter"
-          );
+          dashboardScreen.classList.add("screen-enter");
+
+          /*
+            Spotify se inicializa aquí, cuando el dashboard
+            ya existe visualmente y dejó de estar hidden.
+          */
+          this.initSpotifyPlaylist();
         });
 
         window.setTimeout(() => {
-          dashboardScreen.classList.remove(
-            "screen-enter"
-          );
+          dashboardScreen.classList.remove("screen-enter");
 
+          /*
+            SOLO en el dashboard permitimos scroll.
+          */
           if (body) {
             body.style.overflowY = "auto";
           }
 
           this.enablePointer(dashboardScreen);
-
           this.currentScene = "dashboard";
         }, this.settings.sceneEnterCleanup);
 
@@ -269,87 +253,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* =====================================================
        NAVEGACIÓN SUPERIOR
+       Funciona únicamente una vez abierto el dashboard.
+       No necesitas cambiar los href="#" del HTML por ahora.
     ===================================================== */
     bindNavigation() {
-      const {
-        navLinks,
-        dashboardScreen,
-      } = this.elements;
+      const { navLinks, dashboardScreen } = this.elements;
 
       const sectionMap = {
-        "inicio":
-          dashboardScreen,
-
-        "nuestra historia":
-          document.querySelector(
-            ".card.historia"
-          ),
-
-        "recuerdos":
-          document.querySelector(
-            ".card.recuerdos"
-          ),
-
-        "cartas":
-          document.querySelector(
-            ".card.cartas"
-          ),
-
-        "playlist":
-          document.querySelector(
-            ".card.playlist"
-          ),
-
-        "metas":
-          document.querySelector(
-            ".card.metas"
-          ),
-
-        "aniversarios":
-          document.querySelector(
-            ".card.futuros"
-          ),
+        "inicio": dashboardScreen,
+        "nuestra historia": document.querySelector(".card.historia"),
+        "recuerdos": document.querySelector(".card.recuerdos"),
+        "cartas": document.querySelector(".card.cartas"),
+        "playlist": document.querySelector(".card.playlist"),
+        "metas": document.querySelector(".card.metas"),
+        "aniversarios": document.querySelector(".card.futuros"),
       };
 
       navLinks.forEach((link) => {
-        link.addEventListener(
-          "click",
-          (event) => {
-            event.preventDefault();
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
 
-            if (
-              this.currentScene !== "dashboard"
-            ) {
-              return;
-            }
+          if (this.currentScene !== "dashboard") return;
 
-            const key =
-              link.textContent
-                .trim()
-                .toLowerCase();
+          const key = link.textContent.trim().toLowerCase();
+          const target = sectionMap[key];
 
-            const target =
-              sectionMap[key];
+          if (!target) return;
 
-            if (!target) return;
-
-            target.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
-          }
-        );
+          target.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        });
       });
     },
 
+
     /* =====================================================
        COLECCIONES HORIZONTALES
+       - Móvil/tablet: gesto táctil nativo.
+       - PC: click izquierdo + arrastrar.
+       - Sin flechas, puntos o scrollbar.
+       - El scroll vertical de la página permanece normal.
     ===================================================== */
     initHorizontalCollections() {
-      const collections =
-        document.querySelectorAll(
-          ".polaroid-grid, .envelope-grid"
-        );
+      const collections = document.querySelectorAll(
+        ".polaroid-grid, .envelope-grid"
+      );
 
       collections.forEach((container) => {
         let isDragging = false;
@@ -358,108 +308,75 @@ document.addEventListener("DOMContentLoaded", () => {
         let movedDistance = 0;
         let suppressClick = false;
 
-        container.addEventListener(
-          "pointerdown",
-          (event) => {
-            if (
-              event.pointerType !== "mouse"
-            ) {
-              return;
-            }
+        /*
+          El táctil se deja completamente al navegador:
+          overflow-x:auto en CSS ya permite el swipe natural.
+          Aquí solo añadimos arrastre manual para mouse.
+        */
+        container.addEventListener("pointerdown", (event) => {
+          if (event.pointerType !== "mouse") return;
+          if (event.button !== 0) return;
 
-            if (event.button !== 0) {
-              return;
-            }
+          /*
+            Si no hay contenido desbordado no hace falta
+            iniciar un gesto de arrastre.
+          */
+          if (container.scrollWidth <= container.clientWidth) return;
 
-            if (
-              container.scrollWidth <=
-              container.clientWidth
-            ) {
-              return;
-            }
+          isDragging = true;
+          movedDistance = 0;
+          suppressClick = false;
 
-            isDragging = true;
-            movedDistance = 0;
-            suppressClick = false;
+          startX = event.clientX;
+          startScrollLeft = container.scrollLeft;
 
-            startX = event.clientX;
+          container.classList.add("is-dragging");
 
-            startScrollLeft =
-              container.scrollLeft;
-
-            container.classList.add(
-              "is-dragging"
-            );
-
-            try {
-              container.setPointerCapture(
-                event.pointerId
-              );
-            } catch (_) {
-              /*
-                Algunos navegadores pueden
-                no necesitar captura.
-              */
-            }
+          try {
+            container.setPointerCapture(event.pointerId);
+          } catch (_) {
+            /* Algunos navegadores pueden no necesitar captura. */
           }
-        );
+        });
 
-        container.addEventListener(
-          "pointermove",
-          (event) => {
-            if (!isDragging) return;
+        container.addEventListener("pointermove", (event) => {
+          if (!isDragging) return;
+          if (event.pointerType !== "mouse") return;
 
-            if (
-              event.pointerType !== "mouse"
-            ) {
-              return;
-            }
+          const deltaX = event.clientX - startX;
+          movedDistance = Math.max(movedDistance, Math.abs(deltaX));
 
-            const deltaX =
-              event.clientX - startX;
-
-            movedDistance =
-              Math.max(
-                movedDistance,
-                Math.abs(deltaX)
-              );
-
-            if (movedDistance > 4) {
-              event.preventDefault();
-              suppressClick = true;
-            }
-
-            container.scrollLeft =
-              startScrollLeft - deltaX;
+          /*
+            Una vez que claramente es un arrastre horizontal,
+            evitamos selección de texto e interacciones accidentales.
+          */
+          if (movedDistance > 4) {
+            event.preventDefault();
+            suppressClick = true;
           }
-        );
+
+          container.scrollLeft = startScrollLeft - deltaX;
+        });
 
         const finishDrag = (event) => {
           if (!isDragging) return;
 
           isDragging = false;
-
-          container.classList.remove(
-            "is-dragging"
-          );
+          container.classList.remove("is-dragging");
 
           try {
-            if (
-              container.hasPointerCapture(
-                event.pointerId
-              )
-            ) {
-              container.releasePointerCapture(
-                event.pointerId
-              );
+            if (container.hasPointerCapture(event.pointerId)) {
+              container.releasePointerCapture(event.pointerId);
             }
           } catch (_) {
-            /*
-              Sin acción si el navegador
-              ya liberó la captura.
-            */
+            /* Sin acción si el navegador ya liberó la captura. */
           }
 
+          /*
+            Dejamos suppressClick activo un instante:
+            así al soltar después de arrastrar no se abre
+            accidentalmente una tarjeta.
+          */
           if (suppressClick) {
             window.setTimeout(() => {
               suppressClick = false;
@@ -467,29 +384,21 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         };
 
-        container.addEventListener(
-          "pointerup",
-          finishDrag
-        );
+        container.addEventListener("pointerup", finishDrag);
+        container.addEventListener("pointercancel", finishDrag);
 
-        container.addEventListener(
-          "pointercancel",
-          finishDrag
-        );
+        container.addEventListener("lostpointercapture", () => {
+          if (!isDragging) return;
 
-        container.addEventListener(
-          "lostpointercapture",
-          () => {
-            if (!isDragging) return;
+          isDragging = false;
+          container.classList.remove("is-dragging");
+        });
 
-            isDragging = false;
-
-            container.classList.remove(
-              "is-dragging"
-            );
-          }
-        );
-
+        /*
+          Si después hacemos las tarjetas clicables,
+          un click real seguirá funcionando.
+          Solo se cancela cuando el usuario arrastró.
+        */
         container.addEventListener(
           "click",
           (event) => {
@@ -508,37 +417,26 @@ document.addEventListener("DOMContentLoaded", () => {
     ===================================================== */
     disablePointer(element) {
       if (!element) return;
-
-      element.style.pointerEvents =
-        "none";
+      element.style.pointerEvents = "none";
     },
 
     enablePointer(element) {
       if (!element) return;
-
-      element.style.pointerEvents =
-        "";
+      element.style.pointerEvents = "";
     },
 
     /* =====================================================
        ESTRELLAS
     ===================================================== */
     createStarfield() {
-      const {
-        starfield,
-      } = this.elements;
+      const { starfield } = this.elements;
 
       if (!starfield) return;
 
       starfield.innerHTML = "";
 
-      for (
-        let i = 0;
-        i < this.settings.starCount;
-        i++
-      ) {
-        const star =
-          document.createElement("span");
+      for (let i = 0; i < this.settings.starCount; i++) {
+        const star = document.createElement("span");
 
         star.classList.add("star");
 
@@ -628,6 +526,10 @@ document.addEventListener("DOMContentLoaded", () => {
        NUESTRA PLAYLIST — SPOTIFY
     ===================================================== */
     initSpotifyPlaylist() {
+      if (this.spotifyInitialized) return;
+
+      this.spotifyInitialized = true;
+
       const PLAYLIST_URI =
         "spotify:playlist:56iCiqkBU4tkdYtHMfbsFc";
 
@@ -691,18 +593,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       let controller = null;
-
-      let controllerReady =
-        false;
-
-      let currentPosition =
-        0;
-
-      let currentDuration =
-        0;
-
-      let fallbackCreated =
-        false;
+      let controllerReady = false;
+      let currentPosition = 0;
+      let currentDuration = 0;
+      let fallbackCreated = false;
 
       const setStatus = (message) => {
         if (playerStatus) {
@@ -711,20 +605,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       };
 
-      const setPlayButtonState =
-        (paused) => {
-          playPauseBtn.textContent =
-            paused
-              ? "▶"
-              : "⏸";
+      const setPlayButtonState = (paused) => {
+        playPauseBtn.textContent =
+          paused ? "▶" : "⏸";
 
-          playPauseBtn.setAttribute(
-            "aria-label",
-            paused
-              ? "Reproducir"
-              : "Pausar"
-          );
-        };
+        playPauseBtn.setAttribute(
+          "aria-label",
+          paused
+            ? "Reproducir"
+            : "Pausar"
+        );
+      };
 
       const updateProgress = () => {
         if (!progressFill) return;
@@ -747,63 +638,60 @@ document.addEventListener("DOMContentLoaded", () => {
           `${percentage}%`;
       };
 
-      const createOfficialFallback =
-        () => {
-          if (
-            fallbackCreated ||
-            !fallbackBox ||
-            !fallbackMount
-          ) {
-            return;
-          }
+      const createOfficialFallback = () => {
+        if (
+          fallbackCreated ||
+          !fallbackBox ||
+          !fallbackMount
+        ) {
+          return;
+        }
 
-          fallbackCreated = true;
+        fallbackCreated = true;
 
-          fallbackBox.hidden =
-            false;
+        fallbackBox.hidden =
+          false;
 
-          const iframe =
-            document.createElement(
-              "iframe"
-            );
-
-          iframe.src =
-            "https://open.spotify.com/embed/playlist/56iCiqkBU4tkdYtHMfbsFc?utm_source=generator&theme=0";
-
-          iframe.title =
-            "Spotify Embed: Canciones que suenan a nosotros";
-
-          iframe.loading =
-            "lazy";
-
-          iframe.allowFullscreen =
-            true;
-
-          iframe.setAttribute(
-            "allow",
-            "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        const iframe =
+          document.createElement(
+            "iframe"
           );
 
-          fallbackMount.appendChild(
-            iframe
-          );
-        };
+        iframe.src =
+          "https://open.spotify.com/embed/playlist/56iCiqkBU4tkdYtHMfbsFc?utm_source=generator&theme=0";
 
-      const useOfficialFallback =
-        (message) => {
-          setStatus(
-            message ||
-            "Usa el reproductor oficial de Spotify que aparece debajo."
-          );
+        iframe.title =
+          "Spotify Embed: Canciones que suenan a nosotros";
 
-          createOfficialFallback();
-        };
+        iframe.loading =
+          "lazy";
+
+        iframe.allowFullscreen =
+          true;
+
+        iframe.setAttribute(
+          "allow",
+          "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        );
+
+        fallbackMount.appendChild(
+          iframe
+        );
+      };
+
+      const useOfficialFallback = (message) => {
+        setStatus(
+          message ||
+          "Usa el reproductor oficial de Spotify que aparece debajo."
+        );
+
+        createOfficialFallback();
+      };
 
       const updateTrackMetadata =
         async (playingURI) => {
           if (
-            typeof playingURI !==
-              "string" ||
+            typeof playingURI !== "string" ||
             !playingURI.startsWith(
               "spotify:track:"
             )
@@ -843,8 +731,7 @@ document.addEventListener("DOMContentLoaded", () => {
               await response.json();
 
             if (
-              typeof data.title ===
-                "string" &&
+              typeof data.title === "string" &&
               data.title.trim()
             ) {
               const rawTitle =
@@ -1066,11 +953,9 @@ document.addEventListener("DOMContentLoaded", () => {
             currentDuration > 0
               ? Math.min(
                   currentDuration,
-                  currentPosition +
-                    10000
+                  currentPosition + 10000
                 )
-              : currentPosition +
-                10000;
+              : currentPosition + 10000;
 
           try {
             controller.seek(
@@ -1086,8 +971,8 @@ document.addEventListener("DOMContentLoaded", () => {
         Spotify reemplaza #spotifyRuntimeMount
         por su iframe.
 
-        El wrapper .spotify-runtime
-        permanece fuera de pantalla.
+        El wrapper .spotify-runtime permanece
+        fuera de pantalla.
       */
       window.onSpotifyIframeApiReady =
         (IFrameAPI) => {
@@ -1146,11 +1031,10 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       /*
-        Si tarda en cargar solamente
-        mostramos un mensaje.
+        Si tarda en cargar, solo mostramos
+        un mensaje.
 
-        NO abrimos automáticamente
-        otro Embed.
+        NO abrimos automáticamente otro Embed.
       */
       window.setTimeout(() => {
         if (!controllerReady) {
@@ -1161,8 +1045,25 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 8000);
     },
 
+
     /* =====================================================
        CAPÍTULOS / ANIVERSARIOS DINÁMICOS
+
+       Para agregar un nuevo aniversario en el futuro:
+       SOLO agrega un objeto nuevo al arreglo CHAPTERS.
+
+       Formato:
+       {
+         id: "mes-7",
+         title: "7 meses",
+         unlockDate: "2027-03-23",
+         intro: "Mensaje breve de entrada.",
+         content: `<p>Contenido del capítulo.</p>`
+       }
+
+       TEST_MODE:
+       - false = usa las fechas reales.
+       - true  = desbloquea todo para que puedas probarlo.
     ===================================================== */
     initAnniversaryChapters() {
       const TEST_MODE = false;
@@ -1172,10 +1073,7 @@ document.addEventListener("DOMContentLoaded", () => {
           id: "mes-2",
           title: "Mes 2",
           unlockDate: "2026-10-23",
-
-          intro:
-            "Otro pedacito de nuestra historia ya está listo para guardarse aquí.",
-
+          intro: "Otro pedacito de nuestra historia ya está listo para guardarse aquí.",
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás escribir la carta, recuerdos, momentos y reflexiones de nuestro segundo mes.
@@ -1187,10 +1085,7 @@ document.addEventListener("DOMContentLoaded", () => {
           id: "mes-3",
           title: "Mes 3",
           unlockDate: "2026-11-23",
-
-          intro:
-            "Tres meses, nuevas historias y otro capítulo para nosotros.",
-
+          intro: "Tres meses, nuevas historias y otro capítulo para nosotros.",
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás agregar el contenido especial de nuestro tercer mes.
@@ -1202,10 +1097,7 @@ document.addEventListener("DOMContentLoaded", () => {
           id: "mes-4",
           title: "Mes 4",
           unlockDate: "2026-12-23",
-
-          intro:
-            "Nuestra historia sigue creciendo, un capítulo a la vez.",
-
+          intro: "Nuestra historia sigue creciendo, un capítulo a la vez.",
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás agregar el contenido especial de nuestro cuarto mes.
@@ -1217,10 +1109,7 @@ document.addEventListener("DOMContentLoaded", () => {
           id: "mes-5",
           title: "5 meses",
           unlockDate: "2027-01-23",
-
-          intro:
-            "Cinco meses de momentos que merecen tener su propio lugar.",
-
+          intro: "Cinco meses de momentos que merecen tener su propio lugar.",
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás agregar el contenido especial de nuestros cinco meses.
@@ -1232,10 +1121,7 @@ document.addEventListener("DOMContentLoaded", () => {
           id: "mes-6",
           title: "6 meses",
           unlockDate: "2027-02-23",
-
-          intro:
-            "Medio año de nuestra historia merece abrirse como un capítulo especial.",
-
+          intro: "Medio año de nuestra historia merece abrirse como un capítulo especial.",
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás construir un capítulo más grande para nuestros seis meses.
@@ -1247,10 +1133,7 @@ document.addEventListener("DOMContentLoaded", () => {
           id: "anio-1",
           title: "1 año",
           unlockDate: "2027-08-23",
-
-          intro:
-            "Un año. Todo un universo de momentos que empezó con nosotros.",
-
+          intro: "Un año. Todo un universo de momentos que empezó con nosotros.",
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás crear el capítulo completo de nuestro primer aniversario.
@@ -1727,10 +1610,8 @@ document.addEventListener("DOMContentLoaded", () => {
                   "keydown",
                   (event) => {
                     if (
-                      event.key ===
-                        "Enter" ||
-                      event.key ===
-                        " "
+                      event.key === "Enter" ||
+                      event.key === " "
                     ) {
                       event.preventDefault();
 
@@ -1789,13 +1670,10 @@ document.addEventListener("DOMContentLoaded", () => {
           "click",
           (event) => {
             if (
-              event.target ===
-                scene ||
-              event.target
-                .classList
-                .contains(
-                  "chapter-scene-backdrop"
-                )
+              event.target === scene ||
+              event.target.classList.contains(
+                "chapter-scene-backdrop"
+              )
             ) {
               closeAllChapterScenes();
             }
@@ -1807,8 +1685,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "keydown",
         (event) => {
           if (
-            event.key !==
-            "Escape"
+            event.key !== "Escape"
           ) {
             return;
           }
@@ -1835,18 +1712,14 @@ document.addEventListener("DOMContentLoaded", () => {
        HISTORIA - LÍNEA TEMPORAL INTERACTIVA
     ===================================================== */
     initTimelineStories() {
+
       const stories = {
 
         conocimos: {
           icon: "♡",
-          heading:
-            "Nos conocimos",
-
-          title:
-            "Un encuentro inesperado",
-
-          date:
-            "13 de diciembre de 2023",
+          heading: "Nos conocimos",
+          title: "Un encuentro inesperado",
+          date: "13 de diciembre de 2023",
 
           text: `Nuestra historia comenzó mucho antes de que nosotros mismos pudiéramos imaginarlo.
 
@@ -1857,17 +1730,12 @@ Un mensaje en Roblox fue el primer pequeño capítulo de nuestra historia.
 Quizá en ese momento no sabíamos nada del otro, ni imaginábamos todo lo que vendría después, pero ese instante fue el comienzo de un camino que, tiempo después, nos volvería a juntar.`
         },
 
+
         reencontramos: {
           icon: "✦",
-
-          heading:
-            "Volvimos a encontrarnos",
-
-          title:
-            "Cuando el universo nos volvió a juntar",
-
-          date:
-            "4 de junio de 2026",
+          heading: "Volvimos a encontrarnos",
+          title: "Cuando el universo nos volvió a juntar",
+          date: "4 de junio de 2026",
 
           text: `Después de mucho tiempo, nuestras vidas volvieron a cruzarse.
 
@@ -1880,17 +1748,12 @@ Yo no imaginaba todo lo que iba a pasar después, ni que una conversación que p
 Gracias por haber tenido el valor de volver a acercarte.`
         },
 
+
         hablar: {
           icon: "💌",
-
-          heading:
-            "Empezamos a hablar",
-
-          title:
-            "Conversaciones que no queríamos terminar",
-
-          date:
-            "Junio de 2026",
+          heading: "Empezamos a hablar",
+          title: "Conversaciones que no queríamos terminar",
+          date: "Junio de 2026",
 
           text: `Al principio eran solamente conversaciones.
 
@@ -1901,17 +1764,12 @@ Sin darme cuenta, hablar contigo comenzó a convertirse en una de mis partes fav
 Eran conversaciones que podían durar mucho tiempo y aun así sentir que faltaba más por contar.`
         },
 
+
         sentimos: {
           icon: "✨",
-
-          heading:
-            "Nos atrevimos",
-
-          title:
-            "El día que decidimos intentarlo",
-
-          date:
-            "17 de junio de 2026",
+          heading: "Nos atrevimos",
+          title: "El día que decidimos intentarlo",
+          date: "17 de junio de 2026",
 
           text: `Ese día recuerdo haber tenido muchas dudas.
 
@@ -1928,17 +1786,12 @@ Así que decidí arriesgarme.
 Y ahora sé que fue una de las mejores decisiones que pude tomar.`
         },
 
+
         espacio: {
           icon: "☾",
-
-          heading:
-            "Pasamos a WhatsApp",
-
-          title:
-            "Un lugar donde seguir conociéndonos",
-
-          date:
-            "27 de junio de 2026",
+          heading: "Pasamos a WhatsApp",
+          title: "Un lugar donde seguir conociéndonos",
+          date: "27 de junio de 2026",
 
           text: `Ese día pasamos a WhatsApp y empezamos a tener un espacio un poco más nuestro.
 
@@ -1949,17 +1802,12 @@ Más conversaciones, más momentos, más historias y más razones para seguir co
 Poco a poco dejamos de ser dos personas que hablaban y empezamos a construir algo que sentíamos especial.`
         },
 
+
         llamada: {
           icon: "📞",
-
-          heading:
-            "Nuestra primera llamada",
-
-          title:
-            "Escuchar tu voz por primera vez",
-
-          date:
-            "5 de julio de 2026",
+          heading: "Nuestra primera llamada",
+          title: "Escuchar tu voz por primera vez",
+          date: "5 de julio de 2026",
 
           text: `La primera llamada fue uno de esos momentos que parecen pequeños, pero que terminan quedándose contigo.
 
@@ -1972,17 +1820,12 @@ Una llamada que empezó como algo sencillo terminó siendo uno de esos momentos 
 Horas que parecían minutos.`
         },
 
+
         novios: {
           icon: "❤",
-
-          heading:
-            "Nos hicimos novios",
-
-          title:
-            "Nuestro primer capítulo",
-
-          date:
-            "23 de agosto de 2026",
+          heading: "Nos hicimos novios",
+          title: "Nuestro primer capítulo",
+          date: "23 de agosto de 2026",
 
           text: `Después de todos esos pequeños momentos llegó ese día.
 
@@ -1998,6 +1841,7 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`
         }
 
       };
+
 
       const modal =
         document.getElementById(
@@ -2160,11 +2004,9 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`
           "click",
           (event) => {
             if (
-              event.target
-                .classList
-                .contains(
-                  "timeline-modal-backdrop"
-                )
+              event.target.classList.contains(
+                "timeline-modal-backdrop"
+              )
             ) {
               closeModal();
             }
@@ -2176,8 +2018,7 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`
         "keydown",
         (event) => {
           if (
-            event.key ===
-              "Escape" &&
+            event.key === "Escape" &&
             modal &&
             !modal.hidden
           ) {
@@ -2228,77 +2069,49 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`
 
         timeline: {
           init() {
-            /*
-              Modal de
-              Nuestra historia.
-            */
+            // Modal de "Nuestra historia".
           }
         },
 
         chapterTabs: {
           init() {
-            /*
-              Nuestra carta /
-              Lo que amo de ti /
-              Momentos /
-              Reflexiones.
-            */
+            // Nuestra carta / Lo que amo de ti / Momentos / Reflexiones.
           }
         },
 
         miniCards: {
           init() {
-            /*
-              Contenido individual
-              de Cosas que amo de ti.
-            */
+            // Contenido individual de "Cosas que amo de ti".
           }
         },
 
         memories: {
           init() {
-            /*
-              Galería /
-              lightbox.
-            */
+            // Galería / lightbox.
           }
         },
 
         playlist: {
           init() {
-            /*
-              Audio,
-              play,
-              pause,
-              anterior
-              y siguiente.
-            */
+            // Audio, play, pause, anterior y siguiente.
           }
         },
 
         goals: {
           init() {
-            /*
-              Metas marcables.
-            */
+            // Metas marcables.
           }
         },
 
         letters: {
           init() {
-            /*
-              Apertura de
-              cartas especiales.
-            */
+            // Apertura de cartas especiales.
           }
         },
 
         lockedChapters: {
           init() {
-            /*
-              Ya implementado en
-              initAnniversaryChapters().
-            */
+            // Ya implementado en initAnniversaryChapters().
           }
         }
       };
