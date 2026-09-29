@@ -39,7 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     currentScene: "hero",
-    spotifyInitialized: false,
 
     init() {
       this.setInitialState();
@@ -196,11 +195,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         this.enablePointer(dashboardScreen);
         this.currentScene = "dashboard";
-
-        requestAnimationFrame(() => {
-          this.initSpotifyPlaylist();
-        });
-
         return;
       }
 
@@ -226,12 +220,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         requestAnimationFrame(() => {
           dashboardScreen.classList.add("screen-enter");
-
-          /*
-            Spotify se inicializa aquí, cuando el dashboard
-            ya existe visualmente y dejó de estar hidden.
-          */
-          this.initSpotifyPlaylist();
         });
 
         window.setTimeout(() => {
@@ -409,6 +397,15 @@ document.addEventListener("DOMContentLoaded", () => {
           },
           true
         );
+
+        /*
+          No convertimos la rueda vertical del mouse en scroll
+          horizontal. Eso permite que la página siga bajando
+          normalmente cuando el cursor está sobre una colección.
+
+          Trackpads que envían deltaX horizontal funcionan
+          de forma nativa gracias a overflow-x:auto.
+        */
       });
     },
 
@@ -430,39 +427,23 @@ document.addEventListener("DOMContentLoaded", () => {
     ===================================================== */
     createStarfield() {
       const { starfield } = this.elements;
-
       if (!starfield) return;
 
       starfield.innerHTML = "";
 
       for (let i = 0; i < this.settings.starCount; i++) {
         const star = document.createElement("span");
-
         star.classList.add("star");
 
-        const size =
-          Math.random() * 2.6 + 0.7;
+        const size = Math.random() * 2.6 + 0.7;
 
-        star.style.width =
-          `${size}px`;
-
-        star.style.height =
-          `${size}px`;
-
-        star.style.top =
-          `${Math.random() * 100}%`;
-
-        star.style.left =
-          `${Math.random() * 100}%`;
-
-        star.style.opacity =
-          `${Math.random() * 0.75 + 0.2}`;
-
-        star.style.animationDuration =
-          `${2.5 + Math.random() * 4}s`;
-
-        star.style.animationDelay =
-          `${Math.random() * 5}s`;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.opacity = `${Math.random() * 0.75 + 0.2}`;
+        star.style.animationDuration = `${2.5 + Math.random() * 4}s`;
+        star.style.animationDelay = `${Math.random() * 5}s`;
 
         starfield.appendChild(star);
       }
@@ -472,47 +453,22 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     createShootingStar() {
-      if (
-        document.querySelector(
-          ".shooting-star"
-        )
-      ) {
-        return;
-      }
+      if (document.querySelector(".shooting-star")) return;
 
-      const shootingStar =
-        document.createElement("div");
-
-      shootingStar.classList.add(
-        "shooting-star"
-      );
-
-      document.body.appendChild(
-        shootingStar
-      );
+      const shootingStar = document.createElement("div");
+      shootingStar.classList.add("shooting-star");
+      document.body.appendChild(shootingStar);
     },
 
     startShootingStarLoop() {
-      const shootingStar =
-        document.querySelector(
-          ".shooting-star"
-        );
+      const shootingStar = document.querySelector(".shooting-star");
 
-      if (
-        !shootingStar ||
-        this.settings.useReducedMotion
-      ) {
-        return;
-      }
+      if (!shootingStar || this.settings.useReducedMotion) return;
 
       const relaunch = () => {
-        shootingStar.style.animation =
-          "none";
-
+        shootingStar.style.animation = "none";
         void shootingStar.offsetWidth;
-
-        shootingStar.style.animation =
-          "";
+        shootingStar.style.animation = "";
       };
 
       relaunch();
@@ -522,528 +478,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }, this.settings.shootingStarInterval);
     },
 
-    /* =====================================================
-       NUESTRA PLAYLIST — SPOTIFY
-    ===================================================== */
-    initSpotifyPlaylist() {
-      if (this.spotifyInitialized) return;
-
-      this.spotifyInitialized = true;
-
-      const PLAYLIST_URI =
-        "spotify:playlist:56iCiqkBU4tkdYtHMfbsFc";
-
-      const runtimeMount =
-        document.getElementById(
-          "spotifyRuntimeMount"
-        );
-
-      const playPauseBtn =
-        document.getElementById(
-          "spotifyPlayPauseBtn"
-        );
-
-      const rewindBtn =
-        document.getElementById(
-          "spotifyRewindBtn"
-        );
-
-      const forwardBtn =
-        document.getElementById(
-          "spotifyForwardBtn"
-        );
-
-      const trackTitle =
-        document.getElementById(
-          "spotifyTrackTitle"
-        );
-
-      const trackArtist =
-        document.getElementById(
-          "spotifyTrackArtist"
-        );
-
-      const progressFill =
-        document.getElementById(
-          "spotifyProgressFill"
-        );
-
-      const playerStatus =
-        document.getElementById(
-          "spotifyPlayerStatus"
-        );
-
-      const fallbackBox =
-        document.getElementById(
-          "spotifyFallbackBox"
-        );
-
-      const fallbackMount =
-        document.getElementById(
-          "spotifyFallbackMount"
-        );
-
-      if (
-        !runtimeMount ||
-        !playPauseBtn ||
-        !rewindBtn ||
-        !forwardBtn
-      ) {
-        return;
-      }
-
-      let controller = null;
-      let controllerReady = false;
-      let currentPosition = 0;
-      let currentDuration = 0;
-      let fallbackCreated = false;
-
-      const setStatus = (message) => {
-        if (playerStatus) {
-          playerStatus.textContent =
-            message;
-        }
-      };
-
-      const setPlayButtonState = (paused) => {
-        playPauseBtn.textContent =
-          paused ? "▶" : "⏸";
-
-        playPauseBtn.setAttribute(
-          "aria-label",
-          paused
-            ? "Reproducir"
-            : "Pausar"
-        );
-      };
-
-      const updateProgress = () => {
-        if (!progressFill) return;
-
-        const percentage =
-          currentDuration > 0
-            ? Math.min(
-                100,
-                Math.max(
-                  0,
-                  (
-                    currentPosition /
-                    currentDuration
-                  ) * 100
-                )
-              )
-            : 0;
-
-        progressFill.style.width =
-          `${percentage}%`;
-      };
-
-      const createOfficialFallback = () => {
-        if (
-          fallbackCreated ||
-          !fallbackBox ||
-          !fallbackMount
-        ) {
-          return;
-        }
-
-        fallbackCreated = true;
-
-        fallbackBox.hidden =
-          false;
-
-        const iframe =
-          document.createElement(
-            "iframe"
-          );
-
-        iframe.src =
-          "https://open.spotify.com/embed/playlist/56iCiqkBU4tkdYtHMfbsFc?utm_source=generator&theme=0";
-
-        iframe.title =
-          "Spotify Embed: Canciones que suenan a nosotros";
-
-        iframe.loading =
-          "lazy";
-
-        iframe.allowFullscreen =
-          true;
-
-        iframe.setAttribute(
-          "allow",
-          "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        );
-
-        fallbackMount.appendChild(
-          iframe
-        );
-      };
-
-      const useOfficialFallback = (message) => {
-        setStatus(
-          message ||
-          "Usa el reproductor oficial de Spotify que aparece debajo."
-        );
-
-        createOfficialFallback();
-      };
-
-      const updateTrackMetadata =
-        async (playingURI) => {
-          if (
-            typeof playingURI !== "string" ||
-            !playingURI.startsWith(
-              "spotify:track:"
-            )
-          ) {
-            return;
-          }
-
-          const trackId =
-            playingURI
-              .replace(
-                "spotify:track:",
-                ""
-              )
-              .trim();
-
-          if (!trackId) return;
-
-          try {
-            const url =
-              `https://open.spotify.com/track/${trackId}`;
-
-            const endpoint =
-              `https://open.spotify.com/oembed?url=${encodeURIComponent(
-                url
-              )}`;
-
-            const response =
-              await fetch(endpoint);
-
-            if (!response.ok) {
-              throw new Error(
-                "oEmbed no disponible."
-              );
-            }
-
-            const data =
-              await response.json();
-
-            if (
-              typeof data.title === "string" &&
-              data.title.trim()
-            ) {
-              const rawTitle =
-                data.title.trim();
-
-              const separator =
-                rawTitle.lastIndexOf(
-                  " - "
-                );
-
-              if (separator > 0) {
-                if (trackTitle) {
-                  trackTitle.textContent =
-                    rawTitle
-                      .slice(
-                        0,
-                        separator
-                      )
-                      .trim();
-                }
-
-                if (trackArtist) {
-                  trackArtist.textContent =
-                    rawTitle
-                      .slice(
-                        separator + 3
-                      )
-                      .trim();
-                }
-              } else {
-                if (trackTitle) {
-                  trackTitle.textContent =
-                    rawTitle;
-                }
-
-                if (trackArtist) {
-                  trackArtist.textContent =
-                    "Spotify";
-                }
-              }
-            }
-          } catch (_) {
-            if (trackTitle) {
-              trackTitle.textContent =
-                "Reproduciendo desde Spotify";
-            }
-
-            if (trackArtist) {
-              trackArtist.textContent =
-                "Canciones que suenan a nosotros ♡";
-            }
-          }
-        };
-
-      const connectController =
-        (EmbedController) => {
-          controller =
-            EmbedController;
-
-          controller.addListener(
-            "ready",
-            () => {
-              controllerReady =
-                true;
-
-              playPauseBtn.disabled =
-                false;
-
-              rewindBtn.disabled =
-                false;
-
-              forwardBtn.disabled =
-                false;
-
-              setStatus(
-                "Lista para reproducir ♡"
-              );
-            }
-          );
-
-          controller.addListener(
-            "playback_started",
-            (event) => {
-              const playingURI =
-                event &&
-                event.data &&
-                event.data.playingURI;
-
-              updateTrackMetadata(
-                playingURI
-              );
-
-              setStatus(
-                "Reproduciendo desde Spotify ♡"
-              );
-            }
-          );
-
-          controller.addListener(
-            "playback_update",
-            (event) => {
-              if (
-                !event ||
-                !event.data
-              ) {
-                return;
-              }
-
-              currentPosition =
-                Number(
-                  event.data.position
-                ) || 0;
-
-              currentDuration =
-                Number(
-                  event.data.duration
-                ) || 0;
-
-              setPlayButtonState(
-                Boolean(
-                  event.data.isPaused
-                )
-              );
-
-              updateProgress();
-
-              if (
-                event.data.isBuffering
-              ) {
-                setStatus(
-                  "Cargando desde Spotify..."
-                );
-              } else if (
-                event.data.isPaused
-              ) {
-                setStatus(
-                  "Pausado"
-                );
-              } else {
-                setStatus(
-                  "Reproduciendo desde Spotify ♡"
-                );
-              }
-            }
-          );
-        };
-
-      playPauseBtn.disabled =
-        true;
-
-      rewindBtn.disabled =
-        true;
-
-      forwardBtn.disabled =
-        true;
-
-      playPauseBtn.addEventListener(
-        "click",
-        () => {
-          if (
-            !controller ||
-            !controllerReady
-          ) {
-            useOfficialFallback(
-              "Spotify todavía no permitió el control personalizado."
-            );
-
-            return;
-          }
-
-          try {
-            controller.togglePlay();
-          } catch (_) {
-            useOfficialFallback(
-              "Tu navegador requiere usar el reproductor oficial de Spotify."
-            );
-          }
-        }
-      );
-
-      rewindBtn.addEventListener(
-        "click",
-        () => {
-          if (
-            !controller ||
-            !controllerReady
-          ) {
-            useOfficialFallback();
-
-            return;
-          }
-
-          try {
-            controller.seek(
-              Math.max(
-                0,
-                currentPosition - 10000
-              ) / 1000
-            );
-          } catch (_) {
-            useOfficialFallback();
-          }
-        }
-      );
-
-      forwardBtn.addEventListener(
-        "click",
-        () => {
-          if (
-            !controller ||
-            !controllerReady
-          ) {
-            useOfficialFallback();
-
-            return;
-          }
-
-          const target =
-            currentDuration > 0
-              ? Math.min(
-                  currentDuration,
-                  currentPosition + 10000
-                )
-              : currentPosition + 10000;
-
-          try {
-            controller.seek(
-              target / 1000
-            );
-          } catch (_) {
-            useOfficialFallback();
-          }
-        }
-      );
-
-      /*
-        Spotify reemplaza #spotifyRuntimeMount
-        por su iframe.
-
-        El wrapper .spotify-runtime permanece
-        fuera de pantalla.
-      */
-      window.onSpotifyIframeApiReady =
-        (IFrameAPI) => {
-          try {
-            IFrameAPI.createController(
-              runtimeMount,
-              {
-                width: 320,
-                height: 152,
-                uri: PLAYLIST_URI
-              },
-              connectController
-            );
-          } catch (_) {
-            useOfficialFallback(
-              "No se pudo iniciar el control personalizado de Spotify."
-            );
-          }
-        };
-
-      const oldApiScript =
-        document.querySelector(
-          'script[data-spotify-iframe-api="true"]'
-        );
-
-      if (oldApiScript) {
-        oldApiScript.remove();
-      }
-
-      const spotifyScript =
-        document.createElement(
-          "script"
-        );
-
-      spotifyScript.src =
-        "https://open.spotify.com/embed/iframe-api/v1";
-
-      spotifyScript.async =
-        true;
-
-      spotifyScript.dataset
-        .spotifyIframeApi =
-        "true";
-
-      spotifyScript.addEventListener(
-        "error",
-        () => {
-          useOfficialFallback(
-            "No se pudo cargar la API de Spotify."
-          );
-        }
-      );
-
-      document.body.appendChild(
-        spotifyScript
-      );
-
-      /*
-        Si tarda en cargar, solo mostramos
-        un mensaje.
-
-        NO abrimos automáticamente otro Embed.
-      */
-      window.setTimeout(() => {
-        if (!controllerReady) {
-          setStatus(
-            "Spotify sigue conectando. Si ▶ no responde, aparecerá el reproductor de respaldo."
-          );
-        }
-      }, 8000);
-    },
 
 
     /* =====================================================
@@ -1142,491 +576,308 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       ];
 
-      const chaptersGrid =
-        document.getElementById(
-          "chaptersGrid"
-        );
+      const chaptersGrid = document.getElementById("chaptersGrid");
 
-      const introScreen =
-        document.getElementById(
-          "chapterIntroScreen"
-        );
+      const introScreen = document.getElementById("chapterIntroScreen");
+      const introTitle = document.getElementById("chapterIntroTitle");
+      const introMessage = document.getElementById("chapterIntroMessage");
+      const introCloseBtn = document.getElementById("chapterIntroCloseBtn");
+      const chapterContinueBtn = document.getElementById("chapterContinueBtn");
 
-      const introTitle =
-        document.getElementById(
-          "chapterIntroTitle"
-        );
-
-      const introMessage =
-        document.getElementById(
-          "chapterIntroMessage"
-        );
-
-      const introCloseBtn =
-        document.getElementById(
-          "chapterIntroCloseBtn"
-        );
-
-      const chapterContinueBtn =
-        document.getElementById(
-          "chapterContinueBtn"
-        );
-
-      const contentScreen =
-        document.getElementById(
-          "chapterContentScreen"
-        );
-
-      const contentTitle =
-        document.getElementById(
-          "chapterContentTitle"
-        );
-
-      const contentDate =
-        document.getElementById(
-          "chapterContentDate"
-        );
-
-      const contentBody =
-        document.getElementById(
-          "chapterContentBody"
-        );
-
-      const contentCloseBtn =
-        document.getElementById(
-          "chapterContentCloseBtn"
-        );
-
-      const chapterBackBtn =
-        document.getElementById(
-          "chapterBackBtn"
-        );
+      const contentScreen = document.getElementById("chapterContentScreen");
+      const contentTitle = document.getElementById("chapterContentTitle");
+      const contentDate = document.getElementById("chapterContentDate");
+      const contentBody = document.getElementById("chapterContentBody");
+      const contentCloseBtn = document.getElementById("chapterContentCloseBtn");
+      const chapterBackBtn = document.getElementById("chapterBackBtn");
 
       if (!chaptersGrid) return;
 
       let selectedChapter = null;
       let toastTimer = null;
 
-      const parseLocalDate =
-        (isoDate) => {
-          const [
-            year,
-            month,
-            day,
-          ] =
-            isoDate
-              .split("-")
-              .map(Number);
+      const parseLocalDate = (isoDate) => {
+        const [year, month, day] = isoDate.split("-").map(Number);
+        return new Date(year, month - 1, day, 0, 0, 0, 0);
+      };
 
-          return new Date(
-            year,
-            month - 1,
-            day,
-            0,
-            0,
-            0,
-            0
-          );
-        };
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-      const today =
-        new Date();
+      const formatDate = (date) =>
+        new Intl.DateTimeFormat("es-MX", {
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        }).format(date);
 
-      today.setHours(
-        0,
-        0,
-        0,
-        0
-      );
-
-      const formatDate =
-        (date) =>
-          new Intl.DateTimeFormat(
-            "es-MX",
-            {
-              day: "numeric",
-              month: "long",
-              year: "numeric"
-            }
-          ).format(date);
-
-      const isUnlocked =
-        (chapter) =>
-          TEST_MODE ||
-          today >=
-            parseLocalDate(
-              chapter.unlockDate
-            );
+      const isUnlocked = (chapter) =>
+        TEST_MODE || today >= parseLocalDate(chapter.unlockDate);
 
       const createToast = () => {
-        let toast =
-          document.querySelector(
-            ".chapter-toast"
-          );
+        let toast = document.querySelector(".chapter-toast");
 
         if (!toast) {
-          toast =
-            document.createElement(
-              "div"
-            );
-
-          toast.className =
-            "chapter-toast";
-
-          toast.setAttribute(
-            "role",
-            "status"
-          );
-
-          toast.setAttribute(
-            "aria-live",
-            "polite"
-          );
-
-          document.body.appendChild(
-            toast
-          );
+          toast = document.createElement("div");
+          toast.className = "chapter-toast";
+          toast.setAttribute("role", "status");
+          toast.setAttribute("aria-live", "polite");
+          document.body.appendChild(toast);
         }
 
         return toast;
       };
 
-      const showLockedMessage =
-        (chapter, card) => {
+      const showLockedMessage = (chapter, card) => {
+        const unlockDate = parseLocalDate(chapter.unlockDate);
+        const toast = createToast();
+
+        toast.textContent =
+          `Este capítulo se desbloquea el ${formatDate(unlockDate)}. ♡`;
+
+        toast.classList.add("show");
+
+        card.classList.remove("locked-feedback");
+        void card.offsetWidth;
+        card.classList.add("locked-feedback");
+
+        window.clearTimeout(toastTimer);
+
+        toastTimer = window.setTimeout(() => {
+          toast.classList.remove("show");
+        }, 2600);
+      };
+
+      const lockPage = () => {
+        document.body.dataset.previousOverflowY =
+          document.body.style.overflowY || "";
+
+        document.body.style.overflowY = "hidden";
+      };
+
+      const unlockPage = () => {
+        const previous =
+          document.body.dataset.previousOverflowY || "auto";
+
+        document.body.style.overflowY = previous;
+        delete document.body.dataset.previousOverflowY;
+      };
+
+      const showScene = (scene) => {
+        if (!scene) return;
+
+        scene.hidden = false;
+        scene.setAttribute("aria-hidden", "false");
+
+        requestAnimationFrame(() => {
+          scene.classList.add("is-visible");
+        });
+      };
+
+      const hideScene = (scene, callback) => {
+        if (!scene) return;
+
+        scene.classList.remove("is-visible");
+        scene.setAttribute("aria-hidden", "true");
+
+        window.setTimeout(() => {
+          scene.hidden = true;
+
+          if (typeof callback === "function") {
+            callback();
+          }
+        }, 450);
+      };
+
+      const openChapterIntro = (chapter) => {
+        selectedChapter = chapter;
+
+        if (introTitle) {
+          introTitle.textContent = chapter.title;
+        }
+
+        if (introMessage) {
+          introMessage.textContent = chapter.intro;
+        }
+
+        lockPage();
+        showScene(introScreen);
+      };
+
+      const showChapterContent = () => {
+        if (!selectedChapter) return;
+
+        const unlockDate =
+          parseLocalDate(selectedChapter.unlockDate);
+
+        if (contentTitle) {
+          contentTitle.textContent =
+            selectedChapter.title;
+        }
+
+        if (contentDate) {
+          contentDate.textContent =
+            formatDate(unlockDate);
+        }
+
+        if (contentBody) {
+          contentBody.innerHTML =
+            selectedChapter.content;
+        }
+
+        hideScene(introScreen, () => {
+          showScene(contentScreen);
+        });
+      };
+
+      const closeAllChapterScenes = () => {
+        const finish = () => {
+          selectedChapter = null;
+          unlockPage();
+        };
+
+        if (
+          contentScreen &&
+          !contentScreen.hidden
+        ) {
+          hideScene(
+            contentScreen,
+            finish
+          );
+
+          return;
+        }
+
+        if (
+          introScreen &&
+          !introScreen.hidden
+        ) {
+          hideScene(
+            introScreen,
+            finish
+          );
+
+          return;
+        }
+
+        finish();
+      };
+
+      const renderChapters = () => {
+        chaptersGrid.innerHTML = "";
+
+        CHAPTERS.forEach((chapter) => {
+          const unlocked =
+            isUnlocked(chapter);
+
           const unlockDate =
             parseLocalDate(
               chapter.unlockDate
             );
 
-          const toast =
-            createToast();
+          const card =
+            document.createElement(
+              "article"
+            );
 
-          toast.textContent =
-            `Este capítulo se desbloquea el ${formatDate(
-              unlockDate
-            )}. ♡`;
+          card.className =
+            `locked-card chapter-card ${
+              unlocked
+                ? "is-unlocked"
+                : "is-locked"
+            }`;
 
-          toast.classList.add(
-            "show"
-          );
+          card.dataset.chapterId =
+            chapter.id;
 
-          card.classList.remove(
-            "locked-feedback"
-          );
+          if (unlocked) {
+            card.innerHTML = `
+              <span class="chapter-icon">✦</span>
+              <span class="chapter-title">${chapter.title}</span>
+              <small class="chapter-date">Desbloqueado</small>
 
-          void card.offsetWidth;
+              <button
+                class="chapter-open-btn"
+                type="button"
+                data-open-chapter="${chapter.id}"
+              >
+                Abrir capítulo
+              </button>
+            `;
 
-          card.classList.add(
-            "locked-feedback"
-          );
+            const openBtn =
+              card.querySelector(
+                ".chapter-open-btn"
+              );
 
-          window.clearTimeout(
-            toastTimer
-          );
-
-          toastTimer =
-            window.setTimeout(
+            openBtn.addEventListener(
+              "click",
               () => {
-                toast.classList.remove(
-                  "show"
-                );
-              },
-              2600
-            );
-        };
-
-      const lockPage = () => {
-        document.body.dataset
-          .previousOverflowY =
-          document.body.style
-            .overflowY || "";
-
-        document.body.style
-          .overflowY =
-          "hidden";
-      };
-
-      const unlockPage = () => {
-        const previous =
-          document.body.dataset
-            .previousOverflowY ||
-          "auto";
-
-        document.body.style
-          .overflowY =
-          previous;
-
-        delete document.body
-          .dataset
-          .previousOverflowY;
-      };
-
-      const showScene =
-        (scene) => {
-          if (!scene) return;
-
-          scene.hidden =
-            false;
-
-          scene.setAttribute(
-            "aria-hidden",
-            "false"
-          );
-
-          requestAnimationFrame(
-            () => {
-              scene.classList.add(
-                "is-visible"
-              );
-            }
-          );
-        };
-
-      const hideScene =
-        (scene, callback) => {
-          if (!scene) return;
-
-          scene.classList.remove(
-            "is-visible"
-          );
-
-          scene.setAttribute(
-            "aria-hidden",
-            "true"
-          );
-
-          window.setTimeout(
-            () => {
-              scene.hidden =
-                true;
-
-              if (
-                typeof callback ===
-                "function"
-              ) {
-                callback();
-              }
-            },
-            450
-          );
-        };
-
-      const openChapterIntro =
-        (chapter) => {
-          selectedChapter =
-            chapter;
-
-          if (introTitle) {
-            introTitle.textContent =
-              chapter.title;
-          }
-
-          if (introMessage) {
-            introMessage.textContent =
-              chapter.intro;
-          }
-
-          lockPage();
-
-          showScene(
-            introScreen
-          );
-        };
-
-      const showChapterContent =
-        () => {
-          if (!selectedChapter) {
-            return;
-          }
-
-          const unlockDate =
-            parseLocalDate(
-              selectedChapter
-                .unlockDate
-            );
-
-          if (contentTitle) {
-            contentTitle.textContent =
-              selectedChapter.title;
-          }
-
-          if (contentDate) {
-            contentDate.textContent =
-              formatDate(
-                unlockDate
-              );
-          }
-
-          if (contentBody) {
-            contentBody.innerHTML =
-              selectedChapter.content;
-          }
-
-          hideScene(
-            introScreen,
-            () => {
-              showScene(
-                contentScreen
-              );
-            }
-          );
-        };
-
-      const closeAllChapterScenes =
-        () => {
-          const finish = () => {
-            selectedChapter =
-              null;
-
-            unlockPage();
-          };
-
-          if (
-            contentScreen &&
-            !contentScreen.hidden
-          ) {
-            hideScene(
-              contentScreen,
-              finish
-            );
-
-            return;
-          }
-
-          if (
-            introScreen &&
-            !introScreen.hidden
-          ) {
-            hideScene(
-              introScreen,
-              finish
-            );
-
-            return;
-          }
-
-          finish();
-        };
-
-      const renderChapters =
-        () => {
-          chaptersGrid.innerHTML =
-            "";
-
-          CHAPTERS.forEach(
-            (chapter) => {
-              const unlocked =
-                isUnlocked(
+                openChapterIntro(
                   chapter
                 );
-
-              const unlockDate =
-                parseLocalDate(
-                  chapter.unlockDate
-                );
-
-              const card =
-                document.createElement(
-                  "article"
-                );
-
-              card.className =
-                `locked-card chapter-card ${
-                  unlocked
-                    ? "is-unlocked"
-                    : "is-locked"
-                }`;
-
-              card.dataset.chapterId =
-                chapter.id;
-
-              if (unlocked) {
-                card.innerHTML = `
-                  <span class="chapter-icon">✦</span>
-                  <span class="chapter-title">${chapter.title}</span>
-                  <small class="chapter-date">Desbloqueado</small>
-
-                  <button
-                    class="chapter-open-btn"
-                    type="button"
-                    data-open-chapter="${chapter.id}"
-                  >
-                    Abrir capítulo
-                  </button>
-                `;
-
-                const openBtn =
-                  card.querySelector(
-                    ".chapter-open-btn"
-                  );
-
-                openBtn.addEventListener(
-                  "click",
-                  () => {
-                    openChapterIntro(
-                      chapter
-                    );
-                  }
-                );
-              } else {
-                card.dataset.clickable =
-                  "true";
-
-                card.tabIndex =
-                  0;
-
-                card.setAttribute(
-                  "role",
-                  "button"
-                );
-
-                card.setAttribute(
-                  "aria-label",
-                  `${chapter.title}. Se desbloquea el ${formatDate(
-                    unlockDate
-                  )}`
-                );
-
-                card.innerHTML = `
-                  <span class="chapter-icon">🔒</span>
-                  <span class="chapter-title">${chapter.title}</span>
-                  <small class="chapter-date">Próximamente...</small>
-                `;
-
-                const activateLockedCard =
-                  () => {
-                    showLockedMessage(
-                      chapter,
-                      card
-                    );
-                  };
-
-                card.addEventListener(
-                  "click",
-                  activateLockedCard
-                );
-
-                card.addEventListener(
-                  "keydown",
-                  (event) => {
-                    if (
-                      event.key === "Enter" ||
-                      event.key === " "
-                    ) {
-                      event.preventDefault();
-
-                      activateLockedCard();
-                    }
-                  }
-                );
               }
+            );
+          } else {
+            card.dataset.clickable =
+              "true";
 
-              chaptersGrid.appendChild(
-                card
-              );
-            }
+            card.tabIndex =
+              0;
+
+            card.setAttribute(
+              "role",
+              "button"
+            );
+
+            card.setAttribute(
+              "aria-label",
+              `${chapter.title}. Se desbloquea el ${formatDate(
+                unlockDate
+              )}`
+            );
+
+            card.innerHTML = `
+              <span class="chapter-icon">🔒</span>
+              <span class="chapter-title">${chapter.title}</span>
+              <small class="chapter-date">Próximamente...</small>
+            `;
+
+            const activateLockedCard =
+              () => {
+                showLockedMessage(
+                  chapter,
+                  card
+                );
+              };
+
+            card.addEventListener(
+              "click",
+              activateLockedCard
+            );
+
+            card.addEventListener(
+              "keydown",
+              (event) => {
+                if (
+                  event.key ===
+                    "Enter" ||
+                  event.key ===
+                    " "
+                ) {
+                  event.preventDefault();
+
+                  activateLockedCard();
+                }
+              }
+            );
+          }
+
+          chaptersGrid.appendChild(
+            card
           );
-        };
+        });
+      };
 
       renderChapters();
 
@@ -1685,7 +936,8 @@ document.addEventListener("DOMContentLoaded", () => {
         "keydown",
         (event) => {
           if (
-            event.key !== "Escape"
+            event.key !==
+            "Escape"
           ) {
             return;
           }
@@ -1708,8 +960,12 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     },
 
+
     /* =====================================================
        HISTORIA - LÍNEA TEMPORAL INTERACTIVA
+
+       La tarjeta mantiene una descripción corta.
+       El contenido completo vive aquí y se abre en modal.
     ===================================================== */
     initTimelineStories() {
 
@@ -1843,219 +1099,111 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`
       };
 
 
-      const modal =
-        document.getElementById(
-          "timelineModal"
-        );
+      const modal = document.getElementById("timelineModal");
+      const modalHeading = document.getElementById("timelineModalHeading");
+      const modalTitle = document.getElementById("timelineModalTitle");
+      const modalDate = document.getElementById("timelineModalDate");
+      const modalText = document.getElementById("timelineModalText");
+      const modalIcon = document.getElementById("timelineModalIcon");
+      const closeBtn = document.getElementById("timelineModalClose");
 
-      const modalHeading =
-        document.getElementById(
-          "timelineModalHeading"
-        );
+      const openModal = (story) => {
+        if(!modal || !story) return;
 
-      const modalTitle =
-        document.getElementById(
-          "timelineModalTitle"
-        );
+        modalIcon.textContent = story.icon;
+        modalHeading.textContent = story.heading;
+        modalTitle.textContent = story.title;
+        modalDate.textContent = story.date;
 
-      const modalDate =
-        document.getElementById(
-          "timelineModalDate"
-        );
+        modalText.innerHTML = "";
 
-      const modalText =
-        document.getElementById(
-          "timelineModalText"
-        );
+        story.text
+          .split(/\n\s*\n/)
+          .forEach((paragraph) => {
+            const p = document.createElement("p");
+            p.textContent = paragraph.trim();
+            modalText.appendChild(p);
+          });
 
-      const modalIcon =
-        document.getElementById(
-          "timelineModalIcon"
-        );
+        modal.hidden = false;
+        modal.setAttribute("aria-hidden","false");
 
-      const closeBtn =
-        document.getElementById(
-          "timelineModalClose"
-        );
+        document.body.dataset.timelineOverflow =
+          document.body.style.overflowY || "";
 
-      const openModal =
-        (story) => {
-          if (
-            !modal ||
-            !story
-          ) {
-            return;
-          }
+        document.body.style.overflowY="hidden";
 
-          modalIcon.textContent =
-            story.icon;
-
-          modalHeading.textContent =
-            story.heading;
-
-          modalTitle.textContent =
-            story.title;
-
-          modalDate.textContent =
-            story.date;
-
-          modalText.innerHTML =
-            "";
-
-          story.text
-            .split(/\n\s*\n/)
-            .forEach(
-              (paragraph) => {
-                const p =
-                  document.createElement(
-                    "p"
-                  );
-
-                p.textContent =
-                  paragraph.trim();
-
-                modalText.appendChild(
-                  p
-                );
-              }
-            );
-
-          modal.hidden =
-            false;
-
-          modal.setAttribute(
-            "aria-hidden",
-            "false"
-          );
-
-          document.body.dataset
-            .timelineOverflow =
-            document.body.style
-              .overflowY || "";
-
-          document.body.style
-            .overflowY =
-            "hidden";
-
-          requestAnimationFrame(
-            () => {
-              modal.classList.add(
-                "is-open"
-              );
-            }
-          );
-        };
-
-      const closeModal = () => {
-        if (!modal) return;
-
-        modal.classList.remove(
-          "is-open"
-        );
-
-        modal.setAttribute(
-          "aria-hidden",
-          "true"
-        );
-
-        setTimeout(() => {
-          modal.hidden =
-            true;
-
-          document.body.style
-            .overflowY =
-            document.body.dataset
-              .timelineOverflow ||
-            "auto";
-
-          delete document.body
-            .dataset
-            .timelineOverflow;
-
-        }, 350);
+        requestAnimationFrame(()=>{
+          modal.classList.add("is-open");
+        });
       };
 
-      document.querySelectorAll(
-        ".timeline-button"
-      )
-      .forEach((button) => {
-        button.addEventListener(
-          "click",
-          () => {
-            const story =
-              stories[
-                button.dataset.timeline
-              ];
 
-            openModal(story);
-          }
-        );
+      const closeModal = () => {
+        if(!modal) return;
+
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden","true");
+
+        setTimeout(()=>{
+          modal.hidden=true;
+
+          document.body.style.overflowY =
+            document.body.dataset.timelineOverflow || "auto";
+
+          delete document.body.dataset.timelineOverflow;
+        },350);
+      };
+
+
+      document.querySelectorAll(".timeline-button")
+      .forEach(button=>{
+        button.addEventListener("click",()=>{
+          const story=stories[button.dataset.timeline];
+          openModal(story);
+        });
       });
 
-      if (closeBtn) {
-        closeBtn.addEventListener(
-          "click",
-          closeModal
-        );
+
+      if(closeBtn){
+        closeBtn.addEventListener("click",closeModal);
       }
 
-      if (modal) {
-        modal.addEventListener(
-          "click",
-          (event) => {
-            if (
-              event.target.classList.contains(
-                "timeline-modal-backdrop"
-              )
-            ) {
-              closeModal();
-            }
-          }
-        );
-      }
 
-      document.addEventListener(
-        "keydown",
-        (event) => {
-          if (
-            event.key === "Escape" &&
-            modal &&
-            !modal.hidden
-          ) {
+      if(modal){
+        modal.addEventListener("click",(event)=>{
+          if(
+            event.target.classList.contains("timeline-modal-backdrop")
+          ){
             closeModal();
           }
+        });
+      }
+
+
+      document.addEventListener("keydown",(event)=>{
+        if(event.key==="Escape" && modal && !modal.hidden){
+          closeModal();
         }
-      );
+      });
     },
 
     /* =====================================================
        BOTONES PENDIENTES
+       Mientras no tengan contenido real, no deben fingir
+       que ya son controles funcionales.
     ===================================================== */
     initPendingControls() {
-      const tabButtons =
-        document.querySelectorAll(
-          ".tab-buttons button"
-        );
+      const tabButtons = document.querySelectorAll(".tab-buttons button");
+      const memoriesButton = document.querySelector(".outline-btn");
 
-      const memoriesButton =
-        document.querySelector(
-          ".outline-btn"
-        );
-
-      tabButtons.forEach(
-        (button) => {
-          button.disabled =
-            true;
-
-          button.title =
-            "Esta sección se activará cuando agreguemos su contenido.";
-        }
-      );
+      tabButtons.forEach((button) => {
+        button.disabled = true;
+        button.title = "Esta sección se activará cuando agreguemos su contenido.";
+      });
 
       if (memoriesButton) {
-        memoriesButton.disabled =
-          true;
-
+        memoriesButton.disabled = true;
         memoriesButton.title =
           "Activaremos esta galería cuando agreguemos los recuerdos.";
       }
@@ -2063,10 +1211,10 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`
 
     /* =====================================================
        MÓDULOS FUTUROS
+       Aquí añadiremos las siguientes interacciones.
     ===================================================== */
     initFutureModules() {
       this.modules = {
-
         timeline: {
           init() {
             // Modal de "Nuestra historia".
