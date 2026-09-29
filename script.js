@@ -46,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.bindSceneEvents();
       this.bindNavigation();
       this.initHorizontalCollections();
+      this.initPromiseLetter();
       this.initSpecialLetters();
       this.initAnniversaryChapters();
       this.initTimelineStories();
@@ -243,7 +244,6 @@ document.addEventListener("DOMContentLoaded", () => {
     /* =====================================================
        NAVEGACIÓN SUPERIOR
        Funciona únicamente una vez abierto el dashboard.
-       No necesitas cambiar los href="#" del HTML por ahora.
     ===================================================== */
     bindNavigation() {
       const { navLinks, dashboardScreen } = this.elements;
@@ -277,13 +277,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-
     /* =====================================================
        COLECCIONES HORIZONTALES
-       - Móvil/tablet: gesto táctil nativo.
-       - PC: click izquierdo + arrastrar.
-       - Sin flechas, puntos o scrollbar.
-       - El scroll vertical de la página permanece normal.
     ===================================================== */
     initHorizontalCollections() {
       const collections = document.querySelectorAll(
@@ -297,19 +292,10 @@ document.addEventListener("DOMContentLoaded", () => {
         let movedDistance = 0;
         let suppressClick = false;
 
-        /*
-          El táctil se deja completamente al navegador:
-          overflow-x:auto en CSS ya permite el swipe natural.
-          Aquí solo añadimos arrastre manual para mouse.
-        */
         container.addEventListener("pointerdown", (event) => {
           if (event.pointerType !== "mouse") return;
           if (event.button !== 0) return;
 
-          /*
-            Si no hay contenido desbordado no hace falta
-            iniciar un gesto de arrastre.
-          */
           if (container.scrollWidth <= container.clientWidth) return;
 
           isDragging = true;
@@ -318,13 +304,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
           startX = event.clientX;
           startScrollLeft = container.scrollLeft;
-                    container.classList.add("is-dragging");
+
+          container.classList.add("is-dragging");
 
           try {
             container.setPointerCapture(event.pointerId);
-          } catch (_) {
-            /* Algunos navegadores pueden no necesitar captura. */
-          }
+          } catch (_) {}
         });
 
         container.addEventListener("pointermove", (event) => {
@@ -334,10 +319,6 @@ document.addEventListener("DOMContentLoaded", () => {
           const deltaX = event.clientX - startX;
           movedDistance = Math.max(movedDistance, Math.abs(deltaX));
 
-          /*
-            Una vez que claramente es un arrastre horizontal,
-            evitamos selección de texto e interacciones accidentales.
-          */
           if (movedDistance > 4) {
             event.preventDefault();
             suppressClick = true;
@@ -356,15 +337,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (container.hasPointerCapture(event.pointerId)) {
               container.releasePointerCapture(event.pointerId);
             }
-          } catch (_) {
-            /* Sin acción si el navegador ya liberó la captura. */
-          }
+          } catch (_) {}
 
-          /*
-            Dejamos suppressClick activo un instante:
-            así al soltar después de arrastrar no se abre
-            accidentalmente una tarjeta.
-          */
           if (suppressClick) {
             window.setTimeout(() => {
               suppressClick = false;
@@ -374,17 +348,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         container.addEventListener("pointerup", finishDrag);
         container.addEventListener("pointercancel", finishDrag);
+
         container.addEventListener("lostpointercapture", () => {
           if (!isDragging) return;
+
           isDragging = false;
           container.classList.remove("is-dragging");
         });
 
-        /*
-          Si después hacemos las tarjetas clicables,
-          un click real seguirá funcionando.
-          Solo se cancela cuando el usuario arrastró.
-        */
         container.addEventListener(
           "click",
           (event) => {
@@ -395,15 +366,6 @@ document.addEventListener("DOMContentLoaded", () => {
           },
           true
         );
-
-        /*
-          No convertimos la rueda vertical del mouse en scroll
-          horizontal. Eso permite que la página siga bajando
-          normalmente cuando el cursor está sobre una colección.
-
-          Trackpads que envían deltaX horizontal funcionan
-          de forma nativa gracias a overflow-x:auto.
-        */
       });
     },
 
@@ -425,12 +387,14 @@ document.addEventListener("DOMContentLoaded", () => {
     ===================================================== */
     createStarfield() {
       const { starfield } = this.elements;
+
       if (!starfield) return;
 
       starfield.innerHTML = "";
 
       for (let i = 0; i < this.settings.starCount; i++) {
         const star = document.createElement("span");
+
         star.classList.add("star");
 
         const size = Math.random() * 2.6 + 0.7;
@@ -454,7 +418,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (document.querySelector(".shooting-star")) return;
 
       const shootingStar = document.createElement("div");
+
       shootingStar.classList.add("shooting-star");
+
       document.body.appendChild(shootingStar);
     },
 
@@ -465,7 +431,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const relaunch = () => {
         shootingStar.style.animation = "none";
+
         void shootingStar.offsetWidth;
+
         shootingStar.style.animation = "";
       };
 
@@ -476,20 +444,113 @@ document.addEventListener("DOMContentLoaded", () => {
       }, this.settings.shootingStarInterval);
     },
 
+    /* =====================================================
+       NUESTRA PROMESA
+       Abre únicamente la imagen de la carta de compromiso.
+    ===================================================== */
+    initPromiseLetter() {
+      const openBtn =
+        document.getElementById("promiseCard");
 
+      const modal =
+        document.getElementById("promiseModal");
 
+      const closeBtn =
+        document.getElementById("promiseModalClose");
+
+      if (!openBtn || !modal) return;
+
+      let closeTimer = null;
+
+      const openPromise = () => {
+        window.clearTimeout(closeTimer);
+
+        document.body.dataset.promiseOverflowY =
+          document.body.style.overflowY || "";
+
+        document.body.style.overflowY = "hidden";
+
+        modal.hidden = false;
+        modal.setAttribute("aria-hidden", "false");
+
+        requestAnimationFrame(() => {
+          modal.classList.add("is-open");
+
+          if (closeBtn) {
+            closeBtn.focus({
+              preventScroll: true
+            });
+          }
+        });
+      };
+
+      const closePromise = () => {
+        if (modal.hidden) return;
+
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+
+        closeTimer = window.setTimeout(() => {
+          modal.hidden = true;
+
+          document.body.style.overflowY =
+            document.body.dataset.promiseOverflowY || "auto";
+
+          delete document.body.dataset.promiseOverflowY;
+
+          openBtn.focus({
+            preventScroll: true
+          });
+        }, 280);
+      };
+
+      openBtn.addEventListener(
+        "click",
+        openPromise
+      );
+
+      if (closeBtn) {
+        closeBtn.addEventListener(
+          "click",
+          closePromise
+        );
+      }
+
+      modal.addEventListener(
+        "click",
+        (event) => {
+          if (
+            event.target === modal ||
+            event.target.classList.contains(
+              "promise-modal-backdrop"
+            )
+          ) {
+            closePromise();
+          }
+        }
+      );
+
+      document.addEventListener(
+        "keydown",
+        (event) => {
+          if (
+            event.key === "Escape" &&
+            !modal.hidden
+          ) {
+            closePromise();
+          }
+        }
+      );
+    },
 
     /* =====================================================
        CARTAS PARA MOMENTOS ESPECIALES
-
-       Cada tarjeta abre únicamente su propia carta.
-       El fondo queda bloqueado mientras el modal está abierto
-       y el contenido largo se desplaza dentro del papel.
     ===================================================== */
     initSpecialLetters() {
       const LETTERS = {
         "dia-dificil": {
           title: "Cuando tengas un día difícil",
+
           html: `
             <p><strong>Mi niñita hermosa:</strong></p>
 
@@ -511,6 +572,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         "me-extranes": {
           title: "Cuando me extrañes",
+
           html: `
             <p><strong>Mi cielo estrellado:</strong></p>
 
@@ -534,6 +596,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         "dudes-nosotros": {
           title: "Cuando dudes de nosotros",
+
           html: `
             <p><strong>Mi Xime:</strong></p>
 
@@ -563,6 +626,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         "recordar-amor": {
           title: "Cuando necesites recordar cuánto te amo",
+
           html: `
             <p><strong>Para mi niñita hermosa:</strong></p>
 
@@ -600,16 +664,24 @@ document.addEventListener("DOMContentLoaded", () => {
       };
 
       const modal =
-        document.getElementById("specialLetterModal");
+        document.getElementById(
+          "specialLetterModal"
+        );
 
       const title =
-        document.getElementById("specialLetterTitle");
+        document.getElementById(
+          "specialLetterTitle"
+        );
 
       const content =
-        document.getElementById("specialLetterContent");
+        document.getElementById(
+          "specialLetterContent"
+        );
 
       const closeBtn =
-        document.getElementById("specialLetterClose");
+        document.getElementById(
+          "specialLetterClose"
+        );
 
       const cards =
         document.querySelectorAll(
@@ -636,7 +708,8 @@ document.addEventListener("DOMContentLoaded", () => {
           LETTERS[key];
 
         if (!letter) return;
-                activeCard = card;
+
+        activeCard = card;
 
         title.textContent =
           letter.title;
@@ -644,10 +717,6 @@ document.addEventListener("DOMContentLoaded", () => {
         content.innerHTML =
           letter.html;
 
-        /*
-          Siempre abre la carta desde el inicio,
-          incluso si anteriormente se había desplazado.
-        */
         const scrollArea =
           modal.querySelector(
             ".special-letter-scroll"
@@ -721,12 +790,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 .dataset
                 .specialLetterOverflowY;
 
-              /*
-                Devolvemos el foco a la tarjeta
-                que abrió la carta. Como el fondo
-                nunca se desplazó, vuelve exactamente
-                al mismo punto de la sección.
-              */
               if (activeCard) {
                 activeCard.focus({
                   preventScroll: true
@@ -796,25 +859,8 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     },
 
-
     /* =====================================================
        CAPÍTULOS / ANIVERSARIOS DINÁMICOS
-
-       Para agregar un nuevo aniversario en el futuro:
-       SOLO agrega un objeto nuevo al arreglo CHAPTERS.
-
-       Formato:
-       {
-         id: "mes-7",
-         title: "7 meses",
-         unlockDate: "2027-03-23",
-         intro: "Mensaje breve de entrada.",
-         content: `<p>Contenido del capítulo.</p>`
-       }
-
-       TEST_MODE:
-       - false = usa las fechas reales.
-       - true  = desbloquea todo para que puedas probarlo.
     ===================================================== */
     initAnniversaryChapters() {
       const TEST_MODE = false;
@@ -824,62 +870,73 @@ document.addEventListener("DOMContentLoaded", () => {
           id: "mes-2",
           title: "Mes 2",
           unlockDate: "2026-10-23",
-          intro: "Otro pedacito de nuestra historia ya está listo para guardarse aquí.",
+          intro:
+            "Otro pedacito de nuestra historia ya está listo para guardarse aquí.",
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás escribir la carta, recuerdos, momentos y reflexiones de nuestro segundo mes.
             </div>
           `
         },
+
         {
           id: "mes-3",
           title: "Mes 3",
           unlockDate: "2026-11-23",
-          intro: "Tres meses, nuevas historias y otro capítulo para nosotros.",
+          intro:
+            "Tres meses, nuevas historias y otro capítulo para nosotros.",
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás agregar el contenido especial de nuestro tercer mes.
             </div>
           `
         },
+
         {
           id: "mes-4",
           title: "Mes 4",
           unlockDate: "2026-12-23",
-          intro: "Nuestra historia sigue creciendo, un capítulo a la vez.",
+          intro:
+            "Nuestra historia sigue creciendo, un capítulo a la vez.",
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás agregar el contenido especial de nuestro cuarto mes.
             </div>
           `
         },
+
         {
           id: "mes-5",
           title: "5 meses",
           unlockDate: "2027-01-23",
-          intro: "Cinco meses de momentos que merecen tener su propio lugar.",
+          intro:
+            "Cinco meses de momentos que merecen tener su propio lugar.",
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás agregar el contenido especial de nuestros cinco meses.
             </div>
           `
         },
+
         {
           id: "mes-6",
           title: "6 meses",
           unlockDate: "2027-02-23",
-          intro: "Medio año de nuestra historia merece abrirse como un capítulo especial.",
+          intro:
+            "Medio año de nuestra historia merece abrirse como un capítulo especial.",
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás construir un capítulo más grande para nuestros seis meses.
             </div>
           `
         },
+
         {
           id: "anio-1",
           title: "1 año",
           unlockDate: "2027-08-23",
-          intro: "Un año. Todo un universo de momentos que empezó con nosotros.",
+          intro:
+            "Un año. Todo un universo de momentos que empezó con nosotros.",
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás crear el capítulo completo de nuestro primer aniversario.
@@ -888,283 +945,600 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       ];
 
-      const chaptersGrid = document.getElementById("chaptersGrid");
+      const chaptersGrid =
+        document.getElementById(
+          "chaptersGrid"
+        );
 
-      const introScreen = document.getElementById("chapterIntroScreen");
-      const introTitle = document.getElementById("chapterIntroTitle");
-      const introMessage = document.getElementById("chapterIntroMessage");
-      const introCloseBtn = document.getElementById("chapterIntroCloseBtn");
-      const chapterContinueBtn = document.getElementById("chapterContinueBtn");
+      const introScreen =
+        document.getElementById(
+          "chapterIntroScreen"
+        );
 
-      const contentScreen = document.getElementById("chapterContentScreen");
-      const contentTitle = document.getElementById("chapterContentTitle");
-      const contentDate = document.getElementById("chapterContentDate");
-      const contentBody = document.getElementById("chapterContentBody");
-      const contentCloseBtn = document.getElementById("chapterContentCloseBtn");
-      const chapterBackBtn = document.getElementById("chapterBackBtn");
+      const introTitle =
+        document.getElementById(
+          "chapterIntroTitle"
+        );
+
+      const introMessage =
+        document.getElementById(
+          "chapterIntroMessage"
+        );
+
+      const introCloseBtn =
+        document.getElementById(
+          "chapterIntroCloseBtn"
+        );
+
+      const chapterContinueBtn =
+        document.getElementById(
+          "chapterContinueBtn"
+        );
+
+      const contentScreen =
+        document.getElementById(
+          "chapterContentScreen"
+        );
+
+      const contentTitle =
+        document.getElementById(
+          "chapterContentTitle"
+        );
+
+      const contentDate =
+        document.getElementById(
+          "chapterContentDate"
+        );
+
+      const contentBody =
+        document.getElementById(
+          "chapterContentBody"
+        );
+
+      const contentCloseBtn =
+        document.getElementById(
+          "chapterContentCloseBtn"
+        );
+
+      const chapterBackBtn =
+        document.getElementById(
+          "chapterBackBtn"
+        );
 
       if (!chaptersGrid) return;
 
       let selectedChapter = null;
       let toastTimer = null;
 
-      const parseLocalDate = (isoDate) => {
-        const [year, month, day] = isoDate.split("-").map(Number);
-        return new Date(year, month - 1, day, 0, 0, 0, 0);
-      };
+      const parseLocalDate =
+        (isoDate) => {
+          const [
+            year,
+            month,
+            day,
+          ] =
+            isoDate
+              .split("-")
+              .map(Number);
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+          return new Date(
+            year,
+            month - 1,
+            day,
+            0,
+            0,
+            0,
+            0
+          );
+        };
 
-      const formatDate = (date) =>
-        new Intl.DateTimeFormat("es-MX", {
-          day: "numeric",
-          month: "long",
-          year: "numeric"
-        }).format(date);
+      const today =
+        new Date();
 
-      const isUnlocked = (chapter) =>
-        TEST_MODE || today >= parseLocalDate(chapter.unlockDate);
+      today.setHours(
+        0,
+        0,
+        0,
+        0
+      );
+
+      const formatDate =
+        (date) =>
+          new Intl.DateTimeFormat(
+            "es-MX",
+            {
+              day: "numeric",
+              month: "long",
+              year: "numeric"
+            }
+          ).format(date);
+
+      const isUnlocked =
+        (chapter) =>
+          TEST_MODE ||
+          today >=
+            parseLocalDate(
+              chapter.unlockDate
+            );
 
       const createToast = () => {
-        let toast = document.querySelector(".chapter-toast");
+        let toast =
+          document.querySelector(
+            ".chapter-toast"
+          );
 
         if (!toast) {
-          toast = document.createElement("div");
-          toast.className = "chapter-toast";
-          toast.setAttribute("role", "status");
-          toast.setAttribute("aria-live", "polite");
-          document.body.appendChild(toast);
+          toast =
+            document.createElement(
+              "div"
+            );
+
+          toast.className =
+            "chapter-toast";
+
+          toast.setAttribute(
+            "role",
+            "status"
+          );
+
+          toast.setAttribute(
+            "aria-live",
+            "polite"
+          );
+
+          document.body.appendChild(
+            toast
+          );
         }
 
         return toast;
       };
 
-      const showLockedMessage = (chapter, card) => {
-        const unlockDate = parseLocalDate(chapter.unlockDate);
-        const toast = createToast();
+      const showLockedMessage =
+        (chapter, card) => {
+          const unlockDate =
+            parseLocalDate(
+              chapter.unlockDate
+            );
 
-        toast.textContent =
-          `Este capítulo se desbloquea el ${formatDate(unlockDate)}. ♡`;
+          const toast =
+            createToast();
 
-        toast.classList.add("show");
+          toast.textContent =
+            `Este capítulo se desbloquea el ${formatDate(
+              unlockDate
+            )}. ♡`;
 
-        card.classList.remove("locked-feedback");
-        void card.offsetWidth;
-        card.classList.add("locked-feedback");
+          toast.classList.add(
+            "show"
+          );
 
-        window.clearTimeout(toastTimer);
+          card.classList.remove(
+            "locked-feedback"
+          );
 
-        toastTimer = window.setTimeout(() => {
-                    toast.classList.remove("show");
-        }, 2600);
-      };
+          void card.offsetWidth;
+
+          card.classList.add(
+            "locked-feedback"
+          );
+
+          window.clearTimeout(
+            toastTimer
+          );
+
+          toastTimer =
+            window.setTimeout(
+              () => {
+                toast.classList.remove(
+                  "show"
+                );
+              },
+              2600
+            );
+        };
 
       const lockPage = () => {
-        document.body.dataset.previousOverflowY =
-          document.body.style.overflowY || "";
+        document.body.dataset
+          .previousOverflowY =
+          document.body.style
+            .overflowY || "";
 
-        document.body.style.overflowY = "hidden";
+        document.body.style
+          .overflowY =
+          "hidden";
       };
 
       const unlockPage = () => {
         const previous =
-          document.body.dataset.previousOverflowY || "auto";
+          document.body.dataset
+            .previousOverflowY ||
+          "auto";
 
-        document.body.style.overflowY = previous;
-        delete document.body.dataset.previousOverflowY;
+        document.body.style
+          .overflowY =
+          previous;
+
+        delete document.body
+          .dataset
+          .previousOverflowY;
       };
 
       const showScene = (scene) => {
         if (!scene) return;
 
-        scene.hidden = false;
-        scene.setAttribute("aria-hidden", "false");
+        scene.hidden =
+          false;
 
-        requestAnimationFrame(() => {
-          scene.classList.add("is-visible");
-        });
+        scene.setAttribute(
+          "aria-hidden",
+          "false"
+        );
+
+        requestAnimationFrame(
+          () => {
+            scene.classList.add(
+              "is-visible"
+            );
+          }
+        );
       };
 
-      const hideScene = (scene, callback) => {
-        if (!scene) return;
+      const hideScene =
+        (scene, callback) => {
+          if (!scene) return;
 
-        scene.classList.remove("is-visible");
-        scene.setAttribute("aria-hidden", "true");
+          scene.classList.remove(
+            "is-visible"
+          );
 
-        window.setTimeout(() => {
-          scene.hidden = true;
-          if (typeof callback === "function") callback();
-        }, 450);
-      };
+          scene.setAttribute(
+            "aria-hidden",
+            "true"
+          );
 
-      const openChapterIntro = (chapter) => {
-        selectedChapter = chapter;
+          window.setTimeout(
+            () => {
+              scene.hidden =
+                true;
 
-        if (introTitle) introTitle.textContent = chapter.title;
-        if (introMessage) introMessage.textContent = chapter.intro;
-
-        lockPage();
-        showScene(introScreen);
-      };
-
-      const showChapterContent = () => {
-        if (!selectedChapter) return;
-
-        const unlockDate = parseLocalDate(selectedChapter.unlockDate);
-
-        if (contentTitle) contentTitle.textContent = selectedChapter.title;
-        if (contentDate) contentDate.textContent = formatDate(unlockDate);
-        if (contentBody) contentBody.innerHTML = selectedChapter.content;
-
-        hideScene(introScreen, () => {
-          showScene(contentScreen);
-        });
-      };
-
-      const closeAllChapterScenes = () => {
-        const finish = () => {
-          selectedChapter = null;
-          unlockPage();
+              if (
+                typeof callback ===
+                "function"
+              ) {
+                callback();
+              }
+            },
+            450
+          );
         };
 
-        if (contentScreen && !contentScreen.hidden) {
-          hideScene(contentScreen, finish);
-          return;
-        }
+      const openChapterIntro =
+        (chapter) => {
+          selectedChapter =
+            chapter;
 
-        if (introScreen && !introScreen.hidden) {
-          hideScene(introScreen, finish);
-          return;
-        }
-
-        finish();
-      };
-
-      const renderChapters = () => {
-        chaptersGrid.innerHTML = "";
-
-        CHAPTERS.forEach((chapter) => {
-          const unlocked = isUnlocked(chapter);
-          const unlockDate = parseLocalDate(chapter.unlockDate);
-
-          const card = document.createElement("article");
-          card.className =
-            `locked-card chapter-card ${unlocked ? "is-unlocked" : "is-locked"}`;
-
-          card.dataset.chapterId = chapter.id;
-
-          if (unlocked) {
-            card.innerHTML = `
-              <span class="chapter-icon">✦</span>
-              <span class="chapter-title">${chapter.title}</span>
-              <small class="chapter-date">Desbloqueado</small>
-              <button
-                class="chapter-open-btn"
-                type="button"
-                data-open-chapter="${chapter.id}"
-              >
-                Abrir capítulo
-              </button>
-            `;
-
-            const openBtn = card.querySelector(".chapter-open-btn");
-
-            openBtn.addEventListener("click", () => {
-              openChapterIntro(chapter);
-            });
-          } else {
-            card.dataset.clickable = "true";
-            card.tabIndex = 0;
-            card.setAttribute("role", "button");
-            card.setAttribute(
-              "aria-label",
-              `${chapter.title}. Se desbloquea el ${formatDate(unlockDate)}`
-            );
-
-            card.innerHTML = `
-              <span class="chapter-icon">🔒</span>
-              <span class="chapter-title">${chapter.title}</span>
-              <small class="chapter-date">Próximamente...</small>
-            `;
-
-            const activateLockedCard = () => {
-              showLockedMessage(chapter, card);
-            };
-
-            card.addEventListener("click", activateLockedCard);
-
-            card.addEventListener("keydown", (event) => {
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                activateLockedCard();
-              }
-            });
+          if (introTitle) {
+            introTitle.textContent =
+              chapter.title;
           }
 
-          chaptersGrid.appendChild(card);
-        });
+          if (introMessage) {
+            introMessage.textContent =
+              chapter.intro;
+          }
+
+          lockPage();
+
+          showScene(
+            introScreen
+          );
+        };
+
+      const showChapterContent =
+        () => {
+          if (!selectedChapter) return;
+
+          const unlockDate =
+            parseLocalDate(
+              selectedChapter.unlockDate
+            );
+
+          if (contentTitle) {
+            contentTitle.textContent =
+              selectedChapter.title;
+          }
+
+          if (contentDate) {
+            contentDate.textContent =
+              formatDate(
+                unlockDate
+              );
+          }
+
+          if (contentBody) {
+            contentBody.innerHTML =
+              selectedChapter.content;
+          }
+
+          hideScene(
+            introScreen,
+            () => {
+              showScene(
+                contentScreen
+              );
+            }
+          );
+        };
+
+      const closeAllChapterScenes =
+        () => {
+          const finish = () => {
+            selectedChapter =
+              null;
+
+            unlockPage();
+          };
+
+          if (
+            contentScreen &&
+            !contentScreen.hidden
+          ) {
+            hideScene(
+              contentScreen,
+              finish
+            );
+
+            return;
+          }
+
+          if (
+            introScreen &&
+            !introScreen.hidden
+          ) {
+            hideScene(
+              introScreen,
+              finish
+            );
+
+            return;
+          }
+
+          finish();
+        };
+
+      const renderChapters = () => {
+        chaptersGrid.innerHTML =
+          "";
+
+        CHAPTERS.forEach(
+          (chapter) => {
+            const unlocked =
+              isUnlocked(
+                chapter
+              );
+
+            const unlockDate =
+              parseLocalDate(
+                chapter.unlockDate
+              );
+
+            const card =
+              document.createElement(
+                "article"
+              );
+
+            card.className =
+              `locked-card chapter-card ${
+                unlocked
+                  ? "is-unlocked"
+                  : "is-locked"
+              }`;
+
+            card.dataset.chapterId =
+              chapter.id;
+
+            if (unlocked) {
+              card.innerHTML = `
+                <span class="chapter-icon">✦</span>
+
+                <span class="chapter-title">
+                  ${chapter.title}
+                </span>
+
+                <small class="chapter-date">
+                  Desbloqueado
+                </small>
+
+                <button
+                  class="chapter-open-btn"
+                  type="button"
+                  data-open-chapter="${chapter.id}"
+                >
+                  Abrir capítulo
+                </button>
+              `;
+
+              const openBtn =
+                card.querySelector(
+                  ".chapter-open-btn"
+                );
+
+              openBtn.addEventListener(
+                "click",
+                () => {
+                  openChapterIntro(
+                    chapter
+                  );
+                }
+              );
+            } else {
+              card.dataset.clickable =
+                "true";
+
+              card.tabIndex =
+                0;
+
+              card.setAttribute(
+                "role",
+                "button"
+              );
+
+              card.setAttribute(
+                "aria-label",
+                `${chapter.title}. Se desbloquea el ${formatDate(
+                  unlockDate
+                )}`
+              );
+
+              card.innerHTML = `
+                <span class="chapter-icon">
+                  🔒
+                </span>
+
+                <span class="chapter-title">
+                  ${chapter.title}
+                </span>
+
+                <small class="chapter-date">
+                  Próximamente...
+                </small>
+              `;
+
+              const activateLockedCard =
+                () => {
+                  showLockedMessage(
+                    chapter,
+                    card
+                  );
+                };
+
+              card.addEventListener(
+                "click",
+                activateLockedCard
+              );
+
+              card.addEventListener(
+                "keydown",
+                (event) => {
+                  if (
+                    event.key ===
+                      "Enter" ||
+                    event.key ===
+                      " "
+                  ) {
+                    event.preventDefault();
+
+                    activateLockedCard();
+                  }
+                }
+              );
+            }
+
+            chaptersGrid.appendChild(
+              card
+            );
+          }
+        );
       };
 
       renderChapters();
 
       if (chapterContinueBtn) {
-        chapterContinueBtn.addEventListener("click", showChapterContent);
+        chapterContinueBtn.addEventListener(
+          "click",
+          showChapterContent
+        );
       }
 
       if (introCloseBtn) {
-        introCloseBtn.addEventListener("click", closeAllChapterScenes);
+        introCloseBtn.addEventListener(
+          "click",
+          closeAllChapterScenes
+        );
       }
 
       if (contentCloseBtn) {
-        contentCloseBtn.addEventListener("click", closeAllChapterScenes);
+        contentCloseBtn.addEventListener(
+          "click",
+          closeAllChapterScenes
+        );
       }
 
       if (chapterBackBtn) {
-        chapterBackBtn.addEventListener("click", closeAllChapterScenes);
+        chapterBackBtn.addEventListener(
+          "click",
+          closeAllChapterScenes
+        );
       }
 
-      [introScreen, contentScreen].forEach((scene) => {
+      [
+        introScreen,
+        contentScreen
+      ].forEach((scene) => {
         if (!scene) return;
 
-        scene.addEventListener("click", (event) => {
+        scene.addEventListener(
+          "click",
+          (event) => {
+            if (
+              event.target ===
+                scene ||
+              event.target
+                .classList
+                .contains(
+                  "chapter-scene-backdrop"
+                )
+            ) {
+              closeAllChapterScenes();
+            }
+          }
+        );
+      });
+
+      document.addEventListener(
+        "keydown",
+        (event) => {
           if (
-            event.target === scene ||
-            event.target.classList.contains("chapter-scene-backdrop")
+            event.key !==
+            "Escape"
+          ) {
+            return;
+          }
+
+          const introOpen =
+            introScreen &&
+            !introScreen.hidden;
+
+          const contentOpen =
+            contentScreen &&
+            !contentScreen.hidden;
+
+          if (
+            introOpen ||
+            contentOpen
           ) {
             closeAllChapterScenes();
           }
-        });
-      });
-
-      document.addEventListener("keydown", (event) => {
-        if (event.key !== "Escape") return;
-
-        const introOpen = introScreen && !introScreen.hidden;
-        const contentOpen = contentScreen && !contentScreen.hidden;
-
-        if (introOpen || contentOpen) {
-          closeAllChapterScenes();
         }
-      });
+      );
     },
-
 
     /* =====================================================
        HISTORIA - LÍNEA TEMPORAL INTERACTIVA
-
-       La tarjeta mantiene una descripción corta.
-       El contenido completo vive aquí y se abre en modal.
     ===================================================== */
     initTimelineStories() {
-
       const stories = {
-
         conocimos: {
           icon: "♡",
-          heading: "Nos conocimos",
-          title: "Un encuentro inesperado",
-          date: "13 de diciembre de 2023",
+          heading:
+            "Nos conocimos",
+
+          title:
+            "Un encuentro inesperado",
+
+          date:
+            "13 de diciembre de 2023",
 
           text: `Nuestra historia comenzó mucho antes de que nosotros mismos pudiéramos imaginarlo.
 
@@ -1175,12 +1549,17 @@ Un mensaje en Roblox fue el primer pequeño capítulo de nuestra historia.
 Quizá en ese momento no sabíamos nada del otro, ni imaginábamos todo lo que vendría después, pero ese instante fue el comienzo de un camino que, tiempo después, nos volvería a juntar.`
         },
 
-
         reencontramos: {
           icon: "✦",
-          heading: "Volvimos a encontrarnos",
-          title: "Cuando el universo nos volvió a juntar",
-          date: "4 de junio de 2026",
+
+          heading:
+            "Volvimos a encontrarnos",
+
+          title:
+            "Cuando el universo nos volvió a juntar",
+
+          date:
+            "4 de junio de 2026",
 
           text: `Después de mucho tiempo, nuestras vidas volvieron a cruzarse.
 
@@ -1193,12 +1572,17 @@ Yo no imaginaba todo lo que iba a pasar después, ni que una conversación que p
 Gracias por haber tenido el valor de volver a acercarte.`
         },
 
-
         hablar: {
           icon: "💌",
-          heading: "Empezamos a hablar",
-          title: "Conversaciones que no queríamos terminar",
-          date: "Junio de 2026",
+
+          heading:
+            "Empezamos a hablar",
+
+          title:
+            "Conversaciones que no queríamos terminar",
+
+          date:
+            "Junio de 2026",
 
           text: `Al principio eran solamente conversaciones.
 
@@ -1209,12 +1593,17 @@ Sin darme cuenta, hablar contigo comenzó a convertirse en una de mis partes fav
 Eran conversaciones que podían durar mucho tiempo y aun así sentir que faltaba más por contar.`
         },
 
-
         sentimos: {
           icon: "✨",
-          heading: "Nos atrevimos",
-          title: "El día que decidimos intentarlo",
-          date: "17 de junio de 2026",
+
+          heading:
+            "Nos atrevimos",
+
+          title:
+            "El día que decidimos intentarlo",
+
+          date:
+            "17 de junio de 2026",
 
           text: `Ese día recuerdo haber tenido muchas dudas.
 
@@ -1231,12 +1620,17 @@ Así que decidí arriesgarme.
 Y ahora sé que fue una de las mejores decisiones que pude tomar.`
         },
 
-
         espacio: {
           icon: "☾",
-          heading: "Pasamos a WhatsApp",
-          title: "Un lugar donde seguir conociéndonos",
-          date: "27 de junio de 2026",
+
+          heading:
+            "Pasamos a WhatsApp",
+
+          title:
+            "Un lugar donde seguir conociéndonos",
+
+          date:
+            "27 de junio de 2026",
 
           text: `Ese día pasamos a WhatsApp y empezamos a tener un espacio un poco más nuestro.
 
@@ -1247,12 +1641,17 @@ Más conversaciones, más momentos, más historias y más razones para seguir co
 Poco a poco dejamos de ser dos personas que hablaban y empezamos a construir algo que sentíamos especial.`
         },
 
-
         llamada: {
           icon: "📞",
-          heading: "Nuestra primera llamada",
-          title: "Escuchar tu voz por primera vez",
-          date: "5 de julio de 2026",
+
+          heading:
+            "Nuestra primera llamada",
+
+          title:
+            "Escuchar tu voz por primera vez",
+
+          date:
+            "5 de julio de 2026",
 
           text: `La primera llamada fue uno de esos momentos que parecen pequeños, pero que terminan quedándose contigo.
 
@@ -1265,16 +1664,22 @@ Una llamada que empezó como algo sencillo terminó siendo uno de esos momentos 
 Horas que parecían minutos.`
         },
 
-
         novios: {
           icon: "❤",
-          heading: "Nos hicimos novios",
-          title: "Nuestro primer capítulo",
-          date: "23 de agosto de 2026",
+
+          heading:
+            "Nos hicimos novios",
+
+          title:
+            "Nuestro primer capítulo",
+
+          date:
+            "23 de agosto de 2026",
 
           text: `Después de todos esos pequeños momentos llegó ese día.
 
 Después de las conversaciones, las llamadas, los nervios y todo lo que fuimos construyendo poco a poco, dejamos de ser solamente una posibilidad.
+
 Elegimos intentarlo.
 
 Elegimos cuidarnos, conocernos más y seguir creando recuerdos juntos.
@@ -1283,115 +1688,227 @@ Este fue solamente nuestro primer capítulo.
 
 Y lo más bonito es saber que nuestra historia apenas comienza.`
         }
-
       };
 
+      const modal =
+        document.getElementById(
+          "timelineModal"
+        );
 
-      const modal = document.getElementById("timelineModal");
-      const modalHeading = document.getElementById("timelineModalHeading");
-      const modalTitle = document.getElementById("timelineModalTitle");
-      const modalDate = document.getElementById("timelineModalDate");
-      const modalText = document.getElementById("timelineModalText");
-      const modalIcon = document.getElementById("timelineModalIcon");
-      const closeBtn = document.getElementById("timelineModalClose");
+      const modalHeading =
+        document.getElementById(
+          "timelineModalHeading"
+        );
+
+      const modalTitle =
+        document.getElementById(
+          "timelineModalTitle"
+        );
+
+      const modalDate =
+        document.getElementById(
+          "timelineModalDate"
+        );
+
+      const modalText =
+        document.getElementById(
+          "timelineModalText"
+        );
+
+      const modalIcon =
+        document.getElementById(
+          "timelineModalIcon"
+        );
+
+      const closeBtn =
+        document.getElementById(
+          "timelineModalClose"
+        );
 
       const openModal = (story) => {
-        if(!modal || !story) return;
+        if (
+          !modal ||
+          !story
+        ) {
+          return;
+        }
 
-        modalIcon.textContent = story.icon;
-        modalHeading.textContent = story.heading;
-        modalTitle.textContent = story.title;
-        modalDate.textContent = story.date;
+        modalIcon.textContent =
+          story.icon;
 
-        modalText.innerHTML = "";
+        modalHeading.textContent =
+          story.heading;
+
+        modalTitle.textContent =
+          story.title;
+
+        modalDate.textContent =
+          story.date;
+
+        modalText.innerHTML =
+          "";
 
         story.text
           .split(/\n\s*\n/)
-          .forEach((paragraph) => {
-            const p = document.createElement("p");
-            p.textContent = paragraph.trim();
-            modalText.appendChild(p);
-          });
+          .forEach(
+            (paragraph) => {
+              const p =
+                document.createElement(
+                  "p"
+                );
 
-        modal.hidden = false;
-        modal.setAttribute("aria-hidden","false");
+              p.textContent =
+                paragraph.trim();
 
-        document.body.dataset.timelineOverflow =
-          document.body.style.overflowY || "";
+              modalText.appendChild(
+                p
+              );
+            }
+          );
 
-        document.body.style.overflowY="hidden";
+        modal.hidden =
+          false;
 
-        requestAnimationFrame(()=>{
-          modal.classList.add("is-open");
-        });
+        modal.setAttribute(
+          "aria-hidden",
+          "false"
+        );
+
+        document.body.dataset
+          .timelineOverflow =
+          document.body.style
+            .overflowY || "";
+
+        document.body.style
+          .overflowY =
+          "hidden";
+
+        requestAnimationFrame(
+          () => {
+            modal.classList.add(
+              "is-open"
+            );
+          }
+        );
       };
-
 
       const closeModal = () => {
-        if(!modal) return;
+        if (!modal) return;
 
-        modal.classList.remove("is-open");
-        modal.setAttribute("aria-hidden","true");
+        modal.classList.remove(
+          "is-open"
+        );
 
-        setTimeout(()=>{
-          modal.hidden=true;
+        modal.setAttribute(
+          "aria-hidden",
+          "true"
+        );
 
-          document.body.style.overflowY =
-            document.body.dataset.timelineOverflow || "auto";
+        setTimeout(
+          () => {
+            modal.hidden =
+              true;
 
-          delete document.body.dataset.timelineOverflow;
-        },350);
+            document.body.style
+              .overflowY =
+              document.body.dataset
+                .timelineOverflow ||
+              "auto";
+
+            delete document.body
+              .dataset
+              .timelineOverflow;
+          },
+          350
+        );
       };
 
+      document.querySelectorAll(
+        ".timeline-button"
+      )
+      .forEach((button) => {
+        button.addEventListener(
+          "click",
+          () => {
+            const story =
+              stories[
+                button.dataset.timeline
+              ];
 
-      document.querySelectorAll(".timeline-button")
-      .forEach(button=>{
-        button.addEventListener("click",()=>{
-          const story=stories[button.dataset.timeline];
-          openModal(story);
-        });
+            openModal(
+              story
+            );
+          }
+        );
       });
 
-
-      if(closeBtn){
-        closeBtn.addEventListener("click",closeModal);
+      if (closeBtn) {
+        closeBtn.addEventListener(
+          "click",
+          closeModal
+        );
       }
 
+      if (modal) {
+        modal.addEventListener(
+          "click",
+          (event) => {
+            if (
+              event.target
+                .classList
+                .contains(
+                  "timeline-modal-backdrop"
+                )
+            ) {
+              closeModal();
+            }
+          }
+        );
+      }
 
-      if(modal){
-        modal.addEventListener("click",(event)=>{
-          if(
-            event.target.classList.contains("timeline-modal-backdrop")
-          ){
+      document.addEventListener(
+        "keydown",
+        (event) => {
+          if (
+            event.key ===
+              "Escape" &&
+            modal &&
+            !modal.hidden
+          ) {
             closeModal();
           }
-        });
-      }
-
-
-      document.addEventListener("keydown",(event)=>{
-        if(event.key==="Escape" && modal && !modal.hidden){
-          closeModal();
         }
-      });
+      );
     },
 
     /* =====================================================
        BOTONES PENDIENTES
-       Mientras no tengan contenido real, no deben fingir
-       que ya son controles funcionales.
     ===================================================== */
     initPendingControls() {
-      const tabButtons = document.querySelectorAll(".tab-buttons button");
-      const memoriesButton = document.querySelector(".outline-btn");
+      const tabButtons =
+        document.querySelectorAll(
+          ".tab-buttons button"
+        );
 
-      tabButtons.forEach((button) => {
-        button.disabled = true;
-        button.title = "Esta sección se activará cuando agreguemos su contenido.";
-      });
+      const memoriesButton =
+        document.querySelector(
+          ".outline-btn"
+        );
+
+      tabButtons.forEach(
+        (button) => {
+          button.disabled =
+            true;
+
+          button.title =
+            "Esta sección se activará cuando agreguemos su contenido.";
+        }
+      );
 
       if (memoriesButton) {
-        memoriesButton.disabled = true;
+        memoriesButton.disabled =
+          true;
+
         memoriesButton.title =
           "Activaremos esta galería cuando agreguemos los recuerdos.";
       }
@@ -1399,7 +1916,6 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`
 
     /* =====================================================
        MÓDULOS FUTUROS
-       Aquí añadiremos las siguientes interacciones.
     ===================================================== */
     initFutureModules() {
       this.modules = {
