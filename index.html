@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuestro pequeño universo</title>
+  <link rel="stylesheet" href="estilo.css?v=cartas-final-2">
+</head>
+
+<body>
+
+  <div id="starfield"></div>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="logo">Nuestro pequeño universo ✨</div>
+
+    <nav class="menu">
+      <a href="#">Inicio</a>
+      <a href="#">Nuestra historia</a>
+      <a href="#">Recuerdos</a>
+      <a href="#">Cartas</a>
+      <a href="#">Playlist</a>
+      <a href="#">Metas</a>
+      <a href="#">Aniversarios</a>
+    </nav>
+
+    <div class="nav-right">❤ Siempre tú, siempre yo</div>
+  </header>
+
+
+  <!-- =====================================================
+       1. PORTADA / HERO
+  ====================================================== -->
+
+  <section class="hero screen active-screen" id="heroScreen">
+
+    <div class="hero-overlay"></div>
+
+    <div class="hero-left-note">
+      Aunque estemos<br>
+      a kilómetros,<br>
+      siempre miramos<br>
+      el mismo cielo. ♡
+    </div>
+
+    <div class="hero-content">
+      <h1>Nuestro pequeño<br>universo</h1>
+
+      <h2>Ángel & Xime</h2>
+
+      <p class="subtitle">
+        DOS CORAZONES, UN MISMO UNIVERSO
+      </p>
+
+      <p class="hero-date">
+        23 de agosto de 2026
+      </p>
+
+      <button
+        class="enter-btn"
+        id="enterBtn"
+        type="button"
+      >
+        Entrar →
+      </button>
+    </div>
+
+    <div class="hero-right-text">
+      Mi cielo<br>
+      estrellado. ♡
+    </div>
+
+    <div class="hero-note-paper">
+      Aquí guardamos<br>
+      todos los momentos<br>
+      que hacen de<br>
+      nosotros, nosotros. ♡
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       2. ESCENA / CARTA DE BIENVENIDA
+       Esta pantalla reemplaza visualmente a la portada
+       después de pulsar "Entrar →"
+  ====================================================== -->
+
+  <section
+    class="welcome-screen screen"
+    id="welcomeScreen"
+    hidden
+  >
+
+    <div class="welcome-scene">
+
+      <div class="welcome-paper">
+
+        <span class="welcome-star">✦</span>
+
+        <p class="welcome-small">
+          BIENVENIDA A
+        </p>
+
+        <h2>
+          Nuestro pequeño universo
+        </h2>
+
+        <div class="welcome-divider">
+          <span></span>
+          <span>✦</span>
+          <span></span>
+        </div>
+
+        <p class="welcome-message">
+          Este es un pequeño lugar para guardar nuestra historia,
+          nuestros momentos y todas esas pequeñas cosas que hacen
+          que seamos nosotros.
+        </p>
+
+        <p class="welcome-ending">
+          Y esto apenas comienza... ♡
+        </p>
+
+        <button
+          class="continue-btn"
+          id="continueBtn"
+          type="button"
+        >
+          Continuar ✨
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       3. DASHBOARD
+       SE MANTIENE TU DISEÑO ACTUAL
+  ====================================================== -->
+
+  <main
+    class="dashboard screen dashboard-screen"
+    id="dashboardScreen"
+    hidden
+  >
+
+    <section class="card historia">
+
+      <h3>Nuestra historia</h3>
+
+      <p class="card-sub">
+        Cada gran historia tiene un comienzo...
+      </p>
+
+      <div class="timeline">
+
+        <!-- 1. NOS CONOCIMOS -->
+        <div class="timeline-item">
+          <button
+            class="icon-box timeline-button"
+            type="button"
+            data-timeline="conocimos"
+            aria-label="Abrir historia: Nos conocimos"
+          >
+            ♡
+          </button>
+
+          <div class="timeline-copy">
+            <strong>Nos conocimos</strong>
+            <span class="timeline-date">13 de diciembre de 2023</span>
+            <p class="timeline-summary">
+              El inicio de algo que tardaría tiempo en descubrirse.
+            </p>
+          </div>
+        </div>
+
+
+        <!-- 2. VOLVIMOS A ENCONTRARNOS -->
+        <div class="timeline-item">
+          <button
+            class="icon-box timeline-button"
+            type="button"
+            data-timeline="reencontramos"
+            aria-label="Abrir historia: Volvimos a encontrarnos"
+          >
+            ✦
+          </button>
+
+          <div class="timeline-copy">
+            <strong>Volvimos a encontrarnos</strong>
+            <span class="timeline-date">4 de junio de 2026</span>
+            <p class="timeline-summary">
+              Un mensaje volvió a abrir una puerta.
+            </p>
+          </div>
+        </div>
+
+
+        <!-- 3. EMPEZAMOS A HABLAR -->
+        <div class="timeline-item">
+          <button
+            class="icon-box timeline-button"
+            type="button"
+            data-timeline="hablar"
+            aria-label="Abrir historia: Empezamos a hablar"
+          >
+            💌
+          </button>
+
+          <div class="timeline-copy">
+            <strong>Empezamos a hablar</strong>
+            <span class="timeline-date">Junio de 2026</span>
+            <p class="timeline-summary">
+              Poco a poco dejamos de ser desconocidos.
+            </p>
+          </div>
+        </div>
+
+
+        <!-- 4. NOS ATREVIMOS -->
+        <div class="timeline-item">
+          <button
+            class="icon-box timeline-button"
+            type="button"
+            data-timeline="sentimos"
+            aria-label="Abrir historia: Nos atrevimos"
+          >
+            ✨
+          </button>
+
+          <div class="timeline-copy">
+            <strong>Nos atrevimos</strong>
+            <span class="timeline-date">17 de junio de 2026</span>
+            <p class="timeline-summary">
+              El día que dejamos de guardar lo que sentíamos.
+            </p>
+          </div>
+        </div>
+
+
+        <!-- 5. PASAMOS A WHATSAPP -->
+        <div class="timeline-item">
+          <button
+            class="icon-box timeline-button"
+            type="button"
+            data-timeline="espacio"
+            aria-label="Abrir historia: Pasamos a WhatsApp"
+          >
+            ☾
+          </button>
+
+          <div class="timeline-copy">
+            <strong>Pasamos a WhatsApp</strong>
+            <span class="timeline-date">27 de junio de 2026</span>
+            <p class="timeline-summary">
+              Empezamos a compartir un poco más de nuestra vida.
+            </p>
+          </div>
+        </div>
+
+
+        <!-- 6. NUESTRA PRIMERA LLAMADA -->
+        <div class="timeline-item">
+          <button
+            class="icon-box timeline-button"
+            type="button"
+            data-timeline="llamada"
+            aria-label="Abrir historia: Nuestra primera llamada"
+          >
+            📞
+          </button>
+
+          <div class="timeline-copy">
+            <strong>Nuestra primera llamada</strong>
+            <span class="timeline-date">5 de julio de 2026</span>
+            <p class="timeline-summary">
+              Horas que parecieron minutos.
+            </p>
+          </div>
+        </div>
+
+
+        <!-- 7. NOS HICIMOS NOVIOS -->
+        <div class="timeline-item">
+          <button
+            class="icon-box timeline-button"
+            type="button"
+            data-timeline="novios"
+            aria-label="Abrir historia: Nos hicimos novios"
+          >
+            ❤
+          </button>
+
+          <div class="timeline-copy">
+            <strong>Nos hicimos novios</strong>
+            <span class="timeline-date">23 de agosto de 2026</span>
+            <p class="timeline-summary">
+              El día que elegimos construir algo juntos.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="paper-note small-note story-side-note">
+        Y pensar que todo comenzó con un simple mensaje... ♡
+      </div>
+
+    </section>
+    <!-- CARTA -->
+
+    <section class="card capitulo">
+
+      <div class="letter-box">
+
+        <h5>
+          💌 Una carta para mi niñita hermosa
+        </h5>
+
+        <p>
+          Mi ximenita hermosa.
+        </p>
+
+        <p>
+          Si estás leyendo esto es porque llegaste a este pequeño universo que hice para nosotros.
+          Quería crear un lugar donde pudiera guardar un poquito de nuestra historia, nuestros momentos y todas esas pequeñas cosas que hacen que seamos nosotros.
+          Gracias por llegar a mi vida, por dejarme conocerte y por cada momento que hemos compartido.
+          Aunque llevamos poco tiempo, has logrado convertirte en alguien muy especial para mí...
+          Espero que este sea solamente el comienzo de muchos recuerdos más.
+        </p>
+
+        <p>
+          Te amo muchísimo, mi cielo estrellado. ♡
+        </p>
+
+        <div class="letter-sticky">
+          Te amo<br>
+          hoy, mañana<br>
+          y siempre ♡
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- COSAS QUE AMO -->
+
+    <section class="card amo">
+
+      <h3>
+        ✿ Cosas que amo de ti ♡
+      </h3>
+
+      <p class="card-sub">
+        Pequeñas y grandes razones que hacen que seas increíble.
+      </p>
+
+
+      <div class="mini-grid">
+
+        <div class="mini-card">
+          ♡
+          <span>
+            Tu forma<br>
+            de querer
+          </span>
+        </div>
+
+
+        <div class="mini-card">
+          ★
+          <span>
+            Tus detalles
+          </span>
+        </div>
+
+
+        <div class="mini-card">
+          ☾
+          <span>
+            La manera en<br>
+            que me haces reír
+          </span>
+        </div>
+
+
+        <div class="mini-card">
+          💬
+          <span>
+            Nuestras<br>
+            conversaciones
+          </span>
+        </div>
+
+
+        <div class="mini-card">
+          ✿
+          <span>
+            Tu forma de ser
+          </span>
+        </div>
+
+
+        <div class="mini-card">
+          ∞
+          <span>
+            Todo lo que eres
+          </span>
+        </div>
+
+      </div>
+
+
+      <div class="quote-box">
+        No amo una versión perfecta de ti,<br>
+        amo quién eres, con todo lo que eres. ♡
+      </div>
+
+    </section>
+    <!-- DISTANCIA -->
+
+    <section class="card distancia">
+
+      <h3>
+        🌍 Nuestra distancia
+      </h3>
+
+      <p class="card-sub">
+        Diferentes lugares, el mismo cielo.
+      </p>
+
+
+      <div class="distance-composition">
+
+        <figure class="distance-polaroid distance-polaroid-left">
+          <div class="distance-photo-frame">
+            <!-- Para cambiar esta foto después, modifica únicamente el src -->
+            <img
+              src="imagenes/distancia/tu-cielo.png"
+              alt="Tu cielo"
+              class="distance-photo-image"
+            >
+          </div>
+
+          <figcaption>
+            Tu cielo ♡
+          </figcaption>
+        </figure>
+
+
+        <div class="distance-center">
+
+          <div
+            class="distance-route"
+            aria-label="Aviones conectados por un corazón"
+          >
+            <span class="distance-plane distance-plane-left">✈</span>
+            <span class="distance-route-line"></span>
+            <span class="distance-heart">♡</span>
+            <span class="distance-route-line"></span>
+            <span class="distance-plane distance-plane-right">✈</span>
+          </div>
+
+          <p class="distance-near">
+            Aunque estemos lejos,<br>
+            siempre encontramos<br>
+            la forma de estar cerca.
+          </p>
+
+        </div>
+
+
+        <figure class="distance-polaroid distance-polaroid-right">
+          <div class="distance-photo-frame">
+            <!-- Para cambiar esta foto después, modifica únicamente el src -->
+            <img
+              src="imagenes/distancia/mi-cielo.png"
+              alt="Mi cielo"
+              class="distance-photo-image"
+            >
+          </div>
+
+          <figcaption>
+            Mi cielo ♡
+          </figcaption>
+        </figure>
+
+      </div>
+
+
+      <p class="distance-story">
+        Hay kilómetros entre nosotros, pero nunca han impedido que compartamos
+        nuestros días. Cada mensaje, cada llamada, cada juego y cada momento que
+        vivimos juntos hace que la distancia se sienta un poquito más pequeña.
+      </p>
+
+
+      <p class="distance-closing">
+        Hoy estamos en lugares distintos.<br>
+        Algún día estaremos en la misma foto. ♡
+      </p>
+
+    </section>
+
+
+
+    <!-- RECUERDOS -->
+
+    <section class="card recuerdos">
+
+      <h3>
+        📷 Nuestros recuerdos
+      </h3>
+
+      <p class="card-sub">
+        Momentos que quiero guardar para siempre.
+      </p>
+
+
+      <div class="polaroid-grid memory-grid">
+
+        <figure class="polaroid memory-polaroid">
+          <div class="memory-photo-frame">
+            <img
+              src="imagenes/recuerdos/conversaciones.png"
+              alt="Nuestras conversaciones"
+              class="memory-photo"
+            >
+          </div>
+          <figcaption>Nuestras conversaciones ♡</figcaption>
+        </figure>
+
+
+        <figure class="polaroid memory-polaroid">
+          <div class="memory-photo-frame">
+            <img
+              src="imagenes/recuerdos/mundos.png"
+              alt="Nuestros mundos"
+              class="memory-photo"
+            >
+          </div>
+          <figcaption>Nuestros mundos ♡</figcaption>
+        </figure>
+
+
+        <figure class="polaroid memory-polaroid">
+          <div class="memory-photo-frame">
+            <img
+              src="imagenes/recuerdos/llamadas.png"
+              alt="Nuestras llamadas"
+              class="memory-photo"
+            >
+          </div>
+          <figcaption>Nuestras llamadas ♡</figcaption>
+        </figure>
+
+
+        <figure class="polaroid memory-polaroid">
+          <div class="memory-photo-frame memory-photo-frame-pending">
+            <!--
+              Cuando agregues la cuarta foto, guárdala como:
+              imagenes/recuerdos/dia-especial.png
+              y reemplaza este bloque por un <img> igual a los anteriores.
+            -->
+          </div>
+          <figcaption>Un día cualquiera es especial ♡</figcaption>
+        </figure>
+
+      </div>
+
+    </section>
+
+
+    <!-- PLAYLIST -->
+
+    <section class="card playlist">
+
+      <h3>
+        ♫ Nuestra playlist
+      </h3>
+
+      <p class="card-sub">
+        Canciones que suenan a nosotros.
+      </p>
+
+
+      <div class="music-player playlist-final-player">
+
+        <a
+          class="album-cover playlist-cover"
+          href="https://open.spotify.com/playlist/56iCiqkBU4tkdYtHMfbsFc"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Abrir nuestra playlist en Spotify"
+        >
+          <img
+            src="https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da8436eabb41e14eedd4f1431535"
+            alt="Portada de Canciones que suenan a nosotros"
+          >
+        </a>
+
+
+        <div class="song-info playlist-final-info">
+
+          <small>
+            Spotify playlist
+          </small>
+
+          <strong>
+            Canciones que suenan a nosotros ♡
+          </strong>
+
+          <p>
+            Nuestra playlist
+          </p>
+
+
+          <div class="playlist-divider" aria-hidden="true"></div>
+
+
+          <a
+            class="playlist-open-btn"
+            href="https://open.spotify.com/playlist/56iCiqkBU4tkdYtHMfbsFc"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Escuchar nuestra playlist en Spotify"
+          >
+            <span class="playlist-open-icon" aria-hidden="true">▶</span>
+            <span>Escuchar en Spotify</span>
+          </a>
+
+          <small class="playlist-open-note">
+            Se abrirá la playlist real en Spotify ♡
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <p class="player-quote">
+        “Porque hay canciones que no solo se escuchan,<br>
+        se sienten... y esta me recuerda a ti.” ♡
+      </p>
+
+    </section>
+
+
+
+    <!-- METAS -->
+
+    <section class="card metas">
+
+      <h3>
+        ★ Metas y sueños juntos
+      </h3>
+
+      <p class="card-sub">
+        Cosas que quiero vivir contigo.
+      </p>
+
+
+      <ul class="dream-list">
+
+        <li>
+          Primera cita presencial
+        </li>
+
+        <li>
+          Viajar juntos
+        </li>
+
+        <li>
+          Tomarnos muchas fotos juntos
+        </li>
+
+        <li>
+          Ver el atardecer en el mismo lugar
+        </li>
+
+        <li>
+          Seguir conociéndonos
+        </li>
+
+        <li>
+          Cumplir muchos meses más
+        </li>
+
+      </ul>
+
+
+      <div class="paper-note vertical-note">
+        Lo mejor<br>
+        aún está<br>
+        por venir... ♡
+      </div>
+
+    </section>
+
+
+
+    <!-- CARTAS ESPECIALES -->
+
+    <section class="card cartas">
+
+      <h3>
+        ✉ Cartas para momentos especiales
+      </h3>
+
+      <p class="card-sub">
+        Ábrelas cuando lo necesites.
+        Siempre estarán aquí para ti.
+      </p>
+
+
+      <div class="envelope-grid">
+
+        <div
+          class="envelope special-letter-card"
+          role="button"
+          tabindex="0"
+          data-special-letter="dia-dificil"
+          aria-label="Abrir carta: Cuando tengas un día difícil"
+        >
+          Cuando tengas<br>
+          un día difícil
+        </div>
+
+
+        <div
+          class="envelope special-letter-card"
+          role="button"
+          tabindex="0"
+          data-special-letter="me-extranes"
+          aria-label="Abrir carta: Cuando me extrañes"
+        >
+          Cuando<br>
+          me extrañes
+        </div>
+
+
+        <div
+          class="envelope special-letter-card"
+          role="button"
+          tabindex="0"
+          data-special-letter="dudes-nosotros"
+          aria-label="Abrir carta: Cuando dudes de nosotros"
+        >
+          Cuando dudes<br>
+          de nosotros
+        </div>
+
+
+        <div
+          class="envelope special-letter-card"
+          role="button"
+          tabindex="0"
+          data-special-letter="recordar-amor"
+          aria-label="Abrir carta: Cuando necesites recordar cuánto te amo"
+        >
+          Cuando necesites<br>
+          recordar cuánto te amo
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- PRÓXIMOS CAPÍTULOS -->
+
+    <section class="card futuros">
+
+      <h3>
+        📖 Próximos capítulos
+      </h3>
+
+      <p class="card-sub">
+        Esta historia apenas comienza...
+      </p>
+
+
+      <!--
+        Los capítulos se generan desde script.js.
+        Para agregar Mes 4, Mes 5, 1 año, etc.,
+        solo tendrás que añadir un objeto al arreglo CHAPTERS.
+      -->
+      <div class="locked-grid" id="chaptersGrid" aria-live="polite"></div>
+
+
+      <p class="footer-love">
+        Gracias por ser parte de mi universo.<br>
+        Te amo, mi cielo estrellado. ♡
+      </p>
+
+    </section>
+
+  </main>
+
+
+
+
+  <!-- MODAL DE CARTAS PARA MOMENTOS ESPECIALES -->
+  <section
+    class="special-letter-modal"
+    id="specialLetterModal"
+    hidden
+    aria-hidden="true"
+  >
+    <div class="special-letter-backdrop"></div>
+
+    <article
+      class="special-letter-paper"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="specialLetterTitle"
+    >
+      <button
+        class="special-letter-close"
+        id="specialLetterClose"
+        type="button"
+        aria-label="Cerrar carta"
+      >
+        ×
+      </button>
+
+      <div class="special-letter-scroll">
+        <p class="special-letter-kicker">
+          Una carta para ti ♡
+        </p>
+
+        <h2 id="specialLetterTitle"></h2>
+
+        <div class="special-letter-divider">
+          ✦
+        </div>
+
+        <div
+          class="special-letter-content"
+          id="specialLetterContent"
+        ></div>
+      </div>
+    </article>
+  </section>
+
+
+  <!-- =====================================================
+       EXPERIENCIA DE CAPÍTULOS / ANIVERSARIOS
+       Se reutiliza para cualquier capítulo desbloqueado.
+  ====================================================== -->
+
+  <section
+    class="chapter-scene"
+    id="chapterIntroScreen"
+    aria-hidden="true"
+    hidden
+  >
+    <div class="chapter-scene-backdrop"></div>
+
+    <div class="chapter-intro-paper" role="dialog" aria-modal="true" aria-labelledby="chapterIntroTitle">
+
+      <button
+        class="chapter-close-btn"
+        id="chapterIntroCloseBtn"
+        type="button"
+        aria-label="Cerrar capítulo"
+      >
+        ×
+      </button>
+
+      <span class="chapter-scene-symbol">✦</span>
+
+      <p class="chapter-scene-label">
+        UN NUEVO CAPÍTULO
+      </p>
+
+      <h2 id="chapterIntroTitle">
+        Nuestro siguiente capítulo
+      </h2>
+
+      <div class="chapter-scene-divider">
+        <span></span>
+        <b>✦</b>
+        <span></span>
+      </div>
+
+      <p class="chapter-scene-message" id="chapterIntroMessage">
+        Un pedacito más de nuestra historia está listo para abrirse.
+      </p>
+
+      <button
+        class="chapter-continue-btn"
+        id="chapterContinueBtn"
+        type="button"
+      >
+        Continuar ✨
+      </button>
+
+    </div>
+  </section>
+
+
+  <section
+    class="chapter-scene"
+    id="chapterContentScreen"
+    aria-hidden="true"
+    hidden
+  >
+    <div class="chapter-scene-backdrop"></div>
+
+    <article
+      class="chapter-content-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="chapterContentTitle"
+    >
+
+      <button
+        class="chapter-close-btn"
+        id="chapterContentCloseBtn"
+        type="button"
+        aria-label="Cerrar capítulo"
+      >
+        ×
+      </button>
+
+      <p class="chapter-scene-label">
+        NUESTRO PEQUEÑO UNIVERSO
+      </p>
+
+      <h2 id="chapterContentTitle"></h2>
+
+      <p class="chapter-content-date" id="chapterContentDate"></p>
+
+      <div class="chapter-content-body" id="chapterContentBody"></div>
+
+      <button
+        class="chapter-back-btn"
+        id="chapterBackBtn"
+        type="button"
+      >
+        Volver a nuestro universo
+      </button>
+
+    </article>
+  </section>
+
+
+  <!-- MODAL DE NUESTRA HISTORIA -->
+  <section class="timeline-modal" id="timelineModal" hidden aria-hidden="true">
+    <div class="timeline-modal-backdrop"></div>
+
+    <article class="timeline-modal-card" role="dialog" aria-modal="true" aria-labelledby="timelineModalTitle">
+      <button class="timeline-modal-close" id="timelineModalClose" type="button" aria-label="Cerrar">
+        ×
+      </button>
+
+      <span class="timeline-modal-icon" id="timelineModalIcon">♡</span>
+
+      <p class="timeline-modal-kicker" id="timelineModalHeading">
+        Nuestra historia
+      </p>
+
+      <h2 id="timelineModalTitle">Un momento especial</h2>
+
+      <p class="timeline-modal-date" id="timelineModalDate"></p>
+
+      <div class="timeline-modal-divider">
+        ✦
+      </div>
+
+      <div class="timeline-modal-text" id="timelineModalText"></div>
+    </article>
+  </section>
+
+  <script src="script.js?v=cartas-final-2"></script>
+
+</body>
+</html>
