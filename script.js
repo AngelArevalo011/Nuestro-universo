@@ -46,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
       this.bindSceneEvents();
       this.bindNavigation();
       this.initHorizontalCollections();
+      this.initSpecialLetters();
       this.initAnniversaryChapters();
       this.initTimelineStories();
       this.initPendingControls();
@@ -317,8 +318,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           startX = event.clientX;
           startScrollLeft = container.scrollLeft;
-
-          container.classList.add("is-dragging");
+                    container.classList.add("is-dragging");
 
           try {
             container.setPointerCapture(event.pointerId);
@@ -374,10 +374,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         container.addEventListener("pointerup", finishDrag);
         container.addEventListener("pointercancel", finishDrag);
-
         container.addEventListener("lostpointercapture", () => {
           if (!isDragging) return;
-
           isDragging = false;
           container.classList.remove("is-dragging");
         });
@@ -480,6 +478,325 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+
+    /* =====================================================
+       CARTAS PARA MOMENTOS ESPECIALES
+
+       Cada tarjeta abre únicamente su propia carta.
+       El fondo queda bloqueado mientras el modal está abierto
+       y el contenido largo se desplaza dentro del papel.
+    ===================================================== */
+    initSpecialLetters() {
+      const LETTERS = {
+        "dia-dificil": {
+          title: "Cuando tengas un día difícil",
+          html: `
+            <p><strong>Mi niñita hermosa:</strong></p>
+
+            <p>Si estás leyendo esto, probablemente hoy no fue uno de esos días bonitos. Y aunque quisiera poder estar ahí contigo para abrazarte y hacer que todo se sintiera un poquito más ligero, quiero que recuerdes que no tienes que estar bien todo el tiempo.</p>
+
+            <p>Puedes cansarte. Puedes tener días malos. Puedes sentir que todo te supera un poquito. Y está bien.</p>
+
+            <p>No quiero que olvides que hay alguien al otro lado pensando en ti, queriéndote y deseando poder acompañarte incluso en esos días que no son tan fáciles.</p>
+
+            <p>Así que respira, descansa un poquito y no seas tan dura contigo.</p>
+
+            <p>Mañana habrá nuevas cosas que vivir, nuevas conversaciones, nuevas risas y muchos momentos que todavía nos faltan.</p>
+
+            <p>Y si hoy necesitas que alguien te recuerde que eres importante, aquí estoy.</p>
+
+            <p><strong>Te amo muchísimo, mi Xime. ♡</strong></p>
+          `
+        },
+
+        "me-extranes": {
+          title: "Cuando me extrañes",
+          html: `
+            <p><strong>Mi cielo estrellado:</strong></p>
+
+            <p>Si me estás extrañando, quiero que pienses en algo.</p>
+
+            <p>Aunque estemos lejos, hay algo bonito en saber que en algún lugar también estoy pensando en ti.</p>
+
+            <p>Piensa en todas nuestras llamadas que parecían durar minutos aunque fueran horas, en nuestras conversaciones, en todas esas pequeñas cosas que poco a poco se volvieron nuestras.</p>
+
+            <p>A veces quisiera poder simplemente aparecer ahí contigo, abrazarte y quedarme un rato sin tener que despedirme.</p>
+
+            <p>Pero mientras llega el momento en que podamos compartir muchas más cosas juntas, quiero que guardes nuestros recuerdos cerquita.</p>
+
+            <p>Porque aunque existan kilómetros entre nosotros, <strong>seguimos mirando el mismo cielo.</strong></p>
+
+            <p>Y cada vez que me extrañes, recuerda que yo también tengo un lugar donde guardarte.</p>
+
+            <p><strong>Aquí. ♡</strong></p>
+          `
+        },
+
+        "dudes-nosotros": {
+          title: "Cuando dudes de nosotros",
+          html: `
+            <p><strong>Mi Xime:</strong></p>
+
+            <p>Si alguna vez llegas a dudar de nosotros, quiero que vuelvas al principio.</p>
+
+            <p>A aquel primer mensaje de diciembre de 2023. A todo lo que pasó después. A ese reencuentro que ninguno de los dos sabía hasta dónde iba a llevarnos.</p>
+
+            <p>Recuerda nuestras primeras conversaciones, aquella primera llamada que terminó convirtiéndose en horas que se sintieron como minutos.</p>
+
+            <p>Recuerda todo lo que tuvo que pasar para que finalmente llegáramos hasta aquí.</p>
+
+            <p>No tenemos que saber exactamente qué va a pasar mañana.</p>
+
+            <p>Estamos aprendiendo a conocernos, a entendernos y a construir nuestra propia historia.</p>
+
+            <p>Y creo que eso también es bonito.</p>
+
+            <p>Porque nuestra historia no llegó terminada. <strong>La estamos escribiendo juntas.</strong></p>
+
+            <p>Así que si alguna vez dudas, vuelve aquí.</p>
+
+            <p>Y recuerda que, entre tantas posibilidades, nosotras nos encontramos.</p>
+
+            <p><strong>Y yo todavía quiero descubrir todo lo que nos falta vivir. ♡</strong></p>
+          `
+        },
+
+        "recordar-amor": {
+          title: "Cuando necesites recordar cuánto te amo",
+          html: `
+            <p><strong>Para mi niñita hermosa:</strong></p>
+
+            <p>Quiero que esta carta sea un pequeño recordatorio de algo que quizá nunca debería hacer falta recordar:</p>
+
+            <p><strong>te amo.</strong></p>
+
+            <p>Te amo por las cosas que conozco de ti y también por todas las que todavía estoy descubriendo.</p>
+
+            <p>Te amo por nuestras conversaciones, por nuestras llamadas, por las risas, por las pequeñas tonterías que terminan convirtiéndose en recuerdos que quiero guardar.</p>
+
+            <p>Te amo por cómo poco a poco te fuiste convirtiendo en alguien tan importante para mí.</p>
+
+            <p>Y quizá lo que más me gusta de nosotros es que nuestra historia apenas está comenzando.</p>
+
+            <p>Todavía nos falta nuestra primera cita presencial, todavía nos faltan muchísimas fotos, viajes, lugares, tardes, noches, cumpleaños y recuerdos que todavía ni siquiera existen.</p>
+
+            <p>Quiero conocer todas esas versiones de ti que todavía no conozco.</p>
+
+            <p>Quiero seguir construyendo esto contigo.</p>
+
+            <p>Así que si algún día necesitas recordar cuánto te amo, vuelve a abrir esta carta.</p>
+
+            <p>Y aunque pasen meses o años, quiero que encuentres aquí la misma respuesta:</p>
+
+            <p>
+              <strong>
+                Te amo muchísimo, mi Xime.<br>
+                Mi cielo estrellado.<br>
+                Y quiero seguir haciendo de nosotros, nosotros. ♡
+              </strong>
+            </p>
+          `
+        }
+      };
+
+      const modal =
+        document.getElementById("specialLetterModal");
+
+      const title =
+        document.getElementById("specialLetterTitle");
+
+      const content =
+        document.getElementById("specialLetterContent");
+
+      const closeBtn =
+        document.getElementById("specialLetterClose");
+
+      const cards =
+        document.querySelectorAll(
+          ".cartas .special-letter-card"
+        );
+
+      if (
+        !modal ||
+        !title ||
+        !content ||
+        !cards.length
+      ) {
+        return;
+      }
+
+      let activeCard = null;
+      let closeTimer = null;
+
+      const openLetter = (card) => {
+        const key =
+          card.dataset.specialLetter;
+
+        const letter =
+          LETTERS[key];
+
+        if (!letter) return;
+                activeCard = card;
+
+        title.textContent =
+          letter.title;
+
+        content.innerHTML =
+          letter.html;
+
+        /*
+          Siempre abre la carta desde el inicio,
+          incluso si anteriormente se había desplazado.
+        */
+        const scrollArea =
+          modal.querySelector(
+            ".special-letter-scroll"
+          );
+
+        if (scrollArea) {
+          scrollArea.scrollTop = 0;
+        }
+
+        window.clearTimeout(
+          closeTimer
+        );
+
+        document.body.dataset
+          .specialLetterOverflowY =
+          document.body.style
+            .overflowY || "";
+
+        document.body.style
+          .overflowY =
+          "hidden";
+
+        modal.hidden =
+          false;
+
+        modal.setAttribute(
+          "aria-hidden",
+          "false"
+        );
+
+        requestAnimationFrame(
+          () => {
+            modal.classList.add(
+              "is-open"
+            );
+
+            if (closeBtn) {
+              closeBtn.focus({
+                preventScroll: true
+              });
+            }
+          }
+        );
+      };
+
+      const closeLetter = () => {
+        if (modal.hidden) return;
+
+        modal.classList.remove(
+          "is-open"
+        );
+
+        modal.setAttribute(
+          "aria-hidden",
+          "true"
+        );
+
+        closeTimer =
+          window.setTimeout(
+            () => {
+              modal.hidden =
+                true;
+
+              document.body.style
+                .overflowY =
+                document.body.dataset
+                  .specialLetterOverflowY ||
+                "auto";
+
+              delete document.body
+                .dataset
+                .specialLetterOverflowY;
+
+              /*
+                Devolvemos el foco a la tarjeta
+                que abrió la carta. Como el fondo
+                nunca se desplazó, vuelve exactamente
+                al mismo punto de la sección.
+              */
+              if (activeCard) {
+                activeCard.focus({
+                  preventScroll: true
+                });
+              }
+
+              activeCard =
+                null;
+            },
+            280
+          );
+      };
+
+      cards.forEach((card) => {
+        card.addEventListener(
+          "click",
+          () => {
+            openLetter(card);
+          }
+        );
+
+        card.addEventListener(
+          "keydown",
+          (event) => {
+            if (
+              event.key === "Enter" ||
+              event.key === " "
+            ) {
+              event.preventDefault();
+              openLetter(card);
+            }
+          }
+        );
+      });
+
+      if (closeBtn) {
+        closeBtn.addEventListener(
+          "click",
+          closeLetter
+        );
+      }
+
+      modal.addEventListener(
+        "click",
+        (event) => {
+          if (
+            event.target === modal ||
+            event.target.classList.contains(
+              "special-letter-backdrop"
+            )
+          ) {
+            closeLetter();
+          }
+        }
+      );
+
+      document.addEventListener(
+        "keydown",
+        (event) => {
+          if (
+            event.key === "Escape" &&
+            !modal.hidden
+          ) {
+            closeLetter();
+          }
+        }
+      );
+    },
+
+
     /* =====================================================
        CAPÍTULOS / ANIVERSARIOS DINÁMICOS
 
@@ -514,7 +831,6 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
           `
         },
-
         {
           id: "mes-3",
           title: "Mes 3",
@@ -526,7 +842,6 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
           `
         },
-
         {
           id: "mes-4",
           title: "Mes 4",
@@ -538,7 +853,6 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
           `
         },
-
         {
           id: "mes-5",
           title: "5 meses",
@@ -550,7 +864,6 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
           `
         },
-
         {
           id: "mes-6",
           title: "6 meses",
@@ -562,7 +875,6 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
           `
         },
-
         {
           id: "anio-1",
           title: "1 año",
@@ -644,7 +956,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.clearTimeout(toastTimer);
 
         toastTimer = window.setTimeout(() => {
-          toast.classList.remove("show");
+                    toast.classList.remove("show");
         }, 2600);
       };
 
@@ -682,23 +994,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         window.setTimeout(() => {
           scene.hidden = true;
-
-          if (typeof callback === "function") {
-            callback();
-          }
+          if (typeof callback === "function") callback();
         }, 450);
       };
 
       const openChapterIntro = (chapter) => {
         selectedChapter = chapter;
 
-        if (introTitle) {
-          introTitle.textContent = chapter.title;
-        }
-
-        if (introMessage) {
-          introMessage.textContent = chapter.intro;
-        }
+        if (introTitle) introTitle.textContent = chapter.title;
+        if (introMessage) introMessage.textContent = chapter.intro;
 
         lockPage();
         showScene(introScreen);
@@ -707,23 +1011,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const showChapterContent = () => {
         if (!selectedChapter) return;
 
-        const unlockDate =
-          parseLocalDate(selectedChapter.unlockDate);
+        const unlockDate = parseLocalDate(selectedChapter.unlockDate);
 
-        if (contentTitle) {
-          contentTitle.textContent =
-            selectedChapter.title;
-        }
-
-        if (contentDate) {
-          contentDate.textContent =
-            formatDate(unlockDate);
-        }
-
-        if (contentBody) {
-          contentBody.innerHTML =
-            selectedChapter.content;
-        }
+        if (contentTitle) contentTitle.textContent = selectedChapter.title;
+        if (contentDate) contentDate.textContent = formatDate(unlockDate);
+        if (contentBody) contentBody.innerHTML = selectedChapter.content;
 
         hideScene(introScreen, () => {
           showScene(contentScreen);
@@ -736,27 +1028,13 @@ document.addEventListener("DOMContentLoaded", () => {
           unlockPage();
         };
 
-        if (
-          contentScreen &&
-          !contentScreen.hidden
-        ) {
-          hideScene(
-            contentScreen,
-            finish
-          );
-
+        if (contentScreen && !contentScreen.hidden) {
+          hideScene(contentScreen, finish);
           return;
         }
 
-        if (
-          introScreen &&
-          !introScreen.hidden
-        ) {
-          hideScene(
-            introScreen,
-            finish
-          );
-
+        if (introScreen && !introScreen.hidden) {
+          hideScene(introScreen, finish);
           return;
         }
 
@@ -767,35 +1045,20 @@ document.addEventListener("DOMContentLoaded", () => {
         chaptersGrid.innerHTML = "";
 
         CHAPTERS.forEach((chapter) => {
-          const unlocked =
-            isUnlocked(chapter);
+          const unlocked = isUnlocked(chapter);
+          const unlockDate = parseLocalDate(chapter.unlockDate);
 
-          const unlockDate =
-            parseLocalDate(
-              chapter.unlockDate
-            );
-
-          const card =
-            document.createElement(
-              "article"
-            );
-
+          const card = document.createElement("article");
           card.className =
-            `locked-card chapter-card ${
-              unlocked
-                ? "is-unlocked"
-                : "is-locked"
-            }`;
+            `locked-card chapter-card ${unlocked ? "is-unlocked" : "is-locked"}`;
 
-          card.dataset.chapterId =
-            chapter.id;
+          card.dataset.chapterId = chapter.id;
 
           if (unlocked) {
             card.innerHTML = `
               <span class="chapter-icon">✦</span>
               <span class="chapter-title">${chapter.title}</span>
               <small class="chapter-date">Desbloqueado</small>
-
               <button
                 class="chapter-open-btn"
                 type="button"
@@ -805,36 +1068,18 @@ document.addEventListener("DOMContentLoaded", () => {
               </button>
             `;
 
-            const openBtn =
-              card.querySelector(
-                ".chapter-open-btn"
-              );
+            const openBtn = card.querySelector(".chapter-open-btn");
 
-            openBtn.addEventListener(
-              "click",
-              () => {
-                openChapterIntro(
-                  chapter
-                );
-              }
-            );
+            openBtn.addEventListener("click", () => {
+              openChapterIntro(chapter);
+            });
           } else {
-            card.dataset.clickable =
-              "true";
-
-            card.tabIndex =
-              0;
-
-            card.setAttribute(
-              "role",
-              "button"
-            );
-
+            card.dataset.clickable = "true";
+            card.tabIndex = 0;
+            card.setAttribute("role", "button");
             card.setAttribute(
               "aria-label",
-              `${chapter.title}. Se desbloquea el ${formatDate(
-                unlockDate
-              )}`
+              `${chapter.title}. Se desbloquea el ${formatDate(unlockDate)}`
             );
 
             card.innerHTML = `
@@ -843,121 +1088,65 @@ document.addEventListener("DOMContentLoaded", () => {
               <small class="chapter-date">Próximamente...</small>
             `;
 
-            const activateLockedCard =
-              () => {
-                showLockedMessage(
-                  chapter,
-                  card
-                );
-              };
+            const activateLockedCard = () => {
+              showLockedMessage(chapter, card);
+            };
 
-            card.addEventListener(
-              "click",
-              activateLockedCard
-            );
+            card.addEventListener("click", activateLockedCard);
 
-            card.addEventListener(
-              "keydown",
-              (event) => {
-                if (
-                  event.key ===
-                    "Enter" ||
-                  event.key ===
-                    " "
-                ) {
-                  event.preventDefault();
-
-                  activateLockedCard();
-                }
+            card.addEventListener("keydown", (event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                activateLockedCard();
               }
-            );
+            });
           }
 
-          chaptersGrid.appendChild(
-            card
-          );
+          chaptersGrid.appendChild(card);
         });
       };
 
       renderChapters();
 
-      if (
-        chapterContinueBtn
-      ) {
-        chapterContinueBtn.addEventListener(
-          "click",
-          showChapterContent
-        );
+      if (chapterContinueBtn) {
+        chapterContinueBtn.addEventListener("click", showChapterContent);
       }
 
       if (introCloseBtn) {
-        introCloseBtn.addEventListener(
-          "click",
-          closeAllChapterScenes
-        );
+        introCloseBtn.addEventListener("click", closeAllChapterScenes);
       }
 
       if (contentCloseBtn) {
-        contentCloseBtn.addEventListener(
-          "click",
-          closeAllChapterScenes
-        );
+        contentCloseBtn.addEventListener("click", closeAllChapterScenes);
       }
 
       if (chapterBackBtn) {
-        chapterBackBtn.addEventListener(
-          "click",
-          closeAllChapterScenes
-        );
+        chapterBackBtn.addEventListener("click", closeAllChapterScenes);
       }
 
-      [
-        introScreen,
-        contentScreen
-      ].forEach((scene) => {
+      [introScreen, contentScreen].forEach((scene) => {
         if (!scene) return;
 
-        scene.addEventListener(
-          "click",
-          (event) => {
-            if (
-              event.target === scene ||
-              event.target.classList.contains(
-                "chapter-scene-backdrop"
-              )
-            ) {
-              closeAllChapterScenes();
-            }
-          }
-        );
-      });
-
-      document.addEventListener(
-        "keydown",
-        (event) => {
+        scene.addEventListener("click", (event) => {
           if (
-            event.key !==
-            "Escape"
-          ) {
-            return;
-          }
-
-          const introOpen =
-            introScreen &&
-            !introScreen.hidden;
-
-          const contentOpen =
-            contentScreen &&
-            !contentScreen.hidden;
-
-          if (
-            introOpen ||
-            contentOpen
+            event.target === scene ||
+            event.target.classList.contains("chapter-scene-backdrop")
           ) {
             closeAllChapterScenes();
           }
+        });
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+
+        const introOpen = introScreen && !introScreen.hidden;
+        const contentOpen = contentScreen && !contentScreen.hidden;
+
+        if (introOpen || contentOpen) {
+          closeAllChapterScenes();
         }
-      );
+      });
     },
 
 
@@ -1086,7 +1275,6 @@ Horas que parecían minutos.`
           text: `Después de todos esos pequeños momentos llegó ese día.
 
 Después de las conversaciones, las llamadas, los nervios y todo lo que fuimos construyendo poco a poco, dejamos de ser solamente una posibilidad.
-
 Elegimos intentarlo.
 
 Elegimos cuidarnos, conocernos más y seguir creando recuerdos juntos.
