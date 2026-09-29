@@ -244,6 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /* =====================================================
        NAVEGACIÓN SUPERIOR
        Funciona únicamente una vez abierto el dashboard.
+       No necesitas cambiar los href="#" del HTML por ahora.
     ===================================================== */
     bindNavigation() {
       const { navLinks, dashboardScreen } = this.elements;
@@ -277,8 +278,13 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
+
     /* =====================================================
        COLECCIONES HORIZONTALES
+       - Móvil/tablet: gesto táctil nativo.
+       - PC: click izquierdo + arrastrar.
+       - Sin flechas, puntos o scrollbar.
+       - El scroll vertical de la página permanece normal.
     ===================================================== */
     initHorizontalCollections() {
       const collections = document.querySelectorAll(
@@ -292,10 +298,19 @@ document.addEventListener("DOMContentLoaded", () => {
         let movedDistance = 0;
         let suppressClick = false;
 
+        /*
+          El táctil se deja completamente al navegador:
+          overflow-x:auto en CSS ya permite el swipe natural.
+          Aquí solo añadimos arrastre manual para mouse.
+        */
         container.addEventListener("pointerdown", (event) => {
           if (event.pointerType !== "mouse") return;
           if (event.button !== 0) return;
 
+          /*
+            Si no hay contenido desbordado no hace falta
+            iniciar un gesto de arrastre.
+          */
           if (container.scrollWidth <= container.clientWidth) return;
 
           isDragging = true;
@@ -309,7 +324,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
           try {
             container.setPointerCapture(event.pointerId);
-          } catch (_) {}
+          } catch (_) {
+            /* Algunos navegadores pueden no necesitar captura. */
+          }
         });
 
         container.addEventListener("pointermove", (event) => {
@@ -319,6 +336,10 @@ document.addEventListener("DOMContentLoaded", () => {
           const deltaX = event.clientX - startX;
           movedDistance = Math.max(movedDistance, Math.abs(deltaX));
 
+          /*
+            Una vez que claramente es un arrastre horizontal,
+            evitamos selección de texto e interacciones accidentales.
+          */
           if (movedDistance > 4) {
             event.preventDefault();
             suppressClick = true;
@@ -337,8 +358,15 @@ document.addEventListener("DOMContentLoaded", () => {
             if (container.hasPointerCapture(event.pointerId)) {
               container.releasePointerCapture(event.pointerId);
             }
-          } catch (_) {}
+          } catch (_) {
+            /* Sin acción si el navegador ya liberó la captura. */
+          }
 
+          /*
+            Dejamos suppressClick activo un instante:
+            así al soltar después de arrastrar no se abre
+            accidentalmente una tarjeta.
+          */
           if (suppressClick) {
             window.setTimeout(() => {
               suppressClick = false;
@@ -356,6 +384,11 @@ document.addEventListener("DOMContentLoaded", () => {
           container.classList.remove("is-dragging");
         });
 
+        /*
+          Si después hacemos las tarjetas clicables,
+          un click real seguirá funcionando.
+          Solo se cancela cuando el usuario arrastró.
+        */
         container.addEventListener(
           "click",
           (event) => {
@@ -366,6 +399,15 @@ document.addEventListener("DOMContentLoaded", () => {
           },
           true
         );
+
+        /*
+          No convertimos la rueda vertical del mouse en scroll
+          horizontal. Eso permite que la página siga bajando
+          normalmente cuando el cursor está sobre una colección.
+
+          Trackpads que envían deltaX horizontal funcionan
+          de forma nativa gracias a overflow-x:auto.
+        */
       });
     },
 
@@ -443,6 +485,9 @@ document.addEventListener("DOMContentLoaded", () => {
         relaunch();
       }, this.settings.shootingStarInterval);
     },
+
+
+
 
     /* =====================================================
        NUESTRA PROMESA
@@ -543,8 +588,13 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     },
 
+
     /* =====================================================
        CARTAS PARA MOMENTOS ESPECIALES
+
+       Cada tarjeta abre únicamente su propia carta.
+       El fondo queda bloqueado mientras el modal está abierto
+       y el contenido largo se desplaza dentro del papel.
     ===================================================== */
     initSpecialLetters() {
       const LETTERS = {
@@ -717,6 +767,10 @@ document.addEventListener("DOMContentLoaded", () => {
         content.innerHTML =
           letter.html;
 
+        /*
+          Siempre abre la carta desde el inicio,
+          incluso si anteriormente se había desplazado.
+        */
         const scrollArea =
           modal.querySelector(
             ".special-letter-scroll"
@@ -790,6 +844,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 .dataset
                 .specialLetterOverflowY;
 
+              /*
+                Devolvemos el foco a la tarjeta
+                que abrió la carta. Como el fondo
+                nunca se desplazó, vuelve exactamente
+                al mismo punto de la sección.
+              */
               if (activeCard) {
                 activeCard.focus({
                   preventScroll: true
@@ -859,8 +919,25 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     },
 
+
     /* =====================================================
        CAPÍTULOS / ANIVERSARIOS DINÁMICOS
+
+       Para agregar un nuevo aniversario en el futuro:
+       SOLO agrega un objeto nuevo al arreglo CHAPTERS.
+
+       Formato:
+       {
+         id: "mes-7",
+         title: "7 meses",
+         unlockDate: "2027-03-23",
+         intro: "Mensaje breve de entrada.",
+         content: `<p>Contenido del capítulo.</p>`
+       }
+
+       TEST_MODE:
+       - false = usa las fechas reales.
+       - true  = desbloquea todo para que puedas probarlo.
     ===================================================== */
     initAnniversaryChapters() {
       const TEST_MODE = false;
@@ -870,8 +947,8 @@ document.addEventListener("DOMContentLoaded", () => {
           id: "mes-2",
           title: "Mes 2",
           unlockDate: "2026-10-23",
-          intro:
-            "Otro pedacito de nuestra historia ya está listo para guardarse aquí.",
+          intro: "Otro pedacito de nuestra historia ya está listo para guardarse aquí.",
+
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás escribir la carta, recuerdos, momentos y reflexiones de nuestro segundo mes.
@@ -883,8 +960,8 @@ document.addEventListener("DOMContentLoaded", () => {
           id: "mes-3",
           title: "Mes 3",
           unlockDate: "2026-11-23",
-          intro:
-            "Tres meses, nuevas historias y otro capítulo para nosotros.",
+          intro: "Tres meses, nuevas historias y otro capítulo para nosotros.",
+
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás agregar el contenido especial de nuestro tercer mes.
@@ -896,8 +973,8 @@ document.addEventListener("DOMContentLoaded", () => {
           id: "mes-4",
           title: "Mes 4",
           unlockDate: "2026-12-23",
-          intro:
-            "Nuestra historia sigue creciendo, un capítulo a la vez.",
+          intro: "Nuestra historia sigue creciendo, un capítulo a la vez.",
+
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás agregar el contenido especial de nuestro cuarto mes.
@@ -909,8 +986,8 @@ document.addEventListener("DOMContentLoaded", () => {
           id: "mes-5",
           title: "5 meses",
           unlockDate: "2027-01-23",
-          intro:
-            "Cinco meses de momentos que merecen tener su propio lugar.",
+          intro: "Cinco meses de momentos que merecen tener su propio lugar.",
+
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás agregar el contenido especial de nuestros cinco meses.
@@ -922,8 +999,8 @@ document.addEventListener("DOMContentLoaded", () => {
           id: "mes-6",
           title: "6 meses",
           unlockDate: "2027-02-23",
-          intro:
-            "Medio año de nuestra historia merece abrirse como un capítulo especial.",
+          intro: "Medio año de nuestra historia merece abrirse como un capítulo especial.",
+
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás construir un capítulo más grande para nuestros seis meses.
@@ -935,8 +1012,8 @@ document.addEventListener("DOMContentLoaded", () => {
           id: "anio-1",
           title: "1 año",
           unlockDate: "2027-08-23",
-          intro:
-            "Un año. Todo un universo de momentos que empezó con nosotros.",
+          intro: "Un año. Todo un universo de momentos que empezó con nosotros.",
+
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás crear el capítulo completo de nuestro primer aniversario.
@@ -1015,7 +1092,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const [
             year,
             month,
-            day,
+            day
           ] =
             isoDate
               .split("-")
@@ -1340,7 +1417,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (unlocked) {
               card.innerHTML = `
-                <span class="chapter-icon">✦</span>
+                <span class="chapter-icon">
+                  ✦
+                </span>
 
                 <span class="chapter-title">
                   ${chapter.title}
@@ -1524,21 +1603,22 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     },
 
+
     /* =====================================================
        HISTORIA - LÍNEA TEMPORAL INTERACTIVA
+
+       La tarjeta mantiene una descripción corta.
+       El contenido completo vive aquí y se abre en modal.
     ===================================================== */
     initTimelineStories() {
+
       const stories = {
+
         conocimos: {
           icon: "♡",
-          heading:
-            "Nos conocimos",
-
-          title:
-            "Un encuentro inesperado",
-
-          date:
-            "13 de diciembre de 2023",
+          heading: "Nos conocimos",
+          title: "Un encuentro inesperado",
+          date: "13 de diciembre de 2023",
 
           text: `Nuestra historia comenzó mucho antes de que nosotros mismos pudiéramos imaginarlo.
 
@@ -1549,17 +1629,12 @@ Un mensaje en Roblox fue el primer pequeño capítulo de nuestra historia.
 Quizá en ese momento no sabíamos nada del otro, ni imaginábamos todo lo que vendría después, pero ese instante fue el comienzo de un camino que, tiempo después, nos volvería a juntar.`
         },
 
+
         reencontramos: {
           icon: "✦",
-
-          heading:
-            "Volvimos a encontrarnos",
-
-          title:
-            "Cuando el universo nos volvió a juntar",
-
-          date:
-            "4 de junio de 2026",
+          heading: "Volvimos a encontrarnos",
+          title: "Cuando el universo nos volvió a juntar",
+          date: "4 de junio de 2026",
 
           text: `Después de mucho tiempo, nuestras vidas volvieron a cruzarse.
 
@@ -1572,17 +1647,12 @@ Yo no imaginaba todo lo que iba a pasar después, ni que una conversación que p
 Gracias por haber tenido el valor de volver a acercarte.`
         },
 
+
         hablar: {
           icon: "💌",
-
-          heading:
-            "Empezamos a hablar",
-
-          title:
-            "Conversaciones que no queríamos terminar",
-
-          date:
-            "Junio de 2026",
+          heading: "Empezamos a hablar",
+          title: "Conversaciones que no queríamos terminar",
+          date: "Junio de 2026",
 
           text: `Al principio eran solamente conversaciones.
 
@@ -1593,17 +1663,12 @@ Sin darme cuenta, hablar contigo comenzó a convertirse en una de mis partes fav
 Eran conversaciones que podían durar mucho tiempo y aun así sentir que faltaba más por contar.`
         },
 
+
         sentimos: {
           icon: "✨",
-
-          heading:
-            "Nos atrevimos",
-
-          title:
-            "El día que decidimos intentarlo",
-
-          date:
-            "17 de junio de 2026",
+          heading: "Nos atrevimos",
+          title: "El día que decidimos intentarlo",
+          date: "17 de junio de 2026",
 
           text: `Ese día recuerdo haber tenido muchas dudas.
 
@@ -1620,17 +1685,12 @@ Así que decidí arriesgarme.
 Y ahora sé que fue una de las mejores decisiones que pude tomar.`
         },
 
+
         espacio: {
           icon: "☾",
-
-          heading:
-            "Pasamos a WhatsApp",
-
-          title:
-            "Un lugar donde seguir conociéndonos",
-
-          date:
-            "27 de junio de 2026",
+          heading: "Pasamos a WhatsApp",
+          title: "Un lugar donde seguir conociéndonos",
+          date: "27 de junio de 2026",
 
           text: `Ese día pasamos a WhatsApp y empezamos a tener un espacio un poco más nuestro.
 
@@ -1641,17 +1701,12 @@ Más conversaciones, más momentos, más historias y más razones para seguir co
 Poco a poco dejamos de ser dos personas que hablaban y empezamos a construir algo que sentíamos especial.`
         },
 
+
         llamada: {
           icon: "📞",
-
-          heading:
-            "Nuestra primera llamada",
-
-          title:
-            "Escuchar tu voz por primera vez",
-
-          date:
-            "5 de julio de 2026",
+          heading: "Nuestra primera llamada",
+          title: "Escuchar tu voz por primera vez",
+          date: "5 de julio de 2026",
 
           text: `La primera llamada fue uno de esos momentos que parecen pequeños, pero que terminan quedándose contigo.
 
@@ -1664,17 +1719,12 @@ Una llamada que empezó como algo sencillo terminó siendo uno de esos momentos 
 Horas que parecían minutos.`
         },
 
+
         novios: {
           icon: "❤",
-
-          heading:
-            "Nos hicimos novios",
-
-          title:
-            "Nuestro primer capítulo",
-
-          date:
-            "23 de agosto de 2026",
+          heading: "Nos hicimos novios",
+          title: "Nuestro primer capítulo",
+          date: "23 de agosto de 2026",
 
           text: `Después de todos esos pequeños momentos llegó ese día.
 
@@ -1688,7 +1738,9 @@ Este fue solamente nuestro primer capítulo.
 
 Y lo más bonito es saber que nuestra historia apenas comienza.`
         }
+
       };
+
 
       const modal =
         document.getElementById(
@@ -1883,6 +1935,8 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`
 
     /* =====================================================
        BOTONES PENDIENTES
+       Mientras no tengan contenido real, no deben fingir
+       que ya son controles funcionales.
     ===================================================== */
     initPendingControls() {
       const tabButtons =
@@ -1916,6 +1970,7 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`
 
     /* =====================================================
        MÓDULOS FUTUROS
+       Aquí añadiremos las siguientes interacciones.
     ===================================================== */
     initFutureModules() {
       this.modules = {
