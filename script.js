@@ -1,20 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  /*
-    =========================================================
-    Nuestro pequeño universo — script.js
-    Flujo:
-    1) Portada
-    2) Carta de bienvenida
-    3) Dashboard
-
-    Además:
-    - La navbar se oculta durante la introducción.
-    - La navbar aparece únicamente al entrar al dashboard.
-    - Sus enlaces ya funcionan dentro del dashboard.
-    - Se deja la base lista para futuras interacciones.
-    =========================================================
-  */
-
   const app = {
     elements: {
       body: document.body,
@@ -35,7 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
       sceneEnterCleanup: 950,
       starCount: 120,
       shootingStarInterval: 9000,
-      useReducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+      useReducedMotion: window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches,
     },
 
     currentScene: "hero",
@@ -54,9 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
       this.initFutureModules();
     },
 
-    /* =====================================================
-       ESTADO INICIAL
-    ===================================================== */
     setInitialState() {
       const {
         body,
@@ -68,21 +51,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (heroScreen) {
         heroScreen.hidden = false;
-        heroScreen.classList.remove("screen-enter", "screen-exit");
+        heroScreen.classList.remove(
+          "screen-enter",
+          "screen-exit"
+        );
       }
 
       if (welcomeScreen) {
         welcomeScreen.hidden = true;
-        welcomeScreen.classList.remove("screen-enter", "screen-exit");
+        welcomeScreen.classList.remove(
+          "screen-enter",
+          "screen-exit"
+        );
       }
 
       if (dashboardScreen) {
         dashboardScreen.hidden = true;
-        dashboardScreen.classList.remove("screen-enter", "screen-exit");
+        dashboardScreen.classList.remove(
+          "screen-enter",
+          "screen-exit"
+        );
       }
 
       if (navbar) {
-        navbar.classList.add("navbar-intro-hidden");
+        navbar.classList.add(
+          "navbar-intro-hidden"
+        );
       }
 
       if (body) {
@@ -93,73 +87,134 @@ document.addEventListener("DOMContentLoaded", () => {
       window.scrollTo(0, 0);
     },
 
-    /* =====================================================
-       BOTONES DE LAS ESCENAS
-    ===================================================== */
     bindSceneEvents() {
-      const { enterBtn, continueBtn } = this.elements;
+      const {
+        enterBtn,
+        continueBtn,
+      } = this.elements;
 
       if (enterBtn) {
-        enterBtn.addEventListener("click", () => {
-          this.goFromHeroToWelcome();
-        });
+        enterBtn.addEventListener(
+          "click",
+          () => {
+            this.goFromHeroToWelcome();
+          }
+        );
       }
 
       if (continueBtn) {
-        continueBtn.addEventListener("click", () => {
-          this.goFromWelcomeToDashboard();
-        });
+        continueBtn.addEventListener(
+          "click",
+          () => {
+            this.goFromWelcomeToDashboard();
+          }
+        );
       }
     },
 
-    /* =====================================================
-       PORTADA -> CARTA
-    ===================================================== */
     goFromHeroToWelcome() {
-      if (this.currentScene !== "hero") return;
-
-      const { heroScreen, welcomeScreen } = this.elements;
-      if (!heroScreen || !welcomeScreen) return;
-
-      this.currentScene = "transitioning";
-
-      this.disablePointer(heroScreen);
-      this.disablePointer(welcomeScreen);
-
-      if (this.settings.useReducedMotion) {
-        heroScreen.hidden = true;
-        welcomeScreen.hidden = false;
-        this.enablePointer(welcomeScreen);
-        this.currentScene = "welcome";
+      if (
+        this.currentScene !== "hero"
+      ) {
         return;
       }
 
-      heroScreen.classList.add("screen-exit");
+      const {
+        heroScreen,
+        welcomeScreen,
+      } = this.elements;
 
-      window.setTimeout(() => {
+      if (
+        !heroScreen ||
+        !welcomeScreen
+      ) {
+        return;
+      }
+
+      this.currentScene =
+        "transitioning";
+
+      this.disablePointer(
+        heroScreen
+      );
+
+      this.disablePointer(
+        welcomeScreen
+      );
+
+      if (
+        this.settings
+          .useReducedMotion
+      ) {
         heroScreen.hidden = true;
-        heroScreen.classList.remove("screen-exit");
-
         welcomeScreen.hidden = false;
 
-        requestAnimationFrame(() => {
-          welcomeScreen.classList.add("screen-enter");
-        });
+        this.enablePointer(
+          welcomeScreen
+        );
 
-        window.setTimeout(() => {
-          welcomeScreen.classList.remove("screen-enter");
-          this.enablePointer(welcomeScreen);
-          this.currentScene = "welcome";
-        }, this.settings.sceneEnterCleanup);
+        this.currentScene =
+          "welcome";
 
-      }, this.settings.sceneExitDuration);
+        return;
+      }
+
+      heroScreen.classList.add(
+        "screen-exit"
+      );
+
+      window.setTimeout(
+        () => {
+          heroScreen.hidden = true;
+
+          heroScreen.classList.remove(
+            "screen-exit"
+          );
+
+          welcomeScreen.hidden =
+            false;
+
+          requestAnimationFrame(
+            () => {
+              welcomeScreen
+                .classList
+                .add(
+                  "screen-enter"
+                );
+            }
+          );
+
+          window.setTimeout(
+            () => {
+              welcomeScreen
+                .classList
+                .remove(
+                  "screen-enter"
+                );
+
+              this.enablePointer(
+                welcomeScreen
+              );
+
+              this.currentScene =
+                "welcome";
+            },
+            this.settings
+              .sceneEnterCleanup
+          );
+        },
+        this.settings
+          .sceneExitDuration
+      );
     },
 
-    /* =====================================================
-       CARTA -> DASHBOARD
-    ===================================================== */
     goFromWelcomeToDashboard() {
-      if (this.currentScene !== "welcome") return;
+      if (
+        this.currentScene !==
+        "welcome"
+      ) {
+        return;
+      }
 
       const {
         body,
@@ -168,229 +223,487 @@ document.addEventListener("DOMContentLoaded", () => {
         dashboardScreen,
       } = this.elements;
 
-      if (!welcomeScreen || !dashboardScreen) return;
-
-      this.currentScene = "transitioning";
-
-      this.disablePointer(welcomeScreen);
-      this.disablePointer(dashboardScreen);
-
-      if (this.settings.useReducedMotion) {
-        welcomeScreen.hidden = true;
-        dashboardScreen.hidden = false;
-
-        if (navbar) {
-          navbar.classList.remove("navbar-intro-hidden");
-        }
-
-        if (body) body.style.overflowY = "auto";
-
-        this.enablePointer(dashboardScreen);
-        this.currentScene = "dashboard";
+      if (
+        !welcomeScreen ||
+        !dashboardScreen
+      ) {
         return;
       }
 
-      welcomeScreen.classList.add("screen-exit");
+      this.currentScene =
+        "transitioning";
 
-      window.setTimeout(() => {
-        welcomeScreen.hidden = true;
-        welcomeScreen.classList.remove("screen-exit");
-
-        if (navbar) {
-          navbar.classList.remove("navbar-intro-hidden");
-          navbar.classList.add("navbar-enter");
-
-          window.setTimeout(() => {
-            navbar.classList.remove("navbar-enter");
-          }, 750);
-        }
-
-        dashboardScreen.hidden = false;
-
-        requestAnimationFrame(() => {
-          dashboardScreen.classList.add("screen-enter");
-        });
-
-        window.setTimeout(() => {
-          dashboardScreen.classList.remove("screen-enter");
-
-          if (body) {
-            body.style.overflowY = "auto";
-          }
-
-          this.enablePointer(dashboardScreen);
-          this.currentScene = "dashboard";
-        }, this.settings.sceneEnterCleanup);
-
-      }, this.settings.sceneExitDuration);
-    },
-
-    /* =====================================================
-       NAVEGACIÓN SUPERIOR
-    ===================================================== */
-    bindNavigation() {
-      const { navLinks, dashboardScreen } = this.elements;
-
-      const sectionMap = {
-        "inicio": dashboardScreen,
-        "nuestra historia": document.querySelector(".card.historia"),
-        "recuerdos": document.querySelector(".card.recuerdos"),
-        "cartas": document.querySelector(".card.cartas"),
-        "playlist": document.querySelector(".card.playlist"),
-        "metas": document.querySelector(".card.metas"),
-        "aniversarios": document.querySelector(".card.futuros"),
-      };
-
-      navLinks.forEach((link) => {
-        link.addEventListener("click", (event) => {
-          event.preventDefault();
-
-          if (this.currentScene !== "dashboard") return;
-
-          const key = link.textContent.trim().toLowerCase();
-          const target = sectionMap[key];
-
-          if (!target) return;
-
-          target.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        });
-      });
-    },
-
-    /* =====================================================
-       COLECCIONES HORIZONTALES
-    ===================================================== */
-    initHorizontalCollections() {
-      const collections = document.querySelectorAll(
-        ".polaroid-grid, .envelope-grid"
+      this.disablePointer(
+        welcomeScreen
       );
 
-      collections.forEach((container) => {
-        let isDragging = false;
-        let startX = 0;
-        let startScrollLeft = 0;
-        let movedDistance = 0;
-        let suppressClick = false;
+      this.disablePointer(
+        dashboardScreen
+      );
 
-        container.addEventListener("pointerdown", (event) => {
-          if (event.pointerType !== "mouse") return;
-          if (event.button !== 0) return;
+      if (
+        this.settings
+          .useReducedMotion
+      ) {
+        welcomeScreen.hidden =
+          true;
 
-          if (container.scrollWidth <= container.clientWidth) return;
+        dashboardScreen.hidden =
+          false;
 
-          isDragging = true;
-          movedDistance = 0;
-          suppressClick = false;
+        if (navbar) {
+          navbar.classList.remove(
+            "navbar-intro-hidden"
+          );
+        }
 
-          startX = event.clientX;
-          startScrollLeft = container.scrollLeft;
+        if (body) {
+          body.style.overflowY =
+            "auto";
+        }
 
-          container.classList.add("is-dragging");
-
-          try {
-            container.setPointerCapture(event.pointerId);
-          } catch (_) {}
-        });
-
-        container.addEventListener("pointermove", (event) => {
-          if (!isDragging) return;
-          if (event.pointerType !== "mouse") return;
-
-          const deltaX = event.clientX - startX;
-          movedDistance = Math.max(movedDistance, Math.abs(deltaX));
-
-          if (movedDistance > 4) {
-            event.preventDefault();
-            suppressClick = true;
-          }
-
-          container.scrollLeft = startScrollLeft - deltaX;
-        });
-
-        const finishDrag = (event) => {
-          if (!isDragging) return;
-
-          isDragging = false;
-          container.classList.remove("is-dragging");
-
-          try {
-            if (container.hasPointerCapture(event.pointerId)) {
-              container.releasePointerCapture(event.pointerId);
-            }
-          } catch (_) {}
-
-          if (suppressClick) {
-            window.setTimeout(() => {
-              suppressClick = false;
-            }, 80);
-          }
-        };
-
-        container.addEventListener("pointerup", finishDrag);
-        container.addEventListener("pointercancel", finishDrag);
-
-        container.addEventListener("lostpointercapture", () => {
-          if (!isDragging) return;
-
-          isDragging = false;
-          container.classList.remove("is-dragging");
-        });
-
-        container.addEventListener(
-          "click",
-          (event) => {
-            if (!suppressClick) return;
-
-            event.preventDefault();
-            event.stopPropagation();
-          },
-          true
+        this.enablePointer(
+          dashboardScreen
         );
-      });
+
+        this.currentScene =
+          "dashboard";
+
+        return;
+      }
+
+      welcomeScreen.classList.add(
+        "screen-exit"
+      );
+
+      window.setTimeout(
+        () => {
+          welcomeScreen.hidden =
+            true;
+
+          welcomeScreen
+            .classList
+            .remove(
+              "screen-exit"
+            );
+
+          if (navbar) {
+            navbar.classList.remove(
+              "navbar-intro-hidden"
+            );
+
+            navbar.classList.add(
+              "navbar-enter"
+            );
+
+            window.setTimeout(
+              () => {
+                navbar.classList.remove(
+                  "navbar-enter"
+                );
+              },
+              750
+            );
+          }
+
+          dashboardScreen.hidden =
+            false;
+
+          requestAnimationFrame(
+            () => {
+              dashboardScreen
+                .classList
+                .add(
+                  "screen-enter"
+                );
+            }
+          );
+
+          window.setTimeout(
+            () => {
+              dashboardScreen
+                .classList
+                .remove(
+                  "screen-enter"
+                );
+
+              if (body) {
+                body.style.overflowY =
+                  "auto";
+              }
+
+              this.enablePointer(
+                dashboardScreen
+              );
+
+              this.currentScene =
+                "dashboard";
+            },
+            this.settings
+              .sceneEnterCleanup
+          );
+        },
+        this.settings
+          .sceneExitDuration
+      );
     },
 
-    /* =====================================================
-       UTILIDADES
-    ===================================================== */
+    bindNavigation() {
+      const {
+        navLinks,
+        dashboardScreen,
+      } = this.elements;
+
+      const sectionMap = {
+        "inicio":
+          dashboardScreen,
+
+        "nuestra historia":
+          document.querySelector(
+            ".card.historia"
+          ),
+
+        "recuerdos":
+          document.querySelector(
+            ".card.recuerdos"
+          ),
+
+        "cartas":
+          document.querySelector(
+            ".card.cartas"
+          ),
+
+        "playlist":
+          document.querySelector(
+            ".card.playlist"
+          ),
+
+        "metas":
+          document.querySelector(
+            ".card.metas"
+          ),
+
+        "aniversarios":
+          document.querySelector(
+            ".card.futuros"
+          ),
+      };
+
+      navLinks.forEach(
+        (link) => {
+          link.addEventListener(
+            "click",
+            (event) => {
+              event.preventDefault();
+
+              if (
+                this.currentScene !==
+                "dashboard"
+              ) {
+                return;
+              }
+
+              const key =
+                link.textContent
+                  .trim()
+                  .toLowerCase();
+
+              const target =
+                sectionMap[key];
+
+              if (!target) return;
+
+              target.scrollIntoView({
+                behavior:
+                  "smooth",
+                block:
+                  "start",
+              });
+            }
+          );
+        }
+      );
+    },
+
+    initHorizontalCollections() {
+      const collections =
+        document.querySelectorAll(
+          ".polaroid-grid, .envelope-grid"
+        );
+
+      collections.forEach(
+        (container) => {
+          let isDragging =
+            false;
+
+          let startX = 0;
+
+          let startScrollLeft =
+            0;
+
+          let movedDistance =
+            0;
+
+          let suppressClick =
+            false;
+
+          container.addEventListener(
+            "pointerdown",
+            (event) => {
+              if (
+                event.pointerType !==
+                "mouse"
+              ) {
+                return;
+              }
+
+              if (
+                event.button !== 0
+              ) {
+                return;
+              }
+
+              if (
+                container.scrollWidth <=
+                container.clientWidth
+              ) {
+                return;
+              }
+
+              isDragging =
+                true;
+
+              movedDistance =
+                0;
+
+              suppressClick =
+                false;
+
+              startX =
+                event.clientX;
+
+              startScrollLeft =
+                container.scrollLeft;
+
+              container
+                .classList
+                .add(
+                  "is-dragging"
+                );
+
+              try {
+                container
+                  .setPointerCapture(
+                    event.pointerId
+                  );
+              } catch (_) {}
+            }
+          );
+
+          container.addEventListener(
+            "pointermove",
+            (event) => {
+              if (
+                !isDragging
+              ) {
+                return;
+              }
+
+              if (
+                event.pointerType !==
+                "mouse"
+              ) {
+                return;
+              }
+
+              const deltaX =
+                event.clientX -
+                startX;
+
+              movedDistance =
+                Math.max(
+                  movedDistance,
+                  Math.abs(
+                    deltaX
+                  )
+                );
+
+              if (
+                movedDistance >
+                4
+              ) {
+                event.preventDefault();
+
+                suppressClick =
+                  true;
+              }
+
+              container.scrollLeft =
+                startScrollLeft -
+                deltaX;
+            }
+          );
+
+          const finishDrag =
+            (event) => {
+              if (
+                !isDragging
+              ) {
+                return;
+              }
+
+              isDragging =
+                false;
+
+              container
+                .classList
+                .remove(
+                  "is-dragging"
+                );
+
+              try {
+                if (
+                  container
+                    .hasPointerCapture(
+                      event.pointerId
+                    )
+                ) {
+                  container
+                    .releasePointerCapture(
+                      event.pointerId
+                    );
+                }
+              } catch (_) {}
+
+              if (
+                suppressClick
+              ) {
+                window.setTimeout(
+                  () => {
+                    suppressClick =
+                      false;
+                  },
+                  80
+                );
+              }
+            };
+
+          container.addEventListener(
+            "pointerup",
+            finishDrag
+          );
+
+          container.addEventListener(
+            "pointercancel",
+            finishDrag
+          );
+
+          container.addEventListener(
+            "lostpointercapture",
+            () => {
+              if (
+                !isDragging
+              ) {
+                return;
+              }
+
+              isDragging =
+                false;
+
+              container
+                .classList
+                .remove(
+                  "is-dragging"
+                );
+            }
+          );
+
+          container.addEventListener(
+            "click",
+            (event) => {
+              if (
+                !suppressClick
+              ) {
+                return;
+              }
+
+              event.preventDefault();
+              event.stopPropagation();
+            },
+            true
+          );
+        }
+      );
+    },
+
     disablePointer(element) {
       if (!element) return;
-      element.style.pointerEvents = "none";
+
+      element.style.pointerEvents =
+        "none";
     },
 
     enablePointer(element) {
       if (!element) return;
-      element.style.pointerEvents = "";
+
+      element.style.pointerEvents =
+        "";
     },
 
-    /* =====================================================
-       ESTRELLAS
-    ===================================================== */
     createStarfield() {
-      const { starfield } = this.elements;
+      const {
+        starfield,
+      } = this.elements;
 
       if (!starfield) return;
 
-      starfield.innerHTML = "";
+      starfield.innerHTML =
+        "";
 
-      for (let i = 0; i < this.settings.starCount; i++) {
-        const star = document.createElement("span");
+      for (
+        let i = 0;
+        i <
+        this.settings.starCount;
+        i++
+      ) {
+        const star =
+          document.createElement(
+            "span"
+          );
 
-        star.classList.add("star");
+        star.classList.add(
+          "star"
+        );
 
-        const size = Math.random() * 2.6 + 0.7;
+        const size =
+          Math.random() *
+            2.6 +
+          0.7;
 
-        star.style.width = `${size}px`;
-        star.style.height = `${size}px`;
-        star.style.top = `${Math.random() * 100}%`;
-        star.style.left = `${Math.random() * 100}%`;
-        star.style.opacity = `${Math.random() * 0.75 + 0.2}`;
-        star.style.animationDuration = `${2.5 + Math.random() * 4}s`;
-        star.style.animationDelay = `${Math.random() * 5}s`;
+        star.style.width =
+          `${size}px`;
 
-        starfield.appendChild(star);
+        star.style.height =
+          `${size}px`;
+
+        star.style.top =
+          `${Math.random() * 100}%`;
+
+        star.style.left =
+          `${Math.random() * 100}%`;
+
+        star.style.opacity =
+          `${Math.random() * 0.75 + 0.2}`;
+
+        star.style.animationDuration =
+          `${2.5 + Math.random() * 4}s`;
+
+        star.style.animationDelay =
+          `${Math.random() * 5}s`;
+
+        starfield.appendChild(
+          star
+        );
       }
 
       this.createShootingStar();
@@ -398,93 +711,172 @@ document.addEventListener("DOMContentLoaded", () => {
     },
 
     createShootingStar() {
-      if (document.querySelector(".shooting-star")) return;
+      if (
+        document.querySelector(
+          ".shooting-star"
+        )
+      ) {
+        return;
+      }
 
-      const shootingStar = document.createElement("div");
+      const shootingStar =
+        document.createElement(
+          "div"
+        );
 
-      shootingStar.classList.add("shooting-star");
+      shootingStar.classList.add(
+        "shooting-star"
+      );
 
-      document.body.appendChild(shootingStar);
+      document.body.appendChild(
+        shootingStar
+      );
     },
 
     startShootingStarLoop() {
-      const shootingStar = document.querySelector(".shooting-star");
+      const shootingStar =
+        document.querySelector(
+          ".shooting-star"
+        );
 
-      if (!shootingStar || this.settings.useReducedMotion) return;
+      if (
+        !shootingStar ||
+        this.settings
+          .useReducedMotion
+      ) {
+        return;
+      }
 
-      const relaunch = () => {
-        shootingStar.style.animation = "none";
+      const relaunch =
+        () => {
+          shootingStar.style.animation =
+            "none";
 
-        void shootingStar.offsetWidth;
+          void shootingStar.offsetWidth;
 
-        shootingStar.style.animation = "";
-      };
+          shootingStar.style.animation =
+            "";
+        };
 
       relaunch();
 
-      window.setInterval(() => {
-        relaunch();
-      }, this.settings.shootingStarInterval);
+      window.setInterval(
+        () => {
+          relaunch();
+        },
+        this.settings
+          .shootingStarInterval
+      );
     },
 
-    /* =====================================================
-       NUESTRA PROMESA
-    ===================================================== */
     initPromiseLetter() {
       const openBtn =
-        document.getElementById("promiseCard");
+        document.getElementById(
+          "promiseCard"
+        );
 
       const modal =
-        document.getElementById("promiseModal");
+        document.getElementById(
+          "promiseModal"
+        );
 
       const closeBtn =
-        document.getElementById("promiseModalClose");
+        document.getElementById(
+          "promiseModalClose"
+        );
 
-      if (!openBtn || !modal) return;
+      if (
+        !openBtn ||
+        !modal
+      ) {
+        return;
+      }
 
-      let closeTimer = null;
+      let closeTimer =
+        null;
 
-      const openPromise = () => {
-        window.clearTimeout(closeTimer);
+      const openPromise =
+        () => {
+          window.clearTimeout(
+            closeTimer
+          );
 
-        document.body.dataset.promiseOverflowY =
-          document.body.style.overflowY || "";
+          document.body.dataset
+            .promiseOverflowY =
+            document.body.style
+              .overflowY ||
+            "";
 
-        document.body.style.overflowY = "hidden";
+          document.body.style
+            .overflowY =
+            "hidden";
 
-        modal.hidden = false;
-        modal.setAttribute("aria-hidden", "false");
+          modal.hidden =
+            false;
 
-        requestAnimationFrame(() => {
-          modal.classList.add("is-open");
+          modal.setAttribute(
+            "aria-hidden",
+            "false"
+          );
 
-          if (closeBtn) {
-            closeBtn.focus({
-              preventScroll: true
-            });
+          requestAnimationFrame(
+            () => {
+              modal.classList.add(
+                "is-open"
+              );
+
+              if (
+                closeBtn
+              ) {
+                closeBtn.focus({
+                  preventScroll:
+                    true,
+                });
+              }
+            }
+          );
+        };
+
+      const closePromise =
+        () => {
+          if (
+            modal.hidden
+          ) {
+            return;
           }
-        });
-      };
 
-      const closePromise = () => {
-        if (modal.hidden) return;
+          modal.classList.remove(
+            "is-open"
+          );
 
-        modal.classList.remove("is-open");
-        modal.setAttribute("aria-hidden", "true");
+          modal.setAttribute(
+            "aria-hidden",
+            "true"
+          );
 
-        closeTimer = window.setTimeout(() => {
-          modal.hidden = true;
+          closeTimer =
+            window.setTimeout(
+              () => {
+                modal.hidden =
+                  true;
 
-          document.body.style.overflowY =
-            document.body.dataset.promiseOverflowY || "auto";
+                document.body.style
+                  .overflowY =
+                  document.body.dataset
+                    .promiseOverflowY ||
+                  "auto";
 
-          delete document.body.dataset.promiseOverflowY;
+                delete document.body.dataset
+                  .promiseOverflowY;
 
-          openBtn.focus({
-            preventScroll: true
-          });
-        }, 280);
-      };
+                openBtn.focus({
+                  preventScroll:
+                    true,
+                });
+              },
+              280
+            );
+        };
 
       openBtn.addEventListener(
         "click",
@@ -502,10 +894,13 @@ document.addEventListener("DOMContentLoaded", () => {
         "click",
         (event) => {
           if (
-            event.target === modal ||
-            event.target.classList.contains(
-              "promise-modal-backdrop"
-            )
+            event.target ===
+              modal ||
+            event.target
+              .classList
+              .contains(
+                "promise-modal-backdrop"
+              )
           ) {
             closePromise();
           }
@@ -516,7 +911,8 @@ document.addEventListener("DOMContentLoaded", () => {
         "keydown",
         (event) => {
           if (
-            event.key === "Escape" &&
+            event.key ===
+              "Escape" &&
             !modal.hidden
           ) {
             closePromise();
@@ -525,13 +921,11 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     },
 
-    /* =====================================================
-       CARTAS PARA MOMENTOS ESPECIALES
-    ===================================================== */
     initSpecialLetters() {
       const LETTERS = {
         "dia-dificil": {
-          title: "Cuando tengas un día difícil",
+          title:
+            "Cuando tengas un día difícil",
 
           html: `
             <p><strong>Mi niñita hermosa:</strong></p>
@@ -549,11 +943,12 @@ document.addEventListener("DOMContentLoaded", () => {
             <p>Y si hoy necesitas que alguien te recuerde que eres importante, aquí estoy.</p>
 
             <p><strong>Te amo muchísimo, mi Xime. ♡</strong></p>
-          `
+          `,
         },
 
         "me-extranes": {
-          title: "Cuando me extrañes",
+          title:
+            "Cuando me extrañes",
 
           html: `
             <p><strong>Mi cielo estrellado:</strong></p>
@@ -573,11 +968,12 @@ document.addEventListener("DOMContentLoaded", () => {
             <p>Y cada vez que me extrañes, recuerda que yo también tengo un lugar donde guardarte.</p>
 
             <p><strong>Aquí. ♡</strong></p>
-          `
+          `,
         },
 
         "dudes-nosotros": {
-          title: "Cuando dudes de nosotros",
+          title:
+            "Cuando dudes de nosotros",
 
           html: `
             <p><strong>Mi Xime:</strong></p>
@@ -603,11 +999,12 @@ document.addEventListener("DOMContentLoaded", () => {
             <p>Y recuerda que, entre tantas posibilidades, nosotras nos encontramos.</p>
 
             <p><strong>Y yo todavía quiero descubrir todo lo que nos falta vivir. ♡</strong></p>
-          `
+          `,
         },
 
         "recordar-amor": {
-          title: "Cuando necesites recordar cuánto te amo",
+          title:
+            "Cuando necesites recordar cuánto te amo",
 
           html: `
             <p><strong>Para mi niñita hermosa:</strong></p>
@@ -641,8 +1038,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 Y quiero seguir haciendo de nosotros, nosotros. ♡
               </strong>
             </p>
-          `
-        }
+          `,
+        },
       };
 
       const modal =
@@ -679,133 +1076,162 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      let activeCard = null;
-      let closeTimer = null;
+      let activeCard =
+        null;
 
-      const openLetter = (card) => {
-        const key =
-          card.dataset.specialLetter;
+      let closeTimer =
+        null;
 
-        const letter =
-          LETTERS[key];
+      const openLetter =
+        (card) => {
+          const key =
+            card.dataset
+              .specialLetter;
 
-        if (!letter) return;
+          const letter =
+            LETTERS[key];
 
-        activeCard = card;
+          if (!letter) return;
 
-        title.textContent =
-          letter.title;
+          activeCard =
+            card;
 
-        content.innerHTML =
-          letter.html;
+          title.textContent =
+            letter.title;
 
-        const scrollArea =
-          modal.querySelector(
-            ".special-letter-scroll"
-          );
+          content.innerHTML =
+            letter.html;
 
-        if (scrollArea) {
-          scrollArea.scrollTop = 0;
-        }
-
-        window.clearTimeout(
-          closeTimer
-        );
-
-        document.body.dataset
-          .specialLetterOverflowY =
-          document.body.style
-            .overflowY || "";
-
-        document.body.style
-          .overflowY =
-          "hidden";
-
-        modal.hidden =
-          false;
-
-        modal.setAttribute(
-          "aria-hidden",
-          "false"
-        );
-
-        requestAnimationFrame(
-          () => {
-            modal.classList.add(
-              "is-open"
+          const scrollArea =
+            modal.querySelector(
+              ".special-letter-scroll"
             );
 
-            if (closeBtn) {
-              closeBtn.focus({
-                preventScroll: true
-              });
-            }
+          if (
+            scrollArea
+          ) {
+            scrollArea.scrollTop =
+              0;
           }
-        );
-      };
 
-      const closeLetter = () => {
-        if (modal.hidden) return;
+          window.clearTimeout(
+            closeTimer
+          );
 
-        modal.classList.remove(
-          "is-open"
-        );
+          document.body.dataset
+            .specialLetterOverflowY =
+            document.body.style
+              .overflowY ||
+            "";
 
-        modal.setAttribute(
-          "aria-hidden",
-          "true"
-        );
+          document.body.style
+            .overflowY =
+            "hidden";
 
-        closeTimer =
-          window.setTimeout(
+          modal.hidden =
+            false;
+
+          modal.setAttribute(
+            "aria-hidden",
+            "false"
+          );
+
+          requestAnimationFrame(
             () => {
-              modal.hidden =
-                true;
+              modal.classList.add(
+                "is-open"
+              );
 
-              document.body.style
-                .overflowY =
-                document.body.dataset
-                  .specialLetterOverflowY ||
-                "auto";
-
-              delete document.body
-                .dataset
-                .specialLetterOverflowY;
-
-              if (activeCard) {
-                activeCard.focus({
-                  preventScroll: true
+              if (
+                closeBtn
+              ) {
+                closeBtn.focus({
+                  preventScroll:
+                    true,
                 });
               }
-
-              activeCard =
-                null;
-            },
-            280
-          );
-      };
-
-      cards.forEach((card) => {
-        card.addEventListener(
-          "click",
-          () => {
-            openLetter(card);
-          }
-        );
-
-        card.addEventListener(
-          "keydown",
-          (event) => {
-            if (
-              event.key === "Enter" ||
-              event.key === " "
-            ) {
-              event.preventDefault();
-              openLetter(card);
             }
+          );
+        };
+
+      const closeLetter =
+        () => {
+          if (
+            modal.hidden
+          ) {
+            return;
           }
-        );
-      });
+
+          modal.classList.remove(
+            "is-open"
+          );
+
+          modal.setAttribute(
+            "aria-hidden",
+            "true"
+          );
+
+          closeTimer =
+            window.setTimeout(
+              () => {
+                modal.hidden =
+                  true;
+
+                document.body.style
+                  .overflowY =
+                  document.body.dataset
+                    .specialLetterOverflowY ||
+                  "auto";
+
+                delete document.body.dataset
+                  .specialLetterOverflowY;
+
+                if (
+                  activeCard
+                ) {
+                  activeCard.focus({
+                    preventScroll:
+                      true,
+                  });
+                }
+
+                activeCard =
+                  null;
+              },
+              280
+            );
+        };
+
+      cards.forEach(
+        (card) => {
+          card.addEventListener(
+            "click",
+            () => {
+              openLetter(
+                card
+              );
+            }
+          );
+
+          card.addEventListener(
+            "keydown",
+            (event) => {
+              if (
+                event.key ===
+                  "Enter" ||
+                event.key ===
+                  " "
+              ) {
+                event.preventDefault();
+
+                openLetter(
+                  card
+                );
+              }
+            }
+          );
+        }
+      );
 
       if (closeBtn) {
         closeBtn.addEventListener(
@@ -818,10 +1244,13 @@ document.addEventListener("DOMContentLoaded", () => {
         "click",
         (event) => {
           if (
-            event.target === modal ||
-            event.target.classList.contains(
-              "special-letter-backdrop"
-            )
+            event.target ===
+              modal ||
+            event.target
+              .classList
+              .contains(
+                "special-letter-backdrop"
+              )
           ) {
             closeLetter();
           }
@@ -832,7 +1261,8 @@ document.addEventListener("DOMContentLoaded", () => {
         "keydown",
         (event) => {
           if (
-            event.key === "Escape" &&
+            event.key ===
+              "Escape" &&
             !modal.hidden
           ) {
             closeLetter();
@@ -841,18 +1271,22 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     },
 
-    /* =====================================================
-       CAPÍTULOS / ANIVERSARIOS DINÁMICOS
-    ===================================================== */
     initAnniversaryChapters() {
-      const TEST_MODE = false;
+      const TEST_MODE =
+        false;
 
       const CHAPTERS = [
         {
           id: "mes-2",
-          title: "Mes 2",
-          unlockDate: "2026-10-23",
-          intro: "Hoy cumplimos dos meses siendo nosotros. Este capítulo guarda las palabras que te envié justo al comenzar nuestro segundo mesesaurio.",
+
+          title:
+            "Mes 2",
+
+          unlockDate:
+            "2026-10-23",
+
+          intro:
+            "Hoy cumplimos dos meses siendo nosotros.",
 
           content: `
             <article class="month-letter month-letter-two">
@@ -985,73 +1419,108 @@ document.addEventListener("DOMContentLoaded", () => {
               </div>
 
             </article>
-          `
+          `,
         },
 
         {
-          id: "mes-3",
-          title: "Mes 3",
-          unlockDate: "2026-11-23",
-          intro: "Tres meses, nuevas historias y otro capítulo para nosotros.",
+          id:
+            "mes-3",
+
+          title:
+            "Mes 3",
+
+          unlockDate:
+            "2026-11-23",
+
+          intro:
+            "Tres meses, nuevas historias y otro capítulo para nosotros.",
 
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás agregar el contenido especial de nuestro tercer mes.
             </div>
-          `
+          `,
         },
 
         {
-          id: "mes-4",
-          title: "Mes 4",
-          unlockDate: "2026-12-23",
-          intro: "Nuestra historia sigue creciendo, un capítulo a la vez.",
+          id:
+            "mes-4",
+
+          title:
+            "Mes 4",
+
+          unlockDate:
+            "2026-12-23",
+
+          intro:
+            "Nuestra historia sigue creciendo, un capítulo a la vez.",
 
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás agregar el contenido especial de nuestro cuarto mes.
             </div>
-          `
+          `,
         },
 
         {
-          id: "mes-5",
-          title: "5 meses",
-          unlockDate: "2027-01-23",
-          intro: "Cinco meses de momentos que merecen tener su propio lugar.",
+          id:
+            "mes-5",
+
+          title:
+            "5 meses",
+
+          unlockDate:
+            "2027-01-23",
+
+          intro:
+            "Cinco meses de momentos que merecen tener su propio lugar.",
 
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás agregar el contenido especial de nuestros cinco meses.
             </div>
-          `
+          `,
         },
 
         {
-          id: "mes-6",
-          title: "6 meses",
-          unlockDate: "2027-02-23",
-          intro: "Medio año de nuestra historia merece abrirse como un capítulo especial.",
+          id:
+            "mes-6",
+
+          title:
+            "6 meses",
+
+          unlockDate:
+            "2027-02-23",
+
+          intro:
+            "Medio año de nuestra historia merece abrirse como un capítulo especial.",
 
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás construir un capítulo más grande para nuestros seis meses.
             </div>
-          `
+          `,
         },
 
         {
-          id: "anio-1",
-          title: "1 año",
-          unlockDate: "2027-08-23",
-          intro: "Un año. Todo un universo de momentos que empezó con nosotros.",
+          id:
+            "anio-1",
+
+          title:
+            "1 año",
+
+          unlockDate:
+            "2027-08-23",
+
+          intro:
+            "Un año. Todo un universo de momentos que empezó con nosotros.",
 
           content: `
             <div class="chapter-content-placeholder">
               Aquí podrás crear el capítulo completo de nuestro primer aniversario.
             </div>
-          `
-        }
+          `,
+        },
       ];
 
       const chaptersGrid =
@@ -1114,17 +1583,24 @@ document.addEventListener("DOMContentLoaded", () => {
           "chapterBackBtn"
         );
 
-      if (!chaptersGrid) return;
+      if (
+        !chaptersGrid
+      ) {
+        return;
+      }
 
-      let selectedChapter = null;
-      let toastTimer = null;
+      let selectedChapter =
+        null;
+
+      let toastTimer =
+        null;
 
       const parseLocalDate =
         (isoDate) => {
           const [
             year,
             month,
-            day
+            day,
           ] =
             isoDate
               .split("-")
@@ -1156,11 +1632,18 @@ document.addEventListener("DOMContentLoaded", () => {
           new Intl.DateTimeFormat(
             "es-MX",
             {
-              day: "numeric",
-              month: "long",
-              year: "numeric"
+              day:
+                "numeric",
+
+              month:
+                "long",
+
+              year:
+                "numeric",
             }
-          ).format(date);
+          ).format(
+            date
+          );
 
       const isUnlocked =
         (chapter) =>
@@ -1170,41 +1653,45 @@ document.addEventListener("DOMContentLoaded", () => {
               chapter.unlockDate
             );
 
-      const createToast = () => {
-        let toast =
-          document.querySelector(
-            ".chapter-toast"
-          );
-
-        if (!toast) {
-          toast =
-            document.createElement(
-              "div"
+      const createToast =
+        () => {
+          let toast =
+            document.querySelector(
+              ".chapter-toast"
             );
 
-          toast.className =
-            "chapter-toast";
+          if (!toast) {
+            toast =
+              document.createElement(
+                "div"
+              );
 
-          toast.setAttribute(
-            "role",
-            "status"
-          );
+            toast.className =
+              "chapter-toast";
 
-          toast.setAttribute(
-            "aria-live",
-            "polite"
-          );
+            toast.setAttribute(
+              "role",
+              "status"
+            );
 
-          document.body.appendChild(
-            toast
-          );
-        }
+            toast.setAttribute(
+              "aria-live",
+              "polite"
+            );
 
-        return toast;
-      };
+            document.body.appendChild(
+              toast
+            );
+          }
+
+          return toast;
+        };
 
       const showLockedMessage =
-        (chapter, card) => {
+        (
+          chapter,
+          card
+        ) => {
           const unlockDate =
             parseLocalDate(
               chapter.unlockDate
@@ -1247,54 +1734,60 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         };
 
-      const lockPage = () => {
-        document.body.dataset
-          .previousOverflowY =
-          document.body.style
-            .overflowY || "";
-
-        document.body.style
-          .overflowY =
-          "hidden";
-      };
-
-      const unlockPage = () => {
-        const previous =
+      const lockPage =
+        () => {
           document.body.dataset
-            .previousOverflowY ||
-          "auto";
+            .previousOverflowY =
+            document.body.style
+              .overflowY ||
+            "";
 
-        document.body.style
-          .overflowY =
-          previous;
+          document.body.style
+            .overflowY =
+            "hidden";
+        };
 
-        delete document.body
-          .dataset
-          .previousOverflowY;
-      };
+      const unlockPage =
+        () => {
+          const previous =
+            document.body.dataset
+              .previousOverflowY ||
+            "auto";
 
-      const showScene = (scene) => {
-        if (!scene) return;
+          document.body.style
+            .overflowY =
+            previous;
 
-        scene.hidden =
-          false;
+          delete document.body.dataset
+            .previousOverflowY;
+        };
 
-        scene.setAttribute(
-          "aria-hidden",
-          "false"
-        );
+      const showScene =
+        (scene) => {
+          if (!scene) return;
 
-        requestAnimationFrame(
-          () => {
-            scene.classList.add(
-              "is-visible"
-            );
-          }
-        );
-      };
+          scene.hidden =
+            false;
+
+          scene.setAttribute(
+            "aria-hidden",
+            "false"
+          );
+
+          requestAnimationFrame(
+            () => {
+              scene.classList.add(
+                "is-visible"
+              );
+            }
+          );
+        };
 
       const hideScene =
-        (scene, callback) => {
+        (
+          scene,
+          callback
+        ) => {
           if (!scene) return;
 
           scene.classList.remove(
@@ -1327,12 +1820,16 @@ document.addEventListener("DOMContentLoaded", () => {
           selectedChapter =
             chapter;
 
-          if (introTitle) {
+          if (
+            introTitle
+          ) {
             introTitle.textContent =
               chapter.title;
           }
 
-          if (introMessage) {
+          if (
+            introMessage
+          ) {
             introMessage.textContent =
               chapter.intro;
           }
@@ -1344,31 +1841,64 @@ document.addEventListener("DOMContentLoaded", () => {
           );
         };
 
-      const showChapterContent =
-        () => {
-          if (!selectedChapter) return;
-
+      const fillChapterContent =
+        (chapter) => {
           const unlockDate =
             parseLocalDate(
-              selectedChapter.unlockDate
+              chapter.unlockDate
             );
 
-          if (contentTitle) {
+          if (
+            contentTitle
+          ) {
             contentTitle.textContent =
-              selectedChapter.title;
+              chapter.title;
           }
 
-          if (contentDate) {
+          if (
+            contentDate
+          ) {
             contentDate.textContent =
               formatDate(
                 unlockDate
               );
           }
 
-          if (contentBody) {
+          if (
+            contentBody
+          ) {
             contentBody.innerHTML =
-              selectedChapter.content;
+              chapter.content;
           }
+        };
+
+      const openChapterDirect =
+        (chapter) => {
+          selectedChapter =
+            chapter;
+
+          fillChapterContent(
+            chapter
+          );
+
+          lockPage();
+
+          showScene(
+            contentScreen
+          );
+        };
+
+      const showChapterContent =
+        () => {
+          if (
+            !selectedChapter
+          ) {
+            return;
+          }
+
+          fillChapterContent(
+            selectedChapter
+          );
 
           hideScene(
             introScreen,
@@ -1382,12 +1912,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const closeAllChapterScenes =
         () => {
-          const finish = () => {
-            selectedChapter =
-              null;
+          const finish =
+            () => {
+              selectedChapter =
+                null;
 
-            unlockPage();
-          };
+              unlockPage();
+            };
 
           if (
             contentScreen &&
@@ -1416,167 +1947,248 @@ document.addEventListener("DOMContentLoaded", () => {
           finish();
         };
 
-      const renderChapters = () => {
-        chaptersGrid.innerHTML =
-          "";
+      const renderChapters =
+        () => {
+          chaptersGrid.innerHTML =
+            "";
 
-        CHAPTERS.forEach(
-          (chapter) => {
-            const unlocked =
-              isUnlocked(
-                chapter
-              );
-
-            const unlockDate =
-              parseLocalDate(
-                chapter.unlockDate
-              );
-
-            const card =
-              document.createElement(
-                "article"
-              );
-
-            card.className =
-              `locked-card chapter-card ${
-                unlocked
-                  ? "is-unlocked"
-                  : "is-locked"
-              }`;
-
-            card.dataset.chapterId =
-              chapter.id;
-
-            if (unlocked) {
-              card.innerHTML = `
-                <span class="chapter-icon">
-                  ✦
-                </span>
-
-                <span class="chapter-title">
-                  ${chapter.title}
-                </span>
-
-                <small class="chapter-date">
-                  Desbloqueado
-                </small>
-
-                <button
-                  class="chapter-open-btn"
-                  type="button"
-                  data-open-chapter="${chapter.id}"
-                >
-                  Abrir capítulo
-                </button>
-              `;
-
-              const openBtn =
-                card.querySelector(
-                  ".chapter-open-btn"
+          CHAPTERS.forEach(
+            (chapter) => {
+              const unlocked =
+                isUnlocked(
+                  chapter
                 );
 
-              openBtn.addEventListener(
-                "click",
-                () => {
-                  openChapterIntro(
-                    chapter
+              const unlockDate =
+                parseLocalDate(
+                  chapter.unlockDate
+                );
+
+              const card =
+                document.createElement(
+                  "article"
+                );
+
+              card.className =
+                `locked-card chapter-card ${
+                  unlocked
+                    ? "is-unlocked"
+                    : "is-locked"
+                }`;
+
+              card.dataset
+                .chapterId =
+                chapter.id;
+
+              if (
+                unlocked
+              ) {
+                if (
+                  chapter.id ===
+                  "mes-2"
+                ) {
+                  card.dataset
+                    .clickable =
+                    "true";
+
+                  card.tabIndex =
+                    0;
+
+                  card.setAttribute(
+                    "role",
+                    "button"
                   );
-                }
-              );
-            } else {
-              card.dataset.clickable =
-                "true";
 
-              card.tabIndex =
-                0;
-
-              card.setAttribute(
-                "role",
-                "button"
-              );
-
-              card.setAttribute(
-                "aria-label",
-                `${chapter.title}. Se desbloquea el ${formatDate(
-                  unlockDate
-                )}`
-              );
-
-              card.innerHTML = `
-                <span class="chapter-icon">
-                  🔒
-                </span>
-
-                <span class="chapter-title">
-                  ${chapter.title}
-                </span>
-
-                <small class="chapter-date">
-                  Próximamente...
-                </small>
-              `;
-
-              const activateLockedCard =
-                () => {
-                  showLockedMessage(
-                    chapter,
-                    card
+                  card.setAttribute(
+                    "aria-label",
+                    "Abrir carta del segundo mes"
                   );
-                };
 
-              card.addEventListener(
-                "click",
-                activateLockedCard
-              );
+                  card.innerHTML = `
+                    <span class="chapter-icon">
+                      ✦
+                    </span>
 
-              card.addEventListener(
-                "keydown",
-                (event) => {
+                    <span class="chapter-title">
+                      ${chapter.title}
+                    </span>
+
+                    <small class="chapter-date">
+                      Toca para abrir ♡
+                    </small>
+                  `;
+
+                  const openSecondMonth =
+                    () => {
+                      openChapterDirect(
+                        chapter
+                      );
+                    };
+
+                  card.addEventListener(
+                    "click",
+                    openSecondMonth
+                  );
+
+                  card.addEventListener(
+                    "keydown",
+                    (event) => {
+                      if (
+                        event.key ===
+                          "Enter" ||
+                        event.key ===
+                          " "
+                      ) {
+                        event.preventDefault();
+
+                        openSecondMonth();
+                      }
+                    }
+                  );
+                } else {
+                  card.innerHTML = `
+                    <span class="chapter-icon">
+                      ✦
+                    </span>
+
+                    <span class="chapter-title">
+                      ${chapter.title}
+                    </span>
+
+                    <small class="chapter-date">
+                      Desbloqueado
+                    </small>
+
+                    <button
+                      class="chapter-open-btn"
+                      type="button"
+                      data-open-chapter="${chapter.id}"
+                    >
+                      Abrir capítulo
+                    </button>
+                  `;
+
+                  const openBtn =
+                    card.querySelector(
+                      ".chapter-open-btn"
+                    );
+
                   if (
-                    event.key ===
-                      "Enter" ||
-                    event.key ===
-                      " "
+                    openBtn
                   ) {
-                    event.preventDefault();
-
-                    activateLockedCard();
+                    openBtn.addEventListener(
+                      "click",
+                      () => {
+                        openChapterIntro(
+                          chapter
+                        );
+                      }
+                    );
                   }
                 }
+              } else {
+                card.dataset
+                  .clickable =
+                  "true";
+
+                card.tabIndex =
+                  0;
+
+                card.setAttribute(
+                  "role",
+                  "button"
+                );
+
+                card.setAttribute(
+                  "aria-label",
+                  `${chapter.title}. Se desbloquea el ${formatDate(
+                    unlockDate
+                  )}`
+                );
+
+                card.innerHTML = `
+                  <span class="chapter-icon">
+                    🔒
+                  </span>
+
+                  <span class="chapter-title">
+                    ${chapter.title}
+                  </span>
+
+                  <small class="chapter-date">
+                    Próximamente...
+                  </small>
+                `;
+
+                const activateLockedCard =
+                  () => {
+                    showLockedMessage(
+                      chapter,
+                      card
+                    );
+                  };
+
+                card.addEventListener(
+                  "click",
+                  activateLockedCard
+                );
+
+                card.addEventListener(
+                  "keydown",
+                  (event) => {
+                    if (
+                      event.key ===
+                        "Enter" ||
+                      event.key ===
+                        " "
+                    ) {
+                      event.preventDefault();
+
+                      activateLockedCard();
+                    }
+                  }
+                );
+              }
+
+              chaptersGrid.appendChild(
+                card
               );
             }
-
-            chaptersGrid.appendChild(
-              card
-            );
-          }
-        );
-      };
+          );
+        };
 
       renderChapters();
 
-      if (chapterContinueBtn) {
+      if (
+        chapterContinueBtn
+      ) {
         chapterContinueBtn.addEventListener(
           "click",
           showChapterContent
         );
       }
 
-      if (introCloseBtn) {
+      if (
+        introCloseBtn
+      ) {
         introCloseBtn.addEventListener(
           "click",
           closeAllChapterScenes
         );
       }
 
-      if (contentCloseBtn) {
+      if (
+        contentCloseBtn
+      ) {
         contentCloseBtn.addEventListener(
           "click",
           closeAllChapterScenes
         );
       }
 
-      if (chapterBackBtn) {
+      if (
+        chapterBackBtn
+      ) {
         chapterBackBtn.addEventListener(
           "click",
           closeAllChapterScenes
@@ -1585,27 +2197,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
       [
         introScreen,
-        contentScreen
-      ].forEach((scene) => {
-        if (!scene) return;
+        contentScreen,
+      ].forEach(
+        (scene) => {
+          if (!scene) return;
 
-        scene.addEventListener(
-          "click",
-          (event) => {
-            if (
-              event.target ===
-                scene ||
-              event.target
-                .classList
-                .contains(
-                  "chapter-scene-backdrop"
-                )
-            ) {
-              closeAllChapterScenes();
+          scene.addEventListener(
+            "click",
+            (event) => {
+              if (
+                event.target ===
+                  scene ||
+                event.target
+                  .classList
+                  .contains(
+                    "chapter-scene-backdrop"
+                  )
+              ) {
+                closeAllChapterScenes();
+              }
             }
-          }
-        );
-      });
+          );
+        }
+      );
 
       document.addEventListener(
         "keydown",
@@ -1635,18 +2249,20 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     },
 
-    /* =====================================================
-       HISTORIA - LÍNEA TEMPORAL INTERACTIVA
-    ===================================================== */
     initTimelineStories() {
-
       const stories = {
-
         conocimos: {
-          icon: "♡",
-          heading: "Nos conocimos",
-          title: "Un encuentro inesperado",
-          date: "13 de diciembre de 2023",
+          icon:
+            "♡",
+
+          heading:
+            "Nos conocimos",
+
+          title:
+            "Un encuentro inesperado",
+
+          date:
+            "13 de diciembre de 2023",
 
           text: `Nuestra historia comenzó mucho antes de que nosotros mismos pudiéramos imaginarlo.
 
@@ -1654,15 +2270,21 @@ En ese momento solo era un día cualquiera, un simple encuentro dentro de un jue
 
 Un mensaje en Roblox fue el primer pequeño capítulo de nuestra historia.
 
-Quizá en ese momento no sabíamos nada del otro, ni imaginábamos todo lo que vendría después, pero ese instante fue el comienzo de un camino que, tiempo después, nos volvería a juntar.`
+Quizá en ese momento no sabíamos nada del otro, ni imaginábamos todo lo que vendría después, pero ese instante fue el comienzo de un camino que, tiempo después, nos volvería a juntar.`,
         },
 
-
         reencontramos: {
-          icon: "✦",
-          heading: "Volvimos a encontrarnos",
-          title: "Cuando el universo nos volvió a juntar",
-          date: "4 de junio de 2026",
+          icon:
+            "✦",
+
+          heading:
+            "Volvimos a encontrarnos",
+
+          title:
+            "Cuando el universo nos volvió a juntar",
+
+          date:
+            "4 de junio de 2026",
 
           text: `Después de mucho tiempo, nuestras vidas volvieron a cruzarse.
 
@@ -1672,15 +2294,21 @@ Sin saberlo, ese mensaje llegó en el momento perfecto.
 
 Yo no imaginaba todo lo que iba a pasar después, ni que una conversación que parecía algo sencillo terminaría convirtiéndose en algo tan importante para mí.
 
-Gracias por haber tenido el valor de volver a acercarte.`
+Gracias por haber tenido el valor de volver a acercarte.`,
         },
 
-
         hablar: {
-          icon: "💌",
-          heading: "Empezamos a hablar",
-          title: "Conversaciones que no queríamos terminar",
-          date: "Junio de 2026",
+          icon:
+            "💌",
+
+          heading:
+            "Empezamos a hablar",
+
+          title:
+            "Conversaciones que no queríamos terminar",
+
+          date:
+            "Junio de 2026",
 
           text: `Al principio eran solamente conversaciones.
 
@@ -1688,15 +2316,21 @@ Pero poco a poco empezamos a conocernos más: nuestras formas de pensar, nuestro
 
 Sin darme cuenta, hablar contigo comenzó a convertirse en una de mis partes favoritas del día.
 
-Eran conversaciones que podían durar mucho tiempo y aun así sentir que faltaba más por contar.`
+Eran conversaciones que podían durar mucho tiempo y aun así sentir que faltaba más por contar.`,
         },
 
-
         sentimos: {
-          icon: "✨",
-          heading: "Nos atrevimos",
-          title: "El día que decidimos intentarlo",
-          date: "17 de junio de 2026",
+          icon:
+            "✨",
+
+          heading:
+            "Nos atrevimos",
+
+          title:
+            "El día que decidimos intentarlo",
+
+          date:
+            "17 de junio de 2026",
 
           text: `Ese día recuerdo haber tenido muchas dudas.
 
@@ -1710,15 +2344,21 @@ Me gustaba hablar contigo, compartir momentos contigo, reír contigo y sentir es
 
 Así que decidí arriesgarme.
 
-Y ahora sé que fue una de las mejores decisiones que pude tomar.`
+Y ahora sé que fue una de las mejores decisiones que pude tomar.`,
         },
 
-
         espacio: {
-          icon: "☾",
-          heading: "Pasamos a WhatsApp",
-          title: "Un lugar donde seguir conociéndonos",
-          date: "27 de junio de 2026",
+          icon:
+            "☾",
+
+          heading:
+            "Pasamos a WhatsApp",
+
+          title:
+            "Un lugar donde seguir conociéndonos",
+
+          date:
+            "27 de junio de 2026",
 
           text: `Ese día pasamos a WhatsApp y empezamos a tener un espacio un poco más nuestro.
 
@@ -1726,15 +2366,21 @@ Dejamos atrás los mensajes ocasionales y comenzamos a compartir más cosas de n
 
 Más conversaciones, más momentos, más historias y más razones para seguir conociéndonos.
 
-Poco a poco dejamos de ser dos personas que hablaban y empezamos a construir algo que sentíamos especial.`
+Poco a poco dejamos de ser dos personas que hablaban y empezamos a construir algo que sentíamos especial.`,
         },
 
-
         llamada: {
-          icon: "📞",
-          heading: "Nuestra primera llamada",
-          title: "Escuchar tu voz por primera vez",
-          date: "5 de julio de 2026",
+          icon:
+            "📞",
+
+          heading:
+            "Nuestra primera llamada",
+
+          title:
+            "Escuchar tu voz por primera vez",
+
+          date:
+            "5 de julio de 2026",
 
           text: `La primera llamada fue uno de esos momentos que parecen pequeños, pero que terminan quedándose contigo.
 
@@ -1744,15 +2390,21 @@ Fue extraño y bonito al mismo tiempo, porque aunque era algo nuevo, se sentía 
 
 Una llamada que empezó como algo sencillo terminó siendo uno de esos momentos donde el tiempo pasa diferente.
 
-Horas que parecían minutos.`
+Horas que parecían minutos.`,
         },
 
-
         novios: {
-          icon: "❤",
-          heading: "Nos hicimos novios",
-          title: "Nuestro primer capítulo",
-          date: "23 de agosto de 2026",
+          icon:
+            "❤",
+
+          heading:
+            "Nos hicimos novios",
+
+          title:
+            "Nuestro primer capítulo",
+
+          date:
+            "23 de agosto de 2026",
 
           text: `Después de todos esos pequeños momentos llegó ese día.
 
@@ -1764,11 +2416,9 @@ Elegimos cuidarnos, conocernos más y seguir creando recuerdos juntos.
 
 Este fue solamente nuestro primer capítulo.
 
-Y lo más bonito es saber que nuestra historia apenas comienza.`
-        }
-
+Y lo más bonito es saber que nuestra historia apenas comienza.`,
+        },
       };
-
 
       const modal =
         document.getElementById(
@@ -1805,131 +2455,163 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`
           "timelineModalClose"
         );
 
-      const openModal = (story) => {
-        if (
-          !modal ||
-          !story
-        ) {
-          return;
-        }
+      const openModal =
+        (story) => {
+          if (
+            !modal ||
+            !story
+          ) {
+            return;
+          }
 
-        modalIcon.textContent =
-          story.icon;
+          if (
+            modalIcon
+          ) {
+            modalIcon.textContent =
+              story.icon;
+          }
 
-        modalHeading.textContent =
-          story.heading;
+          if (
+            modalHeading
+          ) {
+            modalHeading.textContent =
+              story.heading;
+          }
 
-        modalTitle.textContent =
-          story.title;
+          if (
+            modalTitle
+          ) {
+            modalTitle.textContent =
+              story.title;
+          }
 
-        modalDate.textContent =
-          story.date;
+          if (
+            modalDate
+          ) {
+            modalDate.textContent =
+              story.date;
+          }
 
-        modalText.innerHTML =
-          "";
+          if (
+            modalText
+          ) {
+            modalText.innerHTML =
+              "";
 
-        story.text
-          .split(/\n\s*\n/)
-          .forEach(
-            (paragraph) => {
-              const p =
-                document.createElement(
-                  "p"
-                );
+            story.text
+              .split(
+                /\n\s*\n/
+              )
+              .forEach(
+                (paragraph) => {
+                  const p =
+                    document.createElement(
+                      "p"
+                    );
 
-              p.textContent =
-                paragraph.trim();
+                  p.textContent =
+                    paragraph.trim();
 
-              modalText.appendChild(
-                p
+                  modalText.appendChild(
+                    p
+                  );
+                }
+              );
+          }
+
+          modal.hidden =
+            false;
+
+          modal.setAttribute(
+            "aria-hidden",
+            "false"
+          );
+
+          document.body.dataset
+            .timelineOverflow =
+            document.body.style
+              .overflowY ||
+            "";
+
+          document.body.style
+            .overflowY =
+            "hidden";
+
+          requestAnimationFrame(
+            () => {
+              modal.classList.add(
+                "is-open"
               );
             }
           );
+        };
 
-        modal.hidden =
-          false;
+      const closeModal =
+        () => {
+          if (!modal) return;
 
-        modal.setAttribute(
-          "aria-hidden",
-          "false"
-        );
+          modal.classList.remove(
+            "is-open"
+          );
 
-        document.body.dataset
-          .timelineOverflow =
-          document.body.style
-            .overflowY || "";
+          modal.setAttribute(
+            "aria-hidden",
+            "true"
+          );
 
-        document.body.style
-          .overflowY =
-          "hidden";
+          window.setTimeout(
+            () => {
+              modal.hidden =
+                true;
 
-        requestAnimationFrame(
-          () => {
-            modal.classList.add(
-              "is-open"
+              document.body.style
+                .overflowY =
+                document.body.dataset
+                  .timelineOverflow ||
+                "auto";
+
+              delete document.body.dataset
+                .timelineOverflow;
+            },
+            350
+          );
+        };
+
+      document
+        .querySelectorAll(
+          ".timeline-button"
+        )
+        .forEach(
+          (button) => {
+            button.addEventListener(
+              "click",
+              () => {
+                const story =
+                  stories[
+                    button.dataset
+                      .timeline
+                  ];
+
+                openModal(
+                  story
+                );
+              }
             );
           }
         );
-      };
 
-      const closeModal = () => {
-        if (!modal) return;
-
-        modal.classList.remove(
-          "is-open"
-        );
-
-        modal.setAttribute(
-          "aria-hidden",
-          "true"
-        );
-
-        setTimeout(
-          () => {
-            modal.hidden =
-              true;
-
-            document.body.style
-              .overflowY =
-              document.body.dataset
-                .timelineOverflow ||
-              "auto";
-
-            delete document.body
-              .dataset
-              .timelineOverflow;
-          },
-          350
-        );
-      };
-
-      document.querySelectorAll(
-        ".timeline-button"
-      )
-      .forEach((button) => {
-        button.addEventListener(
-          "click",
-          () => {
-            const story =
-              stories[
-                button.dataset.timeline
-              ];
-
-            openModal(
-              story
-            );
-          }
-        );
-      });
-
-      if (closeBtn) {
+      if (
+        closeBtn
+      ) {
         closeBtn.addEventListener(
           "click",
           closeModal
         );
       }
 
-      if (modal) {
+      if (
+        modal
+      ) {
         modal.addEventListener(
           "click",
           (event) => {
@@ -1961,9 +2643,6 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`
       );
     },
 
-    /* =====================================================
-       BOTONES PENDIENTES
-    ===================================================== */
     initPendingControls() {
       const tabButtons =
         document.querySelectorAll(
@@ -1985,7 +2664,9 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`
         }
       );
 
-      if (memoriesButton) {
+      if (
+        memoriesButton
+      ) {
         memoriesButton.disabled =
           true;
 
@@ -1994,60 +2675,41 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`
       }
     },
 
-    /* =====================================================
-       MÓDULOS FUTUROS
-    ===================================================== */
     initFutureModules() {
       this.modules = {
         timeline: {
-          init() {
-            // Modal de "Nuestra historia".
-          }
+          init() {},
         },
 
         chapterTabs: {
-          init() {
-            // Nuestra carta / Lo que amo de ti / Momentos / Reflexiones.
-          }
+          init() {},
         },
 
         miniCards: {
-          init() {
-            // Contenido individual de "Cosas que amo de ti".
-          }
+          init() {},
         },
 
         memories: {
-          init() {
-            // Galería / lightbox.
-          }
+          init() {},
         },
 
         playlist: {
-          init() {
-            // Audio, play, pause, anterior y siguiente.
-          }
+          init() {},
         },
 
         goals: {
-          init() {
-            // Metas marcables.
-          }
+          init() {},
         },
 
         letters: {
-          init() {
-            // Apertura de cartas especiales.
-          }
+          init() {},
         },
 
         lockedChapters: {
-          init() {
-            // Ya implementado en initAnniversaryChapters().
-          }
-        }
+          init() {},
+        },
       };
-    }
+    },
   };
 
   app.init();
