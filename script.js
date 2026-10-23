@@ -1,4 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
+  /*
+    =========================================================
+    Nuestro pequeño universo — script.js
+    Flujo:
+    1) Portada
+    2) Carta de bienvenida
+    3) Dashboard
+
+    Además:
+    - La navbar se oculta durante la introducción.
+    - La navbar aparece únicamente al entrar al dashboard.
+    - Sus enlaces ya funcionan dentro del dashboard.
+    - Se deja la base lista para futuras interacciones.
+    =========================================================
+  */
+
   const app = {
     elements: {
       body: document.body,
@@ -19,9 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
       sceneEnterCleanup: 950,
       starCount: 120,
       shootingStarInterval: 9000,
-      useReducedMotion: window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-      ).matches,
+      useReducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     },
 
     currentScene: "hero",
@@ -40,6 +54,9 @@ document.addEventListener("DOMContentLoaded", () => {
       this.initFutureModules();
     },
 
+    /* =====================================================
+       ESTADO INICIAL
+    ===================================================== */
     setInitialState() {
       const {
         body,
@@ -51,32 +68,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (heroScreen) {
         heroScreen.hidden = false;
-        heroScreen.classList.remove(
-          "screen-enter",
-          "screen-exit"
-        );
+        heroScreen.classList.remove("screen-enter", "screen-exit");
       }
 
       if (welcomeScreen) {
         welcomeScreen.hidden = true;
-        welcomeScreen.classList.remove(
-          "screen-enter",
-          "screen-exit"
-        );
+        welcomeScreen.classList.remove("screen-enter", "screen-exit");
       }
 
       if (dashboardScreen) {
         dashboardScreen.hidden = true;
-        dashboardScreen.classList.remove(
-          "screen-enter",
-          "screen-exit"
-        );
+        dashboardScreen.classList.remove("screen-enter", "screen-exit");
       }
 
       if (navbar) {
-        navbar.classList.add(
-          "navbar-intro-hidden"
-        );
+        navbar.classList.add("navbar-intro-hidden");
       }
 
       if (body) {
@@ -87,134 +93,80 @@ document.addEventListener("DOMContentLoaded", () => {
       window.scrollTo(0, 0);
     },
 
+    /* =====================================================
+       BOTONES DE LAS ESCENAS
+    ===================================================== */
     bindSceneEvents() {
-      const {
-        enterBtn,
-        continueBtn,
-      } = this.elements;
+      const { enterBtn, continueBtn } = this.elements;
 
       if (enterBtn) {
-        enterBtn.addEventListener(
-          "click",
-          () => {
-            this.goFromHeroToWelcome();
-          }
-        );
+        enterBtn.addEventListener("click", () => {
+          this.goFromHeroToWelcome();
+        });
       }
 
       if (continueBtn) {
-        continueBtn.addEventListener(
-          "click",
-          () => {
-            this.goFromWelcomeToDashboard();
-          }
-        );
+        continueBtn.addEventListener("click", () => {
+          this.goFromWelcomeToDashboard();
+        });
       }
     },
 
+    /* =====================================================
+       PORTADA -> CARTA
+    ===================================================== */
     goFromHeroToWelcome() {
-      if (
-        this.currentScene !== "hero"
-      ) {
-        return;
-      }
+      if (this.currentScene !== "hero") return;
 
-      const {
-        heroScreen,
-        welcomeScreen,
-      } = this.elements;
+      const { heroScreen, welcomeScreen } = this.elements;
 
-      if (
-        !heroScreen ||
-        !welcomeScreen
-      ) {
-        return;
-      }
+      if (!heroScreen || !welcomeScreen) return;
 
-      this.currentScene =
-        "transitioning";
+      this.currentScene = "transitioning";
 
-      this.disablePointer(
-        heroScreen
-      );
+      this.disablePointer(heroScreen);
+      this.disablePointer(welcomeScreen);
 
-      this.disablePointer(
-        welcomeScreen
-      );
-
-      if (
-        this.settings
-          .useReducedMotion
-      ) {
+      if (this.settings.useReducedMotion) {
         heroScreen.hidden = true;
         welcomeScreen.hidden = false;
 
-        this.enablePointer(
-          welcomeScreen
-        );
+        this.enablePointer(welcomeScreen);
 
-        this.currentScene =
-          "welcome";
+        this.currentScene = "welcome";
 
         return;
       }
 
-      heroScreen.classList.add(
-        "screen-exit"
-      );
+      heroScreen.classList.add("screen-exit");
 
-      window.setTimeout(
-        () => {
-          heroScreen.hidden = true;
+      window.setTimeout(() => {
+        heroScreen.hidden = true;
 
-          heroScreen.classList.remove(
-            "screen-exit"
-          );
+        heroScreen.classList.remove("screen-exit");
 
-          welcomeScreen.hidden =
-            false;
+        welcomeScreen.hidden = false;
 
-          requestAnimationFrame(
-            () => {
-              welcomeScreen
-                .classList
-                .add(
-                  "screen-enter"
-                );
-            }
-          );
+        requestAnimationFrame(() => {
+          welcomeScreen.classList.add("screen-enter");
+        });
 
-          window.setTimeout(
-            () => {
-              welcomeScreen
-                .classList
-                .remove(
-                  "screen-enter"
-                );
+        window.setTimeout(() => {
+          welcomeScreen.classList.remove("screen-enter");
 
-              this.enablePointer(
-                welcomeScreen
-              );
+          this.enablePointer(welcomeScreen);
 
-              this.currentScene =
-                "welcome";
-            },
-            this.settings
-              .sceneEnterCleanup
-          );
-        },
-        this.settings
-          .sceneExitDuration
-      );
+          this.currentScene = "welcome";
+        }, this.settings.sceneEnterCleanup);
+
+      }, this.settings.sceneExitDuration);
     },
 
+    /* =====================================================
+       CARTA -> DASHBOARD
+    ===================================================== */
     goFromWelcomeToDashboard() {
-      if (
-        this.currentScene !==
-        "welcome"
-      ) {
-        return;
-      }
+      if (this.currentScene !== "welcome") return;
 
       const {
         body,
@@ -223,462 +175,259 @@ document.addEventListener("DOMContentLoaded", () => {
         dashboardScreen,
       } = this.elements;
 
-      if (
-        !welcomeScreen ||
-        !dashboardScreen
-      ) {
-        return;
-      }
+      if (!welcomeScreen || !dashboardScreen) return;
 
-      this.currentScene =
-        "transitioning";
+      this.currentScene = "transitioning";
 
-      this.disablePointer(
-        welcomeScreen
-      );
+      this.disablePointer(welcomeScreen);
+      this.disablePointer(dashboardScreen);
 
-      this.disablePointer(
-        dashboardScreen
-      );
-
-      if (
-        this.settings
-          .useReducedMotion
-      ) {
-        welcomeScreen.hidden =
-          true;
-
-        dashboardScreen.hidden =
-          false;
+      if (this.settings.useReducedMotion) {
+        welcomeScreen.hidden = true;
+        dashboardScreen.hidden = false;
 
         if (navbar) {
-          navbar.classList.remove(
-            "navbar-intro-hidden"
-          );
+          navbar.classList.remove("navbar-intro-hidden");
         }
 
         if (body) {
-          body.style.overflowY =
-            "auto";
+          body.style.overflowY = "auto";
         }
 
-        this.enablePointer(
-          dashboardScreen
-        );
+        this.enablePointer(dashboardScreen);
 
-        this.currentScene =
-          "dashboard";
+        this.currentScene = "dashboard";
 
         return;
       }
 
-      welcomeScreen.classList.add(
-        "screen-exit"
-      );
+      welcomeScreen.classList.add("screen-exit");
 
-      window.setTimeout(
-        () => {
-          welcomeScreen.hidden =
-            true;
+      window.setTimeout(() => {
+        welcomeScreen.hidden = true;
 
-          welcomeScreen
-            .classList
-            .remove(
-              "screen-exit"
-            );
+        welcomeScreen.classList.remove("screen-exit");
 
-          if (navbar) {
-            navbar.classList.remove(
-              "navbar-intro-hidden"
-            );
+        if (navbar) {
+          navbar.classList.remove("navbar-intro-hidden");
+          navbar.classList.add("navbar-enter");
 
-            navbar.classList.add(
-              "navbar-enter"
-            );
+          window.setTimeout(() => {
+            navbar.classList.remove("navbar-enter");
+          }, 750);
+        }
 
-            window.setTimeout(
-              () => {
-                navbar.classList.remove(
-                  "navbar-enter"
-                );
-              },
-              750
-            );
+        dashboardScreen.hidden = false;
+
+        requestAnimationFrame(() => {
+          dashboardScreen.classList.add("screen-enter");
+        });
+
+        window.setTimeout(() => {
+          dashboardScreen.classList.remove("screen-enter");
+
+          if (body) {
+            body.style.overflowY = "auto";
           }
 
-          dashboardScreen.hidden =
-            false;
+          this.enablePointer(dashboardScreen);
 
-          requestAnimationFrame(
-            () => {
-              dashboardScreen
-                .classList
-                .add(
-                  "screen-enter"
-                );
-            }
-          );
+          this.currentScene = "dashboard";
+        }, this.settings.sceneEnterCleanup);
 
-          window.setTimeout(
-            () => {
-              dashboardScreen
-                .classList
-                .remove(
-                  "screen-enter"
-                );
-
-              if (body) {
-                body.style.overflowY =
-                  "auto";
-              }
-
-              this.enablePointer(
-                dashboardScreen
-              );
-
-              this.currentScene =
-                "dashboard";
-            },
-            this.settings
-              .sceneEnterCleanup
-          );
-        },
-        this.settings
-          .sceneExitDuration
-      );
+      }, this.settings.sceneExitDuration);
     },
 
+    /* =====================================================
+       NAVEGACIÓN SUPERIOR
+    ===================================================== */
     bindNavigation() {
-      const {
-        navLinks,
-        dashboardScreen,
-      } = this.elements;
+      const { navLinks, dashboardScreen } = this.elements;
 
       const sectionMap = {
-        "inicio":
-          dashboardScreen,
-
-        "nuestra historia":
-          document.querySelector(
-            ".card.historia"
-          ),
-
-        "recuerdos":
-          document.querySelector(
-            ".card.recuerdos"
-          ),
-
-        "cartas":
-          document.querySelector(
-            ".card.cartas"
-          ),
-
-        "playlist":
-          document.querySelector(
-            ".card.playlist"
-          ),
-
-        "metas":
-          document.querySelector(
-            ".card.metas"
-          ),
-
-        "aniversarios":
-          document.querySelector(
-            ".card.futuros"
-          ),
+        "inicio": dashboardScreen,
+        "nuestra historia": document.querySelector(".card.historia"),
+        "recuerdos": document.querySelector(".card.recuerdos"),
+        "cartas": document.querySelector(".card.cartas"),
+        "playlist": document.querySelector(".card.playlist"),
+        "metas": document.querySelector(".card.metas"),
+        "aniversarios": document.querySelector(".card.futuros"),
       };
 
-      navLinks.forEach(
-        (link) => {
-          link.addEventListener(
-            "click",
-            (event) => {
-              event.preventDefault();
+      navLinks.forEach((link) => {
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
 
-              if (
-                this.currentScene !==
-                "dashboard"
-              ) {
-                return;
-              }
+          if (this.currentScene !== "dashboard") return;
 
-              const key =
-                link.textContent
-                  .trim()
-                  .toLowerCase();
+          const key = link.textContent.trim().toLowerCase();
 
-              const target =
-                sectionMap[key];
+          const target = sectionMap[key];
 
-              if (!target) return;
+          if (!target) return;
 
-              target.scrollIntoView({
-                behavior:
-                  "smooth",
-                block:
-                  "start",
-              });
-            }
-          );
-        }
-      );
+          target.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        });
+      });
     },
 
+    /* =====================================================
+       COLECCIONES HORIZONTALES
+    ===================================================== */
     initHorizontalCollections() {
-      const collections =
-        document.querySelectorAll(
-          ".polaroid-grid, .envelope-grid"
+      const collections = document.querySelectorAll(
+        ".polaroid-grid, .envelope-grid"
+      );
+
+      collections.forEach((container) => {
+        let isDragging = false;
+        let startX = 0;
+        let startScrollLeft = 0;
+        let movedDistance = 0;
+        let suppressClick = false;
+
+        container.addEventListener("pointerdown", (event) => {
+          if (event.pointerType !== "mouse") return;
+          if (event.button !== 0) return;
+
+          if (container.scrollWidth <= container.clientWidth) return;
+
+          isDragging = true;
+          movedDistance = 0;
+          suppressClick = false;
+
+          startX = event.clientX;
+          startScrollLeft = container.scrollLeft;
+
+          container.classList.add("is-dragging");
+
+          try {
+            container.setPointerCapture(event.pointerId);
+          } catch (_) {}
+        });
+
+        container.addEventListener("pointermove", (event) => {
+          if (!isDragging) return;
+          if (event.pointerType !== "mouse") return;
+
+          const deltaX = event.clientX - startX;
+
+          movedDistance = Math.max(
+            movedDistance,
+            Math.abs(deltaX)
+          );
+
+          if (movedDistance > 4) {
+            event.preventDefault();
+
+            suppressClick = true;
+          }
+
+          container.scrollLeft =
+            startScrollLeft - deltaX;
+        });
+
+        const finishDrag = (event) => {
+          if (!isDragging) return;
+
+          isDragging = false;
+
+          container.classList.remove("is-dragging");
+
+          try {
+            if (
+              container.hasPointerCapture(event.pointerId)
+            ) {
+              container.releasePointerCapture(
+                event.pointerId
+              );
+            }
+          } catch (_) {}
+
+          if (suppressClick) {
+            window.setTimeout(() => {
+              suppressClick = false;
+            }, 80);
+          }
+        };
+
+        container.addEventListener(
+          "pointerup",
+          finishDrag
         );
 
-      collections.forEach(
-        (container) => {
-          let isDragging =
-            false;
+        container.addEventListener(
+          "pointercancel",
+          finishDrag
+        );
 
-          let startX = 0;
+        container.addEventListener(
+          "lostpointercapture",
+          () => {
+            if (!isDragging) return;
 
-          let startScrollLeft =
-            0;
+            isDragging = false;
 
-          let movedDistance =
-            0;
+            container.classList.remove(
+              "is-dragging"
+            );
+          }
+        );
 
-          let suppressClick =
-            false;
+        container.addEventListener(
+          "click",
+          (event) => {
+            if (!suppressClick) return;
 
-          container.addEventListener(
-            "pointerdown",
-            (event) => {
-              if (
-                event.pointerType !==
-                "mouse"
-              ) {
-                return;
-              }
+            event.preventDefault();
 
-              if (
-                event.button !== 0
-              ) {
-                return;
-              }
-
-              if (
-                container.scrollWidth <=
-                container.clientWidth
-              ) {
-                return;
-              }
-
-              isDragging =
-                true;
-
-              movedDistance =
-                0;
-
-              suppressClick =
-                false;
-
-              startX =
-                event.clientX;
-
-              startScrollLeft =
-                container.scrollLeft;
-
-              container
-                .classList
-                .add(
-                  "is-dragging"
-                );
-
-              try {
-                container
-                  .setPointerCapture(
-                    event.pointerId
-                  );
-              } catch (_) {}
-            }
-          );
-
-          container.addEventListener(
-            "pointermove",
-            (event) => {
-              if (
-                !isDragging
-              ) {
-                return;
-              }
-
-              if (
-                event.pointerType !==
-                "mouse"
-              ) {
-                return;
-              }
-
-              const deltaX =
-                event.clientX -
-                startX;
-
-              movedDistance =
-                Math.max(
-                  movedDistance,
-                  Math.abs(
-                    deltaX
-                  )
-                );
-
-              if (
-                movedDistance >
-                4
-              ) {
-                event.preventDefault();
-
-                suppressClick =
-                  true;
-              }
-
-              container.scrollLeft =
-                startScrollLeft -
-                deltaX;
-            }
-          );
-
-          const finishDrag =
-            (event) => {
-              if (
-                !isDragging
-              ) {
-                return;
-              }
-
-              isDragging =
-                false;
-
-              container
-                .classList
-                .remove(
-                  "is-dragging"
-                );
-
-              try {
-                if (
-                  container
-                    .hasPointerCapture(
-                      event.pointerId
-                    )
-                ) {
-                  container
-                    .releasePointerCapture(
-                      event.pointerId
-                    );
-                }
-              } catch (_) {}
-
-              if (
-                suppressClick
-              ) {
-                window.setTimeout(
-                  () => {
-                    suppressClick =
-                      false;
-                  },
-                  80
-                );
-              }
-            };
-
-          container.addEventListener(
-            "pointerup",
-            finishDrag
-          );
-
-          container.addEventListener(
-            "pointercancel",
-            finishDrag
-          );
-
-          container.addEventListener(
-            "lostpointercapture",
-            () => {
-              if (
-                !isDragging
-              ) {
-                return;
-              }
-
-              isDragging =
-                false;
-
-              container
-                .classList
-                .remove(
-                  "is-dragging"
-                );
-            }
-          );
-
-          container.addEventListener(
-            "click",
-            (event) => {
-              if (
-                !suppressClick
-              ) {
-                return;
-              }
-
-              event.preventDefault();
-              event.stopPropagation();
-            },
-            true
-          );
-        }
-      );
+            event.stopPropagation();
+          },
+          true
+        );
+      });
     },
 
+    /* =====================================================
+       UTILIDADES
+    ===================================================== */
     disablePointer(element) {
       if (!element) return;
 
-      element.style.pointerEvents =
-        "none";
+      element.style.pointerEvents = "none";
     },
 
     enablePointer(element) {
       if (!element) return;
 
-      element.style.pointerEvents =
-        "";
+      element.style.pointerEvents = "";
     },
 
+    /* =====================================================
+       ESTRELLAS
+    ===================================================== */
     createStarfield() {
-      const {
-        starfield,
-      } = this.elements;
+      const { starfield } = this.elements;
 
       if (!starfield) return;
 
-      starfield.innerHTML =
-        "";
+      starfield.innerHTML = "";
 
       for (
         let i = 0;
-        i <
-        this.settings.starCount;
+        i < this.settings.starCount;
         i++
       ) {
         const star =
-          document.createElement(
-            "span"
-          );
+          document.createElement("span");
 
-        star.classList.add(
-          "star"
-        );
+        star.classList.add("star");
 
         const size =
-          Math.random() *
-            2.6 +
-          0.7;
+          Math.random() * 2.6 + 0.7;
 
         star.style.width =
           `${size}px`;
@@ -701,12 +450,11 @@ document.addEventListener("DOMContentLoaded", () => {
         star.style.animationDelay =
           `${Math.random() * 5}s`;
 
-        starfield.appendChild(
-          star
-        );
+        starfield.appendChild(star);
       }
 
       this.createShootingStar();
+
       this.startShootingStarLoop();
     },
 
@@ -720,9 +468,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const shootingStar =
-        document.createElement(
-          "div"
-        );
+        document.createElement("div");
 
       shootingStar.classList.add(
         "shooting-star"
@@ -741,34 +487,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (
         !shootingStar ||
-        this.settings
-          .useReducedMotion
+        this.settings.useReducedMotion
       ) {
         return;
       }
 
-      const relaunch =
-        () => {
-          shootingStar.style.animation =
-            "none";
+      const relaunch = () => {
+        shootingStar.style.animation =
+          "none";
 
-          void shootingStar.offsetWidth;
+        void shootingStar.offsetWidth;
 
-          shootingStar.style.animation =
-            "";
-        };
+        shootingStar.style.animation =
+          "";
+      };
 
       relaunch();
 
-      window.setInterval(
-        () => {
-          relaunch();
-        },
-        this.settings
-          .shootingStarInterval
-      );
+      window.setInterval(() => {
+        relaunch();
+      }, this.settings.shootingStarInterval);
     },
 
+    /* =====================================================
+       NUESTRA PROMESA
+    ===================================================== */
     initPromiseLetter() {
       const openBtn =
         document.getElementById(
@@ -785,98 +528,66 @@ document.addEventListener("DOMContentLoaded", () => {
           "promiseModalClose"
         );
 
-      if (
-        !openBtn ||
-        !modal
-      ) {
-        return;
-      }
+      if (!openBtn || !modal) return;
 
-      let closeTimer =
-        null;
+      let closeTimer = null;
 
-      const openPromise =
-        () => {
-          window.clearTimeout(
-            closeTimer
-          );
+      const openPromise = () => {
+        window.clearTimeout(closeTimer);
 
-          document.body.dataset
-            .promiseOverflowY =
-            document.body.style
-              .overflowY ||
-            "";
+        document.body.dataset.promiseOverflowY =
+          document.body.style.overflowY || "";
 
-          document.body.style
-            .overflowY =
-            "hidden";
+        document.body.style.overflowY =
+          "hidden";
 
-          modal.hidden =
-            false;
+        modal.hidden = false;
 
-          modal.setAttribute(
-            "aria-hidden",
-            "false"
-          );
+        modal.setAttribute(
+          "aria-hidden",
+          "false"
+        );
 
-          requestAnimationFrame(
-            () => {
-              modal.classList.add(
-                "is-open"
-              );
+        requestAnimationFrame(() => {
+          modal.classList.add("is-open");
 
-              if (
-                closeBtn
-              ) {
-                closeBtn.focus({
-                  preventScroll:
-                    true,
-                });
-              }
-            }
-          );
-        };
-
-      const closePromise =
-        () => {
-          if (
-            modal.hidden
-          ) {
-            return;
+          if (closeBtn) {
+            closeBtn.focus({
+              preventScroll: true
+            });
           }
+        });
+      };
 
-          modal.classList.remove(
-            "is-open"
-          );
+      const closePromise = () => {
+        if (modal.hidden) return;
 
-          modal.setAttribute(
-            "aria-hidden",
-            "true"
-          );
+        modal.classList.remove(
+          "is-open"
+        );
 
-          closeTimer =
-            window.setTimeout(
-              () => {
-                modal.hidden =
-                  true;
+        modal.setAttribute(
+          "aria-hidden",
+          "true"
+        );
 
-                document.body.style
-                  .overflowY =
-                  document.body.dataset
-                    .promiseOverflowY ||
-                  "auto";
+        closeTimer =
+          window.setTimeout(() => {
+            modal.hidden = true;
 
-                delete document.body.dataset
-                  .promiseOverflowY;
+            document.body.style.overflowY =
+              document.body.dataset
+                .promiseOverflowY ||
+              "auto";
 
-                openBtn.focus({
-                  preventScroll:
-                    true,
-                });
-              },
-              280
-            );
-        };
+            delete document.body.dataset
+              .promiseOverflowY;
+
+            openBtn.focus({
+              preventScroll: true
+            });
+          }, 280);
+      };
 
       openBtn.addEventListener(
         "click",
@@ -894,13 +605,10 @@ document.addEventListener("DOMContentLoaded", () => {
         "click",
         (event) => {
           if (
-            event.target ===
-              modal ||
-            event.target
-              .classList
-              .contains(
-                "promise-modal-backdrop"
-              )
+            event.target === modal ||
+            event.target.classList.contains(
+              "promise-modal-backdrop"
+            )
           ) {
             closePromise();
           }
@@ -911,8 +619,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "keydown",
         (event) => {
           if (
-            event.key ===
-              "Escape" &&
+            event.key === "Escape" &&
             !modal.hidden
           ) {
             closePromise();
@@ -921,6 +628,9 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     },
 
+    /* =====================================================
+       CARTAS PARA MOMENTOS ESPECIALES
+    ===================================================== */
     initSpecialLetters() {
       const LETTERS = {
         "dia-dificil": {
@@ -943,7 +653,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <p>Y si hoy necesitas que alguien te recuerde que eres importante, aquí estoy.</p>
 
             <p><strong>Te amo muchísimo, mi Xime. ♡</strong></p>
-          `,
+          `
         },
 
         "me-extranes": {
@@ -968,7 +678,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <p>Y cada vez que me extrañes, recuerda que yo también tengo un lugar donde guardarte.</p>
 
             <p><strong>Aquí. ♡</strong></p>
-          `,
+          `
         },
 
         "dudes-nosotros": {
@@ -999,7 +709,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <p>Y recuerda que, entre tantas posibilidades, nosotras nos encontramos.</p>
 
             <p><strong>Y yo todavía quiero descubrir todo lo que nos falta vivir. ♡</strong></p>
-          `,
+          `
         },
 
         "recordar-amor": {
@@ -1038,8 +748,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 Y quiero seguir haciendo de nosotros, nosotros. ♡
               </strong>
             </p>
-          `,
-        },
+          `
+        }
       };
 
       const modal =
@@ -1076,140 +786,117 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      let activeCard =
-        null;
+      let activeCard = null;
+      let closeTimer = null;
 
-      let closeTimer =
-        null;
+      const openLetter = (card) => {
+        const key =
+          card.dataset.specialLetter;
 
-      const openLetter =
-        (card) => {
-          const key =
-            card.dataset
-              .specialLetter;
+        const letter =
+          LETTERS[key];
 
-          const letter =
-            LETTERS[key];
+        if (!letter) return;
 
-          if (!letter) return;
+        activeCard = card;
 
-          activeCard =
-            card;
+        title.textContent =
+          letter.title;
 
-          title.textContent =
-            letter.title;
+        content.innerHTML =
+          letter.html;
 
-          content.innerHTML =
-            letter.html;
+        const scrollArea =
+          modal.querySelector(
+            ".special-letter-scroll"
+          );
 
-          const scrollArea =
-            modal.querySelector(
-              ".special-letter-scroll"
+        if (scrollArea) {
+          scrollArea.scrollTop = 0;
+        }
+
+        window.clearTimeout(
+          closeTimer
+        );
+
+        document.body.dataset
+          .specialLetterOverflowY =
+          document.body.style
+            .overflowY ||
+          "";
+
+        document.body.style
+          .overflowY =
+          "hidden";
+
+        modal.hidden = false;
+
+        modal.setAttribute(
+          "aria-hidden",
+          "false"
+        );
+
+        requestAnimationFrame(
+          () => {
+            modal.classList.add(
+              "is-open"
             );
 
-          if (
-            scrollArea
-          ) {
-            scrollArea.scrollTop =
-              0;
+            if (closeBtn) {
+              closeBtn.focus({
+                preventScroll: true
+              });
+            }
           }
+        );
+      };
 
-          window.clearTimeout(
-            closeTimer
-          );
+      const closeLetter = () => {
+        if (modal.hidden) return;
 
-          document.body.dataset
-            .specialLetterOverflowY =
-            document.body.style
-              .overflowY ||
-            "";
+        modal.classList.remove(
+          "is-open"
+        );
 
-          document.body.style
-            .overflowY =
-            "hidden";
+        modal.setAttribute(
+          "aria-hidden",
+          "true"
+        );
 
-          modal.hidden =
-            false;
-
-          modal.setAttribute(
-            "aria-hidden",
-            "false"
-          );
-
-          requestAnimationFrame(
+        closeTimer =
+          window.setTimeout(
             () => {
-              modal.classList.add(
-                "is-open"
-              );
+              modal.hidden =
+                true;
 
-              if (
-                closeBtn
-              ) {
-                closeBtn.focus({
-                  preventScroll:
-                    true,
+              document.body.style
+                .overflowY =
+                document.body.dataset
+                  .specialLetterOverflowY ||
+                "auto";
+
+              delete document.body
+                .dataset
+                .specialLetterOverflowY;
+
+              if (activeCard) {
+                activeCard.focus({
+                  preventScroll: true
                 });
               }
-            }
+
+              activeCard = null;
+            },
+            280
           );
-        };
-
-      const closeLetter =
-        () => {
-          if (
-            modal.hidden
-          ) {
-            return;
-          }
-
-          modal.classList.remove(
-            "is-open"
-          );
-
-          modal.setAttribute(
-            "aria-hidden",
-            "true"
-          );
-
-          closeTimer =
-            window.setTimeout(
-              () => {
-                modal.hidden =
-                  true;
-
-                document.body.style
-                  .overflowY =
-                  document.body.dataset
-                    .specialLetterOverflowY ||
-                  "auto";
-
-                delete document.body.dataset
-                  .specialLetterOverflowY;
-
-                if (
-                  activeCard
-                ) {
-                  activeCard.focus({
-                    preventScroll:
-                      true,
-                  });
-                }
-
-                activeCard =
-                  null;
-              },
-              280
-            );
-        };
+      };
 
       cards.forEach(
         (card) => {
           card.addEventListener(
             "click",
             () => {
-              openLetter(
-                card
-              );
+              openLetter(card);
             }
           );
 
@@ -1217,16 +904,12 @@ document.addEventListener("DOMContentLoaded", () => {
             "keydown",
             (event) => {
               if (
-                event.key ===
-                  "Enter" ||
-                event.key ===
-                  " "
+                event.key === "Enter" ||
+                event.key === " "
               ) {
                 event.preventDefault();
 
-                openLetter(
-                  card
-                );
+                openLetter(card);
               }
             }
           );
@@ -1244,8 +927,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "click",
         (event) => {
           if (
-            event.target ===
-              modal ||
+            event.target === modal ||
             event.target
               .classList
               .contains(
@@ -1261,8 +943,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "keydown",
         (event) => {
           if (
-            event.key ===
-              "Escape" &&
+            event.key === "Escape" &&
             !modal.hidden
           ) {
             closeLetter();
@@ -1271,20 +952,17 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     },
 
+    /* =====================================================
+       CAPÍTULOS / ANIVERSARIOS DINÁMICOS
+    ===================================================== */
     initAnniversaryChapters() {
-      const TEST_MODE =
-        false;
+      const TEST_MODE = false;
 
       const CHAPTERS = [
         {
           id: "mes-2",
-
-          title:
-            "Mes 2",
-
-          unlockDate:
-            "2026-10-23",
-
+          title: "Mes 2",
+          unlockDate: "2026-10-23",
           intro:
             "Hoy cumplimos dos meses siendo nosotros.",
 
@@ -1419,19 +1097,13 @@ document.addEventListener("DOMContentLoaded", () => {
               </div>
 
             </article>
-          `,
+          `
         },
 
         {
-          id:
-            "mes-3",
-
-          title:
-            "Mes 3",
-
-          unlockDate:
-            "2026-11-23",
-
+          id: "mes-3",
+          title: "Mes 3",
+          unlockDate: "2026-11-23",
           intro:
             "Tres meses, nuevas historias y otro capítulo para nosotros.",
 
@@ -1439,19 +1111,13 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="chapter-content-placeholder">
               Aquí podrás agregar el contenido especial de nuestro tercer mes.
             </div>
-          `,
+          `
         },
 
         {
-          id:
-            "mes-4",
-
-          title:
-            "Mes 4",
-
-          unlockDate:
-            "2026-12-23",
-
+          id: "mes-4",
+          title: "Mes 4",
+          unlockDate: "2026-12-23",
           intro:
             "Nuestra historia sigue creciendo, un capítulo a la vez.",
 
@@ -1459,19 +1125,13 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="chapter-content-placeholder">
               Aquí podrás agregar el contenido especial de nuestro cuarto mes.
             </div>
-          `,
+          `
         },
 
         {
-          id:
-            "mes-5",
-
-          title:
-            "5 meses",
-
-          unlockDate:
-            "2027-01-23",
-
+          id: "mes-5",
+          title: "5 meses",
+          unlockDate: "2027-01-23",
           intro:
             "Cinco meses de momentos que merecen tener su propio lugar.",
 
@@ -1479,19 +1139,13 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="chapter-content-placeholder">
               Aquí podrás agregar el contenido especial de nuestros cinco meses.
             </div>
-          `,
+          `
         },
 
         {
-          id:
-            "mes-6",
-
-          title:
-            "6 meses",
-
-          unlockDate:
-            "2027-02-23",
-
+          id: "mes-6",
+          title: "6 meses",
+          unlockDate: "2027-02-23",
           intro:
             "Medio año de nuestra historia merece abrirse como un capítulo especial.",
 
@@ -1499,19 +1153,13 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="chapter-content-placeholder">
               Aquí podrás construir un capítulo más grande para nuestros seis meses.
             </div>
-          `,
+          `
         },
 
         {
-          id:
-            "anio-1",
-
-          title:
-            "1 año",
-
-          unlockDate:
-            "2027-08-23",
-
+          id: "anio-1",
+          title: "1 año",
+          unlockDate: "2027-08-23",
           intro:
             "Un año. Todo un universo de momentos que empezó con nosotros.",
 
@@ -1519,8 +1167,8 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="chapter-content-placeholder">
               Aquí podrás crear el capítulo completo de nuestro primer aniversario.
             </div>
-          `,
-        },
+          `
+        }
       ];
 
       const chaptersGrid =
@@ -1583,24 +1231,17 @@ document.addEventListener("DOMContentLoaded", () => {
           "chapterBackBtn"
         );
 
-      if (
-        !chaptersGrid
-      ) {
-        return;
-      }
+      if (!chaptersGrid) return;
 
-      let selectedChapter =
-        null;
-
-      let toastTimer =
-        null;
+      let selectedChapter = null;
+      let toastTimer = null;
 
       const parseLocalDate =
         (isoDate) => {
           const [
             year,
             month,
-            day,
+            day
           ] =
             isoDate
               .split("-")
@@ -1632,18 +1273,11 @@ document.addEventListener("DOMContentLoaded", () => {
           new Intl.DateTimeFormat(
             "es-MX",
             {
-              day:
-                "numeric",
-
-              month:
-                "long",
-
-              year:
-                "numeric",
+              day: "numeric",
+              month: "long",
+              year: "numeric"
             }
-          ).format(
-            date
-          );
+          ).format(date);
 
       const isUnlocked =
         (chapter) =>
@@ -1653,45 +1287,41 @@ document.addEventListener("DOMContentLoaded", () => {
               chapter.unlockDate
             );
 
-      const createToast =
-        () => {
-          let toast =
-            document.querySelector(
-              ".chapter-toast"
+      const createToast = () => {
+        let toast =
+          document.querySelector(
+            ".chapter-toast"
+          );
+
+        if (!toast) {
+          toast =
+            document.createElement(
+              "div"
             );
 
-          if (!toast) {
-            toast =
-              document.createElement(
-                "div"
-              );
+          toast.className =
+            "chapter-toast";
 
-            toast.className =
-              "chapter-toast";
+          toast.setAttribute(
+            "role",
+            "status"
+          );
 
-            toast.setAttribute(
-              "role",
-              "status"
-            );
+          toast.setAttribute(
+            "aria-live",
+            "polite"
+          );
 
-            toast.setAttribute(
-              "aria-live",
-              "polite"
-            );
+          document.body.appendChild(
+            toast
+          );
+        }
 
-            document.body.appendChild(
-              toast
-            );
-          }
-
-          return toast;
-        };
+        return toast;
+      };
 
       const showLockedMessage =
-        (
-          chapter,
-          card
-        ) => {
+        (chapter, card) => {
           const unlockDate =
             parseLocalDate(
               chapter.unlockDate
@@ -1734,60 +1364,54 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         };
 
-      const lockPage =
-        () => {
+      const lockPage = () => {
+        document.body.dataset
+          .previousOverflowY =
+          document.body.style
+            .overflowY ||
+          "";
+
+        document.body.style
+          .overflowY =
+          "hidden";
+      };
+
+      const unlockPage = () => {
+        const previous =
           document.body.dataset
-            .previousOverflowY =
-            document.body.style
-              .overflowY ||
-            "";
+            .previousOverflowY ||
+          "auto";
 
-          document.body.style
-            .overflowY =
-            "hidden";
-        };
+        document.body.style
+          .overflowY =
+          previous;
 
-      const unlockPage =
-        () => {
-          const previous =
-            document.body.dataset
-              .previousOverflowY ||
-            "auto";
+        delete document.body.dataset
+          .previousOverflowY;
+      };
 
-          document.body.style
-            .overflowY =
-            previous;
+      const showScene = (scene) => {
+        if (!scene) return;
 
-          delete document.body.dataset
-            .previousOverflowY;
-        };
+        scene.hidden =
+          false;
 
-      const showScene =
-        (scene) => {
-          if (!scene) return;
+        scene.setAttribute(
+          "aria-hidden",
+          "false"
+        );
 
-          scene.hidden =
-            false;
-
-          scene.setAttribute(
-            "aria-hidden",
-            "false"
-          );
-
-          requestAnimationFrame(
-            () => {
-              scene.classList.add(
-                "is-visible"
-              );
-            }
-          );
-        };
+        requestAnimationFrame(
+          () => {
+            scene.classList.add(
+              "is-visible"
+            );
+          }
+        );
+      };
 
       const hideScene =
-        (
-          scene,
-          callback
-        ) => {
+        (scene, callback) => {
           if (!scene) return;
 
           scene.classList.remove(
@@ -1820,16 +1444,12 @@ document.addEventListener("DOMContentLoaded", () => {
           selectedChapter =
             chapter;
 
-          if (
-            introTitle
-          ) {
+          if (introTitle) {
             introTitle.textContent =
               chapter.title;
           }
 
-          if (
-            introMessage
-          ) {
+          if (introMessage) {
             introMessage.textContent =
               chapter.intro;
           }
@@ -1848,25 +1468,19 @@ document.addEventListener("DOMContentLoaded", () => {
               chapter.unlockDate
             );
 
-          if (
-            contentTitle
-          ) {
+          if (contentTitle) {
             contentTitle.textContent =
               chapter.title;
           }
 
-          if (
-            contentDate
-          ) {
+          if (contentDate) {
             contentDate.textContent =
               formatDate(
                 unlockDate
               );
           }
 
-          if (
-            contentBody
-          ) {
+          if (contentBody) {
             contentBody.innerHTML =
               chapter.content;
           }
@@ -1890,11 +1504,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const showChapterContent =
         () => {
-          if (
-            !selectedChapter
-          ) {
-            return;
-          }
+          if (!selectedChapter) return;
 
           fillChapterContent(
             selectedChapter
@@ -1912,13 +1522,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const closeAllChapterScenes =
         () => {
-          const finish =
-            () => {
-              selectedChapter =
-                null;
+          const finish = () => {
+            selectedChapter =
+              null;
 
-              unlockPage();
-            };
+            unlockPage();
+          };
 
           if (
             contentScreen &&
@@ -1947,152 +1556,46 @@ document.addEventListener("DOMContentLoaded", () => {
           finish();
         };
 
-      const renderChapters =
-        () => {
-          chaptersGrid.innerHTML =
-            "";
+      const renderChapters = () => {
+        chaptersGrid.innerHTML =
+          "";
 
-          CHAPTERS.forEach(
-            (chapter) => {
-              const unlocked =
-                isUnlocked(
-                  chapter
-                );
+        CHAPTERS.forEach(
+          (chapter) => {
+            const unlocked =
+              isUnlocked(
+                chapter
+              );
 
-              const unlockDate =
-                parseLocalDate(
-                  chapter.unlockDate
-                );
+            const unlockDate =
+              parseLocalDate(
+                chapter.unlockDate
+              );
 
-              const card =
-                document.createElement(
-                  "article"
-                );
+            const card =
+              document.createElement(
+                "article"
+              );
 
-              card.className =
-                `locked-card chapter-card ${
-                  unlocked
-                    ? "is-unlocked"
-                    : "is-locked"
-                }`;
-
-              card.dataset
-                .chapterId =
-                chapter.id;
-
-              if (
+            card.className =
+              `locked-card chapter-card ${
                 unlocked
+                  ? "is-unlocked"
+                  : "is-locked"
+              }`;
+
+            card.dataset.chapterId =
+              chapter.id;
+
+            if (unlocked) {
+              if (
+                chapter.id ===
+                "mes-2"
               ) {
-                if (
-                  chapter.id ===
-                  "mes-2"
-                ) {
-                  card.dataset
-                    .clickable =
-                    "true";
-
-                  card.tabIndex =
-                    0;
-
-                  card.setAttribute(
-                    "role",
-                    "button"
-                  );
-
-                  card.setAttribute(
-                    "aria-label",
-                    "Abrir carta del segundo mes"
-                  );
-
-                  card.innerHTML = `
-                    <span class="chapter-icon">
-                      ✦
-                    </span>
-
-                    <span class="chapter-title">
-                      ${chapter.title}
-                    </span>
-
-                    <small class="chapter-date">
-                      Toca para abrir ♡
-                    </small>
-                  `;
-
-                  const openSecondMonth =
-                    () => {
-                      openChapterDirect(
-                        chapter
-                      );
-                    };
-
-                  card.addEventListener(
-                    "click",
-                    openSecondMonth
-                  );
-
-                  card.addEventListener(
-                    "keydown",
-                    (event) => {
-                      if (
-                        event.key ===
-                          "Enter" ||
-                        event.key ===
-                          " "
-                      ) {
-                        event.preventDefault();
-
-                        openSecondMonth();
-                      }
-                    }
-                  );
-                } else {
-                  card.innerHTML = `
-                    <span class="chapter-icon">
-                      ✦
-                    </span>
-
-                    <span class="chapter-title">
-                      ${chapter.title}
-                    </span>
-
-                    <small class="chapter-date">
-                      Desbloqueado
-                    </small>
-
-                    <button
-                      class="chapter-open-btn"
-                      type="button"
-                      data-open-chapter="${chapter.id}"
-                    >
-                      Abrir capítulo
-                    </button>
-                  `;
-
-                  const openBtn =
-                    card.querySelector(
-                      ".chapter-open-btn"
-                    );
-
-                  if (
-                    openBtn
-                  ) {
-                    openBtn.addEventListener(
-                      "click",
-                      () => {
-                        openChapterIntro(
-                          chapter
-                        );
-                      }
-                    );
-                  }
-                }
-              } else {
-                card.dataset
-                  .clickable =
+                card.dataset.clickable =
                   "true";
 
-                card.tabIndex =
-                  0;
+                card.tabIndex = 0;
 
                 card.setAttribute(
                   "role",
@@ -2101,14 +1604,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 card.setAttribute(
                   "aria-label",
-                  `${chapter.title}. Se desbloquea el ${formatDate(
-                    unlockDate
-                  )}`
+                  "Abrir carta del segundo mes"
                 );
 
                 card.innerHTML = `
                   <span class="chapter-icon">
-                    🔒
+                    ✦
                   </span>
 
                   <span class="chapter-title">
@@ -2116,21 +1617,20 @@ document.addEventListener("DOMContentLoaded", () => {
                   </span>
 
                   <small class="chapter-date">
-                    Próximamente...
+                    Toca para abrir ♡
                   </small>
                 `;
 
-                const activateLockedCard =
+                const openSecondMonth =
                   () => {
-                    showLockedMessage(
-                      chapter,
-                      card
+                    openChapterDirect(
+                      chapter
                     );
                   };
 
                 card.addEventListener(
                   "click",
-                  activateLockedCard
+                  openSecondMonth
                 );
 
                 card.addEventListener(
@@ -2144,51 +1644,144 @@ document.addEventListener("DOMContentLoaded", () => {
                     ) {
                       event.preventDefault();
 
-                      activateLockedCard();
+                      openSecondMonth();
                     }
                   }
                 );
+
+              } else {
+                card.innerHTML = `
+                  <span class="chapter-icon">
+                    ✦
+                  </span>
+
+                  <span class="chapter-title">
+                    ${chapter.title}
+                  </span>
+
+                  <small class="chapter-date">
+                    Desbloqueado
+                  </small>
+
+                  <button
+                    class="chapter-open-btn"
+                    type="button"
+                    data-open-chapter="${chapter.id}"
+                  >
+                    Abrir capítulo
+                  </button>
+                `;
+
+                const openBtn =
+                  card.querySelector(
+                    ".chapter-open-btn"
+                  );
+
+                if (openBtn) {
+                  openBtn.addEventListener(
+                    "click",
+                    () => {
+                      openChapterIntro(
+                        chapter
+                      );
+                    }
+                  );
+                }
               }
 
-              chaptersGrid.appendChild(
-                card
+            } else {
+              card.dataset.clickable =
+                "true";
+
+              card.tabIndex = 0;
+
+              card.setAttribute(
+                "role",
+                "button"
+              );
+
+              card.setAttribute(
+                "aria-label",
+                `${chapter.title}. Se desbloquea el ${formatDate(
+                  unlockDate
+                )}`
+              );
+
+              card.innerHTML = `
+                <span class="chapter-icon">
+                  🔒
+                </span>
+
+                <span class="chapter-title">
+                  ${chapter.title}
+                </span>
+
+                <small class="chapter-date">
+                  Próximamente...
+                </small>
+              `;
+
+              const activateLockedCard =
+                () => {
+                  showLockedMessage(
+                    chapter,
+                    card
+                  );
+                };
+
+              card.addEventListener(
+                "click",
+                activateLockedCard
+              );
+
+              card.addEventListener(
+                "keydown",
+                (event) => {
+                  if (
+                    event.key ===
+                      "Enter" ||
+                    event.key ===
+                      " "
+                  ) {
+                    event.preventDefault();
+
+                    activateLockedCard();
+                  }
+                }
               );
             }
-          );
-        };
+
+            chaptersGrid.appendChild(
+              card
+            );
+          }
+        );
+      };
 
       renderChapters();
 
-      if (
-        chapterContinueBtn
-      ) {
+      if (chapterContinueBtn) {
         chapterContinueBtn.addEventListener(
           "click",
           showChapterContent
         );
       }
 
-      if (
-        introCloseBtn
-      ) {
+      if (introCloseBtn) {
         introCloseBtn.addEventListener(
           "click",
           closeAllChapterScenes
         );
       }
 
-      if (
-        contentCloseBtn
-      ) {
+      if (contentCloseBtn) {
         contentCloseBtn.addEventListener(
           "click",
           closeAllChapterScenes
         );
       }
 
-      if (
-        chapterBackBtn
-      ) {
+      if (chapterBackBtn) {
         chapterBackBtn.addEventListener(
           "click",
           closeAllChapterScenes
@@ -2197,29 +1790,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
       [
         introScreen,
-        contentScreen,
-      ].forEach(
-        (scene) => {
-          if (!scene) return;
+        contentScreen
+      ].forEach((scene) => {
+        if (!scene) return;
 
-          scene.addEventListener(
-            "click",
-            (event) => {
-              if (
-                event.target ===
-                  scene ||
-                event.target
-                  .classList
-                  .contains(
-                    "chapter-scene-backdrop"
-                  )
-              ) {
-                closeAllChapterScenes();
-              }
+        scene.addEventListener(
+          "click",
+          (event) => {
+            if (
+              event.target ===
+                scene ||
+              event.target
+                .classList
+                .contains(
+                  "chapter-scene-backdrop"
+                )
+            ) {
+              closeAllChapterScenes();
             }
-          );
-        }
-      );
+          }
+        );
+      });
 
       document.addEventListener(
         "keydown",
@@ -2249,11 +1840,13 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     },
 
+    /* =====================================================
+       HISTORIA - LÍNEA TEMPORAL INTERACTIVA
+    ===================================================== */
     initTimelineStories() {
       const stories = {
         conocimos: {
-          icon:
-            "♡",
+          icon: "♡",
 
           heading:
             "Nos conocimos",
@@ -2270,12 +1863,11 @@ En ese momento solo era un día cualquiera, un simple encuentro dentro de un jue
 
 Un mensaje en Roblox fue el primer pequeño capítulo de nuestra historia.
 
-Quizá en ese momento no sabíamos nada del otro, ni imaginábamos todo lo que vendría después, pero ese instante fue el comienzo de un camino que, tiempo después, nos volvería a juntar.`,
+Quizá en ese momento no sabíamos nada del otro, ni imaginábamos todo lo que vendría después, pero ese instante fue el comienzo de un camino que, tiempo después, nos volvería a juntar.`
         },
 
         reencontramos: {
-          icon:
-            "✦",
+          icon: "✦",
 
           heading:
             "Volvimos a encontrarnos",
@@ -2294,12 +1886,11 @@ Sin saberlo, ese mensaje llegó en el momento perfecto.
 
 Yo no imaginaba todo lo que iba a pasar después, ni que una conversación que parecía algo sencillo terminaría convirtiéndose en algo tan importante para mí.
 
-Gracias por haber tenido el valor de volver a acercarte.`,
+Gracias por haber tenido el valor de volver a acercarte.`
         },
 
         hablar: {
-          icon:
-            "💌",
+          icon: "💌",
 
           heading:
             "Empezamos a hablar",
@@ -2316,12 +1907,11 @@ Pero poco a poco empezamos a conocernos más: nuestras formas de pensar, nuestro
 
 Sin darme cuenta, hablar contigo comenzó a convertirse en una de mis partes favoritas del día.
 
-Eran conversaciones que podían durar mucho tiempo y aun así sentir que faltaba más por contar.`,
+Eran conversaciones que podían durar mucho tiempo y aun así sentir que faltaba más por contar.`
         },
 
         sentimos: {
-          icon:
-            "✨",
+          icon: "✨",
 
           heading:
             "Nos atrevimos",
@@ -2344,12 +1934,11 @@ Me gustaba hablar contigo, compartir momentos contigo, reír contigo y sentir es
 
 Así que decidí arriesgarme.
 
-Y ahora sé que fue una de las mejores decisiones que pude tomar.`,
+Y ahora sé que fue una de las mejores decisiones que pude tomar.`
         },
 
         espacio: {
-          icon:
-            "☾",
+          icon: "☾",
 
           heading:
             "Pasamos a WhatsApp",
@@ -2366,12 +1955,11 @@ Dejamos atrás los mensajes ocasionales y comenzamos a compartir más cosas de n
 
 Más conversaciones, más momentos, más historias y más razones para seguir conociéndonos.
 
-Poco a poco dejamos de ser dos personas que hablaban y empezamos a construir algo que sentíamos especial.`,
+Poco a poco dejamos de ser dos personas que hablaban y empezamos a construir algo que sentíamos especial.`
         },
 
         llamada: {
-          icon:
-            "📞",
+          icon: "📞",
 
           heading:
             "Nuestra primera llamada",
@@ -2390,12 +1978,11 @@ Fue extraño y bonito al mismo tiempo, porque aunque era algo nuevo, se sentía 
 
 Una llamada que empezó como algo sencillo terminó siendo uno de esos momentos donde el tiempo pasa diferente.
 
-Horas que parecían minutos.`,
+Horas que parecían minutos.`
         },
 
         novios: {
-          icon:
-            "❤",
+          icon: "❤",
 
           heading:
             "Nos hicimos novios",
@@ -2416,8 +2003,8 @@ Elegimos cuidarnos, conocernos más y seguir creando recuerdos juntos.
 
 Este fue solamente nuestro primer capítulo.
 
-Y lo más bonito es saber que nuestra historia apenas comienza.`,
-        },
+Y lo más bonito es saber que nuestra historia apenas comienza.`
+        }
       };
 
       const modal =
@@ -2455,127 +2042,111 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`,
           "timelineModalClose"
         );
 
-      const openModal =
-        (story) => {
-          if (
-            !modal ||
-            !story
-          ) {
-            return;
-          }
+      const openModal = (story) => {
+        if (
+          !modal ||
+          !story
+        ) {
+          return;
+        }
 
-          if (
-            modalIcon
-          ) {
-            modalIcon.textContent =
-              story.icon;
-          }
+        if (modalIcon) {
+          modalIcon.textContent =
+            story.icon;
+        }
 
-          if (
-            modalHeading
-          ) {
-            modalHeading.textContent =
-              story.heading;
-          }
+        if (modalHeading) {
+          modalHeading.textContent =
+            story.heading;
+        }
 
-          if (
-            modalTitle
-          ) {
-            modalTitle.textContent =
-              story.title;
-          }
+        if (modalTitle) {
+          modalTitle.textContent =
+            story.title;
+        }
 
-          if (
-            modalDate
-          ) {
-            modalDate.textContent =
-              story.date;
-          }
+        if (modalDate) {
+          modalDate.textContent =
+            story.date;
+        }
 
-          if (
-            modalText
-          ) {
-            modalText.innerHTML =
-              "";
-
-            story.text
-              .split(
-                /\n\s*\n/
-              )
-              .forEach(
-                (paragraph) => {
-                  const p =
-                    document.createElement(
-                      "p"
-                    );
-
-                  p.textContent =
-                    paragraph.trim();
-
-                  modalText.appendChild(
-                    p
-                  );
-                }
-              );
-          }
-
-          modal.hidden =
-            false;
-
-          modal.setAttribute(
-            "aria-hidden",
-            "false"
-          );
-
-          document.body.dataset
-            .timelineOverflow =
-            document.body.style
-              .overflowY ||
+        if (modalText) {
+          modalText.innerHTML =
             "";
 
+          story.text
+            .split(/\n\s*\n/)
+            .forEach(
+              (paragraph) => {
+                const p =
+                  document.createElement(
+                    "p"
+                  );
+
+                p.textContent =
+                  paragraph.trim();
+
+                modalText.appendChild(
+                  p
+                );
+              }
+            );
+        }
+
+        modal.hidden = false;
+
+        modal.setAttribute(
+          "aria-hidden",
+          "false"
+        );
+
+        document.body.dataset
+          .timelineOverflow =
           document.body.style
-            .overflowY =
-            "hidden";
+            .overflowY ||
+          "";
 
-          requestAnimationFrame(
-            () => {
-              modal.classList.add(
-                "is-open"
-              );
-            }
-          );
-        };
+        document.body.style
+          .overflowY =
+          "hidden";
 
-      const closeModal =
-        () => {
-          if (!modal) return;
+        requestAnimationFrame(
+          () => {
+            modal.classList.add(
+              "is-open"
+            );
+          }
+        );
+      };
 
-          modal.classList.remove(
-            "is-open"
-          );
+      const closeModal = () => {
+        if (!modal) return;
 
-          modal.setAttribute(
-            "aria-hidden",
-            "true"
-          );
+        modal.classList.remove(
+          "is-open"
+        );
 
-          window.setTimeout(
-            () => {
-              modal.hidden =
-                true;
+        modal.setAttribute(
+          "aria-hidden",
+          "true"
+        );
 
-              document.body.style
-                .overflowY =
-                document.body.dataset
-                  .timelineOverflow ||
-                "auto";
+        window.setTimeout(
+          () => {
+            modal.hidden = true;
 
-              delete document.body.dataset
-                .timelineOverflow;
-            },
-            350
-          );
-        };
+            document.body.style
+              .overflowY =
+              document.body.dataset
+                .timelineOverflow ||
+              "auto";
+
+            delete document.body.dataset
+              .timelineOverflow;
+          },
+          350
+        );
+      };
 
       document
         .querySelectorAll(
@@ -2600,18 +2171,14 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`,
           }
         );
 
-      if (
-        closeBtn
-      ) {
+      if (closeBtn) {
         closeBtn.addEventListener(
           "click",
           closeModal
         );
       }
 
-      if (
-        modal
-      ) {
+      if (modal) {
         modal.addEventListener(
           "click",
           (event) => {
@@ -2643,6 +2210,9 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`,
       );
     },
 
+    /* =====================================================
+       BOTONES PENDIENTES
+    ===================================================== */
     initPendingControls() {
       const tabButtons =
         document.querySelectorAll(
@@ -2664,9 +2234,7 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`,
         }
       );
 
-      if (
-        memoriesButton
-      ) {
+      if (memoriesButton) {
         memoriesButton.disabled =
           true;
 
@@ -2675,16 +2243,48 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`,
       }
     },
 
+    /* =====================================================
+       MÓDULOS FUTUROS
+    ===================================================== */
     initFutureModules() {
       this.modules = {
         timeline: {
-          init() {},
+          init() {}
         },
 
         chapterTabs: {
-          init() {},
+          init() {}
         },
 
+        miniCards: {
+          init() {}
+        },
+
+        memories: {
+          init() {}
+        },
+
+        playlist: {
+          init() {}
+        },
+
+        goals: {
+          init() {}
+        },
+
+        letters: {
+          init() {}
+        },
+
+        lockedChapters: {
+          init() {}
+        }
+      };
+    }
+  };
+
+  app.init();
+});
         miniCards: {
           init() {},
         },
