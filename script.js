@@ -1090,7 +1090,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 <p class="month-letter-ending">
                   <strong>
-                    Feliz 2 mesesaurio, mi Ximenota hermosa
+                    Feliz 2 mesesaurio, mi Ximenita hermosa
                   </strong>
                 </p>
 
