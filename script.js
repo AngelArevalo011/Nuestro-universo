@@ -2285,32 +2285,3 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`
 
   app.init();
 });
-        miniCards: {
-          init() {},
-        },
-
-        memories: {
-          init() {},
-        },
-
-        playlist: {
-          init() {},
-        },
-
-        goals: {
-          init() {},
-        },
-
-        letters: {
-          init() {},
-        },
-
-        lockedChapters: {
-          init() {},
-        },
-      };
-    },
-  };
-
-  app.init();
-});
