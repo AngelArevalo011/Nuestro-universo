@@ -81,20 +81,10 @@ document.addEventListener("DOMContentLoaded", () => {
         dashboardScreen.classList.remove("screen-enter", "screen-exit");
       }
 
-      /*
-        Decisión de diseño:
-        Durante portada y carta NO mostramos el menú.
-        Así la introducción se siente como una experiencia
-        y no como una web con enlaces que todavía no sirven.
-      */
       if (navbar) {
         navbar.classList.add("navbar-intro-hidden");
       }
 
-      /*
-        No existe scroll durante las dos primeras escenas.
-        Cada una ocupa el viewport completo.
-      */
       if (body) {
         body.style.overflowX = "hidden";
         body.style.overflowY = "hidden";
@@ -206,9 +196,6 @@ document.addEventListener("DOMContentLoaded", () => {
         welcomeScreen.hidden = true;
         welcomeScreen.classList.remove("screen-exit");
 
-        /*
-          El menú aparece justo cuando entramos al universo.
-        */
         if (navbar) {
           navbar.classList.remove("navbar-intro-hidden");
           navbar.classList.add("navbar-enter");
@@ -227,9 +214,6 @@ document.addEventListener("DOMContentLoaded", () => {
         window.setTimeout(() => {
           dashboardScreen.classList.remove("screen-enter");
 
-          /*
-            SOLO en el dashboard permitimos scroll.
-          */
           if (body) {
             body.style.overflowY = "auto";
           }
@@ -243,8 +227,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* =====================================================
        NAVEGACIÓN SUPERIOR
-       Funciona únicamente una vez abierto el dashboard.
-       No necesitas cambiar los href="#" del HTML por ahora.
     ===================================================== */
     bindNavigation() {
       const { navLinks, dashboardScreen } = this.elements;
@@ -278,13 +260,8 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     },
 
-
     /* =====================================================
        COLECCIONES HORIZONTALES
-       - Móvil/tablet: gesto táctil nativo.
-       - PC: click izquierdo + arrastrar.
-       - Sin flechas, puntos o scrollbar.
-       - El scroll vertical de la página permanece normal.
     ===================================================== */
     initHorizontalCollections() {
       const collections = document.querySelectorAll(
@@ -298,19 +275,10 @@ document.addEventListener("DOMContentLoaded", () => {
         let movedDistance = 0;
         let suppressClick = false;
 
-        /*
-          El táctil se deja completamente al navegador:
-          overflow-x:auto en CSS ya permite el swipe natural.
-          Aquí solo añadimos arrastre manual para mouse.
-        */
         container.addEventListener("pointerdown", (event) => {
           if (event.pointerType !== "mouse") return;
           if (event.button !== 0) return;
 
-          /*
-            Si no hay contenido desbordado no hace falta
-            iniciar un gesto de arrastre.
-          */
           if (container.scrollWidth <= container.clientWidth) return;
 
           isDragging = true;
@@ -324,9 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           try {
             container.setPointerCapture(event.pointerId);
-          } catch (_) {
-            /* Algunos navegadores pueden no necesitar captura. */
-          }
+          } catch (_) {}
         });
 
         container.addEventListener("pointermove", (event) => {
@@ -336,10 +302,6 @@ document.addEventListener("DOMContentLoaded", () => {
           const deltaX = event.clientX - startX;
           movedDistance = Math.max(movedDistance, Math.abs(deltaX));
 
-          /*
-            Una vez que claramente es un arrastre horizontal,
-            evitamos selección de texto e interacciones accidentales.
-          */
           if (movedDistance > 4) {
             event.preventDefault();
             suppressClick = true;
@@ -358,15 +320,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (container.hasPointerCapture(event.pointerId)) {
               container.releasePointerCapture(event.pointerId);
             }
-          } catch (_) {
-            /* Sin acción si el navegador ya liberó la captura. */
-          }
+          } catch (_) {}
 
-          /*
-            Dejamos suppressClick activo un instante:
-            así al soltar después de arrastrar no se abre
-            accidentalmente una tarjeta.
-          */
           if (suppressClick) {
             window.setTimeout(() => {
               suppressClick = false;
@@ -384,11 +339,6 @@ document.addEventListener("DOMContentLoaded", () => {
           container.classList.remove("is-dragging");
         });
 
-        /*
-          Si después hacemos las tarjetas clicables,
-          un click real seguirá funcionando.
-          Solo se cancela cuando el usuario arrastró.
-        */
         container.addEventListener(
           "click",
           (event) => {
@@ -399,15 +349,6 @@ document.addEventListener("DOMContentLoaded", () => {
           },
           true
         );
-
-        /*
-          No convertimos la rueda vertical del mouse en scroll
-          horizontal. Eso permite que la página siga bajando
-          normalmente cuando el cursor está sobre una colección.
-
-          Trackpads que envían deltaX horizontal funcionan
-          de forma nativa gracias a overflow-x:auto.
-        */
       });
     },
 
@@ -486,12 +427,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }, this.settings.shootingStarInterval);
     },
 
-
-
-
     /* =====================================================
        NUESTRA PROMESA
-       Abre únicamente la imagen de la carta de compromiso.
     ===================================================== */
     initPromiseLetter() {
       const openBtn =
@@ -588,13 +525,8 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     },
 
-
     /* =====================================================
        CARTAS PARA MOMENTOS ESPECIALES
-
-       Cada tarjeta abre únicamente su propia carta.
-       El fondo queda bloqueado mientras el modal está abierto
-       y el contenido largo se desplaza dentro del papel.
     ===================================================== */
     initSpecialLetters() {
       const LETTERS = {
@@ -767,10 +699,6 @@ document.addEventListener("DOMContentLoaded", () => {
         content.innerHTML =
           letter.html;
 
-        /*
-          Siempre abre la carta desde el inicio,
-          incluso si anteriormente se había desplazado.
-        */
         const scrollArea =
           modal.querySelector(
             ".special-letter-scroll"
@@ -844,12 +772,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 .dataset
                 .specialLetterOverflowY;
 
-              /*
-                Devolvemos el foco a la tarjeta
-                que abrió la carta. Como el fondo
-                nunca se desplazó, vuelve exactamente
-                al mismo punto de la sección.
-              */
               if (activeCard) {
                 activeCard.focus({
                   preventScroll: true
@@ -919,25 +841,8 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     },
 
-
     /* =====================================================
        CAPÍTULOS / ANIVERSARIOS DINÁMICOS
-
-       Para agregar un nuevo aniversario en el futuro:
-       SOLO agrega un objeto nuevo al arreglo CHAPTERS.
-
-       Formato:
-       {
-         id: "mes-7",
-         title: "7 meses",
-         unlockDate: "2027-03-23",
-         intro: "Mensaje breve de entrada.",
-         content: `<p>Contenido del capítulo.</p>`
-       }
-
-       TEST_MODE:
-       - false = usa las fechas reales.
-       - true  = desbloquea todo para que puedas probarlo.
     ===================================================== */
     initAnniversaryChapters() {
       const TEST_MODE = false;
@@ -947,12 +852,139 @@ document.addEventListener("DOMContentLoaded", () => {
           id: "mes-2",
           title: "Mes 2",
           unlockDate: "2026-10-23",
-          intro: "Otro pedacito de nuestra historia ya está listo para guardarse aquí.",
+          intro: "Hoy cumplimos dos meses siendo nosotros. Este capítulo guarda las palabras que te envié justo al comenzar nuestro segundo mesesaurio.",
 
           content: `
-            <div class="chapter-content-placeholder">
-              Aquí podrás escribir la carta, recuerdos, momentos y reflexiones de nuestro segundo mes.
-            </div>
+            <article class="month-letter month-letter-two">
+
+              <div class="month-letter-header">
+
+                <span class="month-letter-mark">
+                  ♡
+                </span>
+
+                <p class="month-letter-eyebrow">
+                  23 de octubre de 2026
+                </p>
+
+                <h3>
+                  Feliz 2 mesesaurio
+                </h3>
+
+                <p class="month-letter-subtitle">
+                  Dos meses siendo nosotros.
+                </p>
+
+              </div>
+
+              <div
+                class="month-letter-divider"
+                aria-hidden="true"
+              >
+                <span></span>
+                <b>✦</b>
+                <span></span>
+              </div>
+
+              <div class="month-letter-copy">
+
+                <p>
+                  <strong>
+                    Mi Ximenita hermosa...
+                  </strong>
+                </p>
+
+                <p>
+                  Feliz 2 mesesaurio mi niña
+                </p>
+
+                <p>
+                  Hoy me hace muy feliz poder decir que ya llevamos dos meses siendo nosotros. Y aunque dos meses puedan parecer poquito, cuando pienso en todo lo que hay detrás de ellos siento que tenemos muchísimo que celebrar.
+                </p>
+
+                <p>
+                  Nuestra historia empezó mucho antes de este 23 de agosto. Desde aquel primer mensaje, todas esas conversaciones, las llamadas, los juegos, las cosas que fuimos descubriendo del otro y todos esos pequeños momentos que, sin darnos cuenta, nos fueron acercando hasta llegar a donde estamos hoy.
+                </p>
+
+                <p>
+                  Y qué bonito se siente pensar que, entre tantas personas y tantos caminos que pudieron existir, terminamos encontrándonos nosotros.
+                </p>
+
+                <p>
+                  Me encanta tenerte en mi vida mi cielo. Me encantan nuestras conversaciones, nuestras tonterías, cuando jugamos juntos, cuando nos contamos cualquier cosa y esas veces en las que simplemente estar contigo hace que mi día se sienta diferente.
+                </p>
+
+                <p>
+                  Pero también me gusta que lo nuestro sea real. No todo ha sido perfecto y creo que tampoco tiene que serlo. Hemos tenido momentos muy bonitos y otros en los que nos ha tocado aprender, escucharnos y entendernos un poquito más. Y aun así aquí seguimos.
+                </p>
+
+                <p>
+                  Eso también es algo que valoro muchísimo de nosotros.
+                </p>
+
+                <p>
+                  No quiero que estos dos meses sean solamente una fecha bonita. Quiero que algún día podamos mirar hacia atrás y recordar que esto fue apenas el comienzo de una historia mucho más grande.
+                </p>
+
+                <p>
+                  Me emociona pensar en todo lo que todavía nos falta.
+                </p>
+
+                <p>
+                  Conocernos en persona. Poder abrazarte por fin. Tener nuestras primeras fotos juntos. Viajar. Conocer lugares nuevos. Hacer planes que ahora solamente podemos imaginar. Tener días completamente normales juntos y descubrir que incluso esos días pueden convertirse en nuestros favoritos.
+                </p>
+
+                <p>
+                  Y más adelante, quién sabe... quizá algún día podamos mirar todo lo que construimos y reconocer en nuestra vida a aquellas dos personas que empezaron queriéndose desde lejos.
+                </p>
+
+                <p>
+                  Me gusta imaginar ese futuro contigo.
+                </p>
+
+                <p>
+                  No porque necesite saber exactamente qué va a pasar, sino porque cuando pienso en las cosas bonitas que todavía me gustaría vivir, naturalmente apareces tú en ellas.
+                </p>
+
+                <p>
+                  Así que gracias mi niñita
+                </p>
+
+                <p>
+                  Gracias por cada llamada, cada mensaje, cada partida, cada risa, cada conversación y también por todos esos momentos que solamente nosotros entendemos.
+                </p>
+
+                <p>
+                  Gracias por ser tú y por dejarme formar parte de tu vida.
+                </p>
+
+                <p class="month-letter-emphasis">
+                  <strong>
+                    Te amo muchísimo mi pequeña.
+                  </strong>
+                </p>
+
+                <p>
+                  Y espero que este sea solamente uno de muchísimos mesesaurios que podamos celebrar juntos.
+                </p>
+
+                <p>
+                  Que sigamos escribiendo nuestra historia poquito a poquito, sin importar cuántos kilómetros haya entre nosotros.
+                </p>
+
+                <p>
+                  Porque si algo me gusta de nuestra historia es que todavía nos quedan <strong>muchísimos capítulos por vivir.</strong>
+                </p>
+
+                <p class="month-letter-ending">
+                  <strong>
+                    Feliz 2 mesesaurio, mi Ximenota hermosa
+                  </strong>
+                </p>
+
+              </div>
+
+            </article>
           `
         },
 
@@ -1603,12 +1635,8 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     },
 
-
     /* =====================================================
        HISTORIA - LÍNEA TEMPORAL INTERACTIVA
-
-       La tarjeta mantiene una descripción corta.
-       El contenido completo vive aquí y se abre en modal.
     ===================================================== */
     initTimelineStories() {
 
@@ -1935,8 +1963,6 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`
 
     /* =====================================================
        BOTONES PENDIENTES
-       Mientras no tengan contenido real, no deben fingir
-       que ya son controles funcionales.
     ===================================================== */
     initPendingControls() {
       const tabButtons =
@@ -1970,7 +1996,6 @@ Y lo más bonito es saber que nuestra historia apenas comienza.`
 
     /* =====================================================
        MÓDULOS FUTUROS
-       Aquí añadiremos las siguientes interacciones.
     ===================================================== */
     initFutureModules() {
       this.modules = {
